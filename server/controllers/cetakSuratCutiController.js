@@ -18,13 +18,12 @@ Handlebars.registerHelper("uppercase", function (str) {
     return str?.toUpperCase?.() || '';
 });
 
-const formatTanggalJam = { 
+const frontendBaseURL = process.env.FRONTEND_URL;
+
+const formatTanggal = { 
     day: '2-digit', 
     month: 'long', 
     year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
   };
   
 const cetakSuratCuti = async (req, res) => {
@@ -54,9 +53,8 @@ const cetakSuratCuti = async (req, res) => {
 
         const tahunKeterangan = new Date(pengajuan.tanggalPengajuan).getFullYear();
 
-        const pegawai = pengajuan.Pegawai;
-        const pegawaiQRText = `Nama: ${pegawai.nama}\nNIP: ${pegawai.nip}\nMengajukan: ${pengajuan.jenisCuti}\nPada Tanggal: ${pengajuan.tanggalPengajuan.toLocaleDateString('id-ID', formatTanggalJam).replace(/\./g, ':')}`;
-        const qrCodePengaju = await generateQRCodeBase64(pegawaiQRText);
+        const pegawaiQRUrl = `${frontendBaseURL}/validasi/qr-code-pengajuan/${pengajuan.id}`; 
+        const qrCodePengaju = await QRCode.toDataURL(pegawaiQRUrl);
 
         const filteredVerifikator = await Promise.all(
             pengajuan.VerifikasiCutis
@@ -64,40 +62,33 @@ const cetakSuratCuti = async (req, res) => {
                     ["Kepala Satuan Pelayanan", "Ketua Tim", "Kepala Sub Bagian Umum"].includes(v.jenisVerifikator)
                 )
                 .map(async v => {
-                    const qrText = `Nama: ${v.verifikator?.nama}\nNIP: ${v.verifikator?.nip}\nStatus: ${v.statusVerifikasi}\nPada Tanggal: ${v.updatedAt.toLocaleString("id-ID", formatTanggalJam).replace(/\./g, ':')}`;
-                    const qrCode = await generateQRCodeBase64(qrText);
+                    const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${v.id}`;
+                    const qrCode = await QRCode.toDataURL(qrUrl);
                     return {
                         jenis: v.jenisVerifikator,
                         nama: v.verifikator?.nama,
                         nip: v.verifikator?.nip,
                         status: v.statusVerifikasi,
                         komentar: v.komentar,
-                        tanggalVerifikasi: v.updatedAt.toLocaleString("id-ID", {
-                            day: "2-digit", month: "long", year: "numeric"
-                        }),
-                        qrCode
+                        qrCode,
                     };
                 })
         );
-
+        
         const verifikatorKepalaBalai = pengajuan.VerifikasiCutis.find(
             v => v.jenisVerifikator === "Kepala Balai Besar"
         );
         let kepalaBalai = null;
         if (verifikatorKepalaBalai) {
-            const qrText = `Nama: ${verifikatorKepalaBalai.verifikator?.nama}\nNIP: ${verifikatorKepalaBalai.verifikator?.nip}\nStatus: ${verifikatorKepalaBalai.statusVerifikasi}\nPada Tanggal: ${verifikatorKepalaBalai.updatedAt.toLocaleString("id-ID", formatTanggalJam).replace(/\./g, ':')}`;
-            const qrCode = await generateQRCodeBase64(qrText);
-
+            const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${verifikatorKepalaBalai.id}`;
+            const qrCode = await QRCode.toDataURL(qrUrl);
             kepalaBalai = {
                 jenis: verifikatorKepalaBalai.jenisVerifikator,
                 nama: verifikatorKepalaBalai.verifikator?.nama,
                 nip: verifikatorKepalaBalai.verifikator?.nip,
                 status: verifikatorKepalaBalai.statusVerifikasi,
                 komentar: verifikatorKepalaBalai.komentar,
-                tanggalVerifikasi: verifikatorKepalaBalai.updatedAt.toLocaleString("id-ID", {
-                    day: "2-digit", month: "long", year: "numeric"
-                }),
-                qrCode
+                qrCode,
             };
         }
 
@@ -130,24 +121,12 @@ const cetakSuratCuti = async (req, res) => {
             tahunN2: tahunKeterangan - 2,
             alasanCuti: pengajuan.alasanCuti,
             durasi: pengajuan.durasi,
-            tanggalMulai: new Date(pengajuan.tanggalMulai).toLocaleDateString("id-ID", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-            }),
-            tanggalSelesai: new Date(pengajuan.tanggalSelesai).toLocaleDateString("id-ID", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-            }),
+            tanggalMulai: new Date(pengajuan.tanggalMulai).toLocaleDateString("id-ID", formatTanggal),
+            tanggalSelesai: new Date(pengajuan.tanggalSelesai).toLocaleDateString("id-ID", formatTanggal),
             sisaKuota: pengajuan.sisaKuota,
             kuota,
             kuotaTahunanBreakdown,
-            tanggalPengajuan: new Date(pengajuan.tanggalPengajuan).toLocaleDateString("id-ID", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-            }),
+            tanggalPengajuan: new Date(pengajuan.tanggalPengajuan).toLocaleDateString("id-ID", formatTanggal),
             alamatCuti: pengajuan.alamatCuti,
             qrCodePengaju,
             filteredVerifikator,
@@ -186,16 +165,6 @@ const cetakSuratCuti = async (req, res) => {
     } catch (error) {
         console.error('Gagal mencetak surat cuti:', error);
         res.status(500).json({ msg: 'Gagal mencetak surat cuti', error: error.message });
-    }
-};
-
-const generateQRCodeBase64 = async (text) => {
-    try {
-        const dataUrl = await QRCode.toDataURL(text, { width: 200 });
-        return dataUrl;
-    } catch (err) {
-        console.error("Gagal membuat QR:", err);
-        return null;
     }
 };
 

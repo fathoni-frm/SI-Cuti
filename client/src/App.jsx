@@ -5,6 +5,8 @@ import useAuthStore from "./store/authStore";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./page/Login";
+import ValidasiPengajuanCuti from "./page/ValidasiPengajuanCuti";
+import ValidasiVerifikator from "./page/ValidasiVerifikator";
 import DashboardAdmin from "./page/DashboardAdmin";
 import DashboardAtasan from "./page/DashboardAtasan";
 import DashboardPegawai from "./page/DashboardPegawai";
@@ -67,6 +69,14 @@ const App = () => {
 					<Route
 						path="/login"
 						element={user ? <Navigate to="/dashboard" /> : <Login />}
+					/>
+					<Route
+						path="/validasi/qr-code-pengajuan/:id"
+						element={<ValidasiPengajuanCuti />}
+					/>
+					<Route
+						path="/validasi/qr-code-verifikator/:id"
+						element={<ValidasiVerifikator />}
 					/>
 					<Route
 						path="/dashboard"

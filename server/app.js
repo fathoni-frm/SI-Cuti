@@ -2,17 +2,19 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const cron = require('node-cron');
 const { sequelize } = require("./models");
 const authRoutes = require("./routes/authRoutes");
 const dataPegawaiRoutes = require("./routes/dataPegawaiRoutes");
 const kuotaCutiRoutes = require("./routes/kuotaCutiRoutes");
 const pengajuanCutiRoutes = require("./routes/pengajuanCutiRoutes");
 const verifikasiCutiRoutes = require("./routes/verifikasiCutiRoutes");
+const validasiRoutes = require("./routes/validasiRoutes");
 
 dotenv.config();
 const app = express();
 const PORT = 3000;
+
+app.use("/api/validasi", cors({ origin: "http://localhost:5173" }), validasiRoutes);
 
 app.use(cors({
   origin: "http://localhost:5173", // GANTI SESUAI URL FRONTEND
