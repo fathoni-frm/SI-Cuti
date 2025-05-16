@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosPublic from "../api/axiosPublic";
 import logo from "../assets/logo.png";
+import Spinner from "../components/Spinner";
 
 const ValidasiPengajuanCuti = () => {
 	const { id } = useParams();
@@ -34,7 +35,7 @@ const ValidasiPengajuanCuti = () => {
 		fetchData();
 	}, [id]);
 
-	if (status === "loading") return <p>Memuat data...</p>;
+	if (status === "loading") return <Spinner />;
 	if (status === "error") {
 		return (
 			<div className="max-w-xl mx-auto mt-20 bg-white border border-red-500 p-6 rounded-lg text-center shadow">
