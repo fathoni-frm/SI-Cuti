@@ -3,8 +3,9 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const Handlebars = require('handlebars');
 const QRCode = require('qrcode');
-
+const { createCanvas, loadImage } = require('canvas');
 const { PengajuanCuti, Pegawai, VerifikasiCuti, KuotaCuti } = require('../models');
+const logoPath = path.join(__dirname, '../uploads/assets/logoQRCode.png');
 
 Handlebars.registerHelper("eq", function (a, b) {
     return a === b;
@@ -20,12 +21,38 @@ Handlebars.registerHelper("uppercase", function (str) {
 
 const frontendBaseURL = process.env.FRONTEND_URL;
 
-const formatTanggal = { 
-    day: '2-digit', 
-    month: 'long', 
+const formatTanggal = {
+    day: '2-digit',
+    month: 'long',
     year: 'numeric',
-  };
-  
+};
+
+const generateQRCodeWithLogo = async (text, logoPath) => {
+    try {
+        const size = 300;
+        const canvas = createCanvas(size, size);
+        const ctx = canvas.getContext('2d');
+        
+        await QRCode.toCanvas(canvas, text, {
+            errorCorrectionLevel: 'H',
+            margin: 1,
+            width: 300
+        });
+        
+        const logo = await loadImage(logoPath);
+        const logoSize = size * 0.4;
+        const x = (size - logoSize) / 2;
+        const y = (size - logoSize) / 2;
+
+        ctx.drawImage(logo, x, y, logoSize, logoSize);
+        
+        return canvas.toDataURL();
+    } catch (err) {
+        console.error("Gagal generate QR Code dengan logo:", err);
+        throw err;
+    }
+};
+
 const cetakSuratCuti = async (req, res) => {
     try {
         const { id } = req.params;
@@ -53,8 +80,8 @@ const cetakSuratCuti = async (req, res) => {
 
         const tahunKeterangan = new Date(pengajuan.tanggalPengajuan).getFullYear();
 
-        const pegawaiQRUrl = `${frontendBaseURL}/validasi/qr-code-pengajuan/${pengajuan.id}`; 
-        const qrCodePengaju = await QRCode.toDataURL(pegawaiQRUrl);
+        const pegawaiQRUrl = `${frontendBaseURL}/validasi/qr-code-pengajuan/${pengajuan.id}`;
+        const qrCodePengaju = await generateQRCodeWithLogo(pegawaiQRUrl, logoPath);
 
         const filteredVerifikator = await Promise.all(
             pengajuan.VerifikasiCutis
@@ -63,7 +90,7 @@ const cetakSuratCuti = async (req, res) => {
                 )
                 .map(async v => {
                     const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${v.id}`;
-                    const qrCode = await QRCode.toDataURL(qrUrl);
+                    const qrCode = await generateQRCodeWithLogo(qrUrl, logoPath);
                     return {
                         jenis: v.jenisVerifikator,
                         nama: v.verifikator?.nama,
@@ -74,14 +101,14 @@ const cetakSuratCuti = async (req, res) => {
                     };
                 })
         );
-        
+
         const verifikatorKepalaBalai = pengajuan.VerifikasiCutis.find(
             v => v.jenisVerifikator === "Kepala Balai Besar"
         );
         let kepalaBalai = null;
         if (verifikatorKepalaBalai) {
             const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${verifikatorKepalaBalai.id}`;
-            const qrCode = await QRCode.toDataURL(qrUrl);
+            const qrCode = await generateQRCodeWithLogo(qrUrl, logoPath);
             kepalaBalai = {
                 jenis: verifikatorKepalaBalai.jenisVerifikator,
                 nama: verifikatorKepalaBalai.verifikator?.nama,
