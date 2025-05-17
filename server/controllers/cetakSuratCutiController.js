@@ -32,20 +32,20 @@ const generateQRCodeWithLogo = async (text, logoPath) => {
         const size = 300;
         const canvas = createCanvas(size, size);
         const ctx = canvas.getContext('2d');
-        
+
         await QRCode.toCanvas(canvas, text, {
             errorCorrectionLevel: 'H',
             margin: 1,
             width: 300
         });
-        
+
         const logo = await loadImage(logoPath);
         const logoSize = size * 0.4;
         const x = (size - logoSize) / 2;
         const y = (size - logoSize) / 2;
 
         ctx.drawImage(logo, x, y, logoSize, logoSize);
-        
+
         return canvas.toDataURL();
     } catch (err) {
         console.error("Gagal generate QR Code dengan logo:", err);
@@ -53,11 +53,10 @@ const generateQRCodeWithLogo = async (text, logoPath) => {
     }
 };
 
-const cetakSuratCuti = async (req, res) => {
-    try {
-        const { id } = req.params;
 
-        const pengajuan = await PengajuanCuti.findByPk(id, {
+const generateSuratCuti = async (idPengajuan) => {
+    try {
+        const pengajuan = await PengajuanCuti.findByPk(idPengajuan, {
             include: [
                 { model: Pegawai, as: 'Pegawai', include: [{ model: KuotaCuti }] },
                 { model: Pegawai, as: 'PenerimaTugas', required: false },
@@ -69,7 +68,7 @@ const cetakSuratCuti = async (req, res) => {
             order: [[{ model: VerifikasiCuti }, 'urutanVerifikasi', 'ASC']],
         });
 
-        if (!pengajuan) return res.status(404).json({ msg: 'Pengajuan tidak ditemukan' });
+        if (!pengajuan) throw new Error('Pengajuan tidak ditemukan');
 
         const rawKuota = pengajuan.Pegawai.KuotaCutis;
         const kuota = {};
@@ -119,27 +118,6 @@ const cetakSuratCuti = async (req, res) => {
             };
         }
 
-        let kuotaTahunanBreakdown = null;
-        if (pengajuan.jenisCuti === "Cuti Tahunan") {
-            let sisaKembali = pengajuan.durasi;
-            kuotaTahunanBreakdown = {};
-
-            for (const jenis of ["Cuti Tahunan", "Cuti Tahunan N-1", "Cuti Tahunan N-2"]) {
-                const item = rawKuota.find(k => k.jenisCuti === jenis);
-                if (!item) continue;
-
-                const sisaSekarang = item.sisaKuota;
-                const total = item.totalKuota;
-
-                const maksimumPemakaian = total - sisaSekarang;
-                const dikembalikan = Math.min(sisaKembali, maksimumPemakaian);
-                const sebelumDipakai = sisaSekarang + dikembalikan;
-
-                kuotaTahunanBreakdown[jenis] = sebelumDipakai;
-                sisaKembali -= dikembalikan;
-            }
-        }
-
         const data = {
             pegawai: pengajuan.Pegawai.get({ plain: true }),
             jenisCuti: pengajuan.jenisCuti,
@@ -150,9 +128,7 @@ const cetakSuratCuti = async (req, res) => {
             durasi: pengajuan.durasi,
             tanggalMulai: new Date(pengajuan.tanggalMulai).toLocaleDateString("id-ID", formatTanggal),
             tanggalSelesai: new Date(pengajuan.tanggalSelesai).toLocaleDateString("id-ID", formatTanggal),
-            sisaKuota: pengajuan.sisaKuota,
             kuota,
-            kuotaTahunanBreakdown,
             tanggalPengajuan: new Date(pengajuan.tanggalPengajuan).toLocaleDateString("id-ID", formatTanggal),
             alamatCuti: pengajuan.alamatCuti,
             qrCodePengaju,
@@ -174,27 +150,26 @@ const cetakSuratCuti = async (req, res) => {
         const page = await browser.newPage();
         await page.setContent(html, { waitUntil: 'networkidle0' });
 
-        const pdfBuffer = await page.pdf({
+        const namaFile = `SuratCuti_${idPengajuan}_${Date.now()}.pdf`;
+        const filePath = path.join(__dirname, '../uploads/surat-cuti', namaFile);
+
+        await page.pdf({
+            path: filePath,
             format: 'A4',
             printBackground: true,
-            margin: { top: '20mm', bottom: '20mm', left: '20mm', right: '20mm' },
+            margin: { top: '20mm', bottom: '20mm', left: '20mm', right: '20mm' }
         });
 
         await browser.close();
 
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename=SuratCuti_${id}.pdf`,
-            'Content-Length': pdfBuffer.length,
-        });
-
-        res.send(pdfBuffer);
+        // console.log(namaFile);
+        return namaFile;
     } catch (error) {
         console.error('Gagal mencetak surat cuti:', error);
-        res.status(500).json({ msg: 'Gagal mencetak surat cuti', error: error.message });
+        throw new Error('Gagal generate surat cuti:', error);
     }
 };
 
 module.exports = {
-    cetakSuratCuti,
+    generateSuratCuti,
 };

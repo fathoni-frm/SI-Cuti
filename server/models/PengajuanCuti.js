@@ -69,7 +69,11 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('Draft', 'Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'),
       allowNull: false
-    }
+    },
+    suratCuti: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
   }, {
     sequelize,
     modelName: 'PengajuanCuti',

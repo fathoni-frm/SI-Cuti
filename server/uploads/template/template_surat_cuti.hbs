@@ -1,752 +1,760 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ms" lang="ms">
 
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Surat Cuti dan Form Pelimpahan Tugas</title>
-	<style type="text/css">
-		* {
-			margin: 0;
-			padding: 0;
-			text-indent: 0;
-		}
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Surat Cuti dan Form Pelimpahan Tugas</title>
+		<style type="text/css">
+			* { margin: 0; padding: 0; text-indent: 0; } p { color: black;
+			font-family: Calibri, sans-serif; font-style: normal; font-weight: normal;
+			text-decoration: none; font-size: 11pt; margin: 0pt; } .s1 { color: black;
+			font-family: Calibri, sans-serif; font-style: normal; font-weight: normal;
+			text-decoration: none; font-size: 11pt; padding-left: 6pt; text-align:
+			left; } h1 { color: black; font-family: Calibri, sans-serif; font-style:
+			normal; font-weight: bold; text-decoration: none; font-size: 12pt; }
+			table, tbody { vertical-align: top; overflow: visible; }
+		</style>
+	</head>
 
-		p {
-			color: black;
-			font-family: Calibri, sans-serif;
-			font-style: normal;
-			font-weight: normal;
-			text-decoration: none;
-			font-size: 11pt;
-			margin: 0pt;
-		}
-
-		.s1 {
-			color: black;
-			font-family: Calibri, sans-serif;
-			font-style: normal;
-			font-weight: normal;
-			text-decoration: none;
-			font-size: 11pt;
-			padding-left: 6pt;
-			text-align:
-				left;
-		}
-
-		h1 {
-			color: black;
-			font-family: Calibri, sans-serif;
-			font-style:
-				normal;
-			font-weight: bold;
-			text-decoration: none;
-			font-size: 12pt;
-		}
-
-		table,
-		tbody {
-			vertical-align: top;
-			overflow: visible;
-		}
-	</style>
-</head>
-
-<body>
-	<div style="display: flex;flex-direction: column;align-items: flex-end;">
-		<p style="text-align: right;">Balikpapan, {{tanggalPengajuan}}</p>
-		<p style="margin-right: 150pt;text-align: left;">Kepada</p>
-		<p style="text-align: left;">Yth. Kepala Balai Besar Karantina Hewan,<br />Ikan dan Tumbuhan Kalimantan Timur
-		</p>
-	</div>
-	<p><br /></p>
-	<h1 style="text-align: center;">FORMULIR PERMINTAAN DAN PEMBERIAN CUTI</h1>
-	<p><br /></p>
-
-	{{! I. DATA PEGAWAI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:14pt">
-			<td style="width:503pt;border:1pt solid #000;" colspan="4">
-				<p class="s1">I. DATA PEGAWAI</p>
-			</td>
-		</tr>
-		<tr style="height:14pt">
-			<td style="width:58pt;border:1pt solid #000;">
-				<p class="s1">Nama</p>
-			</td>
-			<td style="width:181pt;border:1pt solid #000;">
-				<p class="s1" class="s1">{{pegawai.nama}}</p>
-			</td>
-			<td style="width:66pt;border:1pt solid #000;">
-				<p class="s1">NIP</p>
-			</td>
-			<td style="width:198pt;border:1pt solid #000;">
-				<p class="s1">{{pegawai.nip}}</p>
-			</td>
-		</tr>
-		<tr style="height:14pt">
-			<td style="width:58pt;border:1pt solid #000;">
-				<p class="s1">Jabatan</p>
-			</td>
-			<td style="width:181pt;border:1pt solid #000;">
-				<p class="s1">{{pegawai.jabatanFungsional}}</p>
-			</td>
-			<td style="width:66pt;border:1pt solid #000;">
-				<p class="s1">Masa Kerja
-				</p>
-			</td>
-			<td style="width:198pt;border:1pt solid #000;">
-				<p class="s1"><br /></p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:58pt;border:1pt solid #000;">
-				<p class="s1" style="padding-left: 6pt;line-height: 12pt;text-align: left;">Unit Kerja
-				</p>
-			</td>
-			<td style="width:445pt;border:1pt solid #000;" colspan="3">
-				<p class="s1">{{pegawai.satuanKerja}}</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! II. JENIS CUTI YANG DIAMBIL }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:14pt">
-			<td style="width:503pt;border:1pt solid #000;" colspan="4">
-				<p class="s1">II. JENIS CUTI YANG DIAMBIL</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:156pt;border:1pt solid #000;">
-				<p class="s1">1. Cuti Tahunan</p>
-			</td>
-			<td style="width:83pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Tahunan")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:171pt;border:1pt solid #000;">
-				<p class="s1">2. Cuti Besar</p>
-			</td>
-			<td style="width:93pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Besar")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:156pt;border:1pt solid #000;">
-				<p class="s1">3. Cuti Sakit</p>
-			</td>
-			<td style="width:83pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Sakit")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:171pt;border:1pt solid #000;">
-				<p class="s1">4. Cuti Melahirkan</p>
-			</td>
-			<td style="width:93pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Melahirkan")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:156pt;border:1pt solid #000;">
-				<p class="s1">5. Cuti Karena Alasan Penting</p>
-			</td>
-			<td style="width:83pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Karena Alasan Penting")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:171pt;border:1pt solid #000;">
-				<p class="s1">6. Cuti Diluar Tanggungan Negara</p>
-			</td>
-			<td style="width:93pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{#if
-					(eq jenisCuti "Cuti Di Luar Tanggungan Negara")
-					}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! III. ALASAN CUTI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:14pt">
-			<td style="width:503pt;border:1pt solid #000;" colspan="0">
-				<p class="s1">III. ALASAN CUTI</p>
-			</td>
-		</tr>
-		<tr style="height:14pt">
-			<td style="width:503pt;border:1pt solid #000;" colspan="0">
-				<p class="s1">{{alasanCuti}}</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! IV. LAMANYA CUTI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:13pt">
-			<td style="width:504pt;border:1pt solid #000;" colspan="6">
-				<p class="s1">IV . LAMANYA CUTI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:47pt;border:1pt solid #000;">
-				<p class="s1">Selama</p>
-			</td>
-			<td style="width:112pt;border:1pt solid #000;">
-				<p class="s1">{{durasi}} hari</p>
-			</td>
-			<td style="width:86pt;border:1pt solid #000;">
-				<p class="s1">Mulai tanggal</p>
-			</td>
-			<td style="width:107pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{tanggalMulai}}</p>
-			</td>
-			<td style="width:30pt;border:1pt solid #000;">
-				<p class="s1">s.d</p>
-			</td>
-			<td style="width:122pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{tanggalSelesai}}</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! V. CATATAN CUTI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:13pt">
-			<td style="width:504pt;border:1pt solid #000;" colspan="5">
-				<p class="s1">V. CATATAN CUTI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:184pt;border:1pt solid #000;" colspan="3">
-				<p class="s1">1. CUTI TAHUNAN</p>
-			</td>
-			<td style="width:223pt;border:1pt solid #000;">
-				<p class="s1">2. CUTI BESAR</p>
-			</td>
-			<td style="width:97pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Besar")}}
-					{{sisaKuota}}
-					{{else}}
-					{{getKuota kuota "Cuti Besar"}}
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:50pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">Tahun</p>
-			</td>
-			<td style="width:44pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">Sisa</p>
-			</td>
-			<td style="width:90pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">Keterangan</p>
-			</td>
-			<td style="width:223pt;border:1pt solid #000;">
-				<p class="s1">3. CUTI SAKIT</p>
-			</td>
-			<td style="width:97pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Sakit")}}
-					{{sisaKuota}}
-					{{else}}
-					{{getKuota kuota "Cuti Sakit"}}
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:50pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">N-2</p>
-			</td>
-			<td style="width:44pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Tahunan")}}
-					{{getKuota kuotaTahunanBreakdown "Cuti Tahunan N-2"}}
-					{{else}}
-					{{getKuota kuota "Cuti Tahunan N-2"}}
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:90pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{tahunN2}}</p>
-			</td>
-			<td style="width:223pt;border:1pt solid #000;">
-				<p class="s1">4. CUTI MELAHIRKAN</p>
-			</td>
-			<td style="width:97pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Melahirkan")}}
-					{{sisaKuota}}
-					{{else}}
-					{{getKuota kuota "Cuti Melahirkan"}}
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:14pt">
-			<td style="width:50pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">N-1</p>
-			</td>
-			<td style="width:44pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Tahunan")}}
-					{{getKuota kuotaTahunanBreakdown "Cuti Tahunan N-1"}}
-					{{else}}
-					{{getKuota kuota "Cuti Tahunan N-1"}}
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:90pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{tahunN1}}</p>
-			</td>
-			<td style="width:223pt;border:1pt solid #000;">
-				<p class="s1">5. CUTI KARENA ALASAN PENTING</p>
-			</td>
-			<td style="width:97pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Alasan Penting")}}
-					{{sisaKuota}}
-					{{else}}
-					{{getKuota kuota "Cuti Alasan Penting"}}
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:50pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">N</p>
-			</td>
-			<td style="width:44pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Tahunan")}}
-					{{getKuota kuotaTahunanBreakdown "Cuti Tahunan"}}
-					{{else}}
-					{{getKuota kuota "Cuti Tahunan"}}
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:90pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{tahunN}}</p>
-			</td>
-			<td style="width:223pt;border:1pt solid #000;">
-				<p class="s1">6. CUTI DILUAR TANGGUNGAN NEGARA</p>
-			</td>
-			<td style="width:97pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq jenisCuti "Cuti Di Luar Tanggungan Negara")}}
-					{{sisaKuota}}
-					{{else}}
-					{{getKuota kuota "Cuti Di Luar Tanggungan Negara"}}
-					{{/if}}
-				</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! VI. ALAMAT SELAMA MENJALANKAN CUTI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:13pt">
-			<td style="width:505pt;border:1pt solid #000;" colspan="3">
-				<p class="s1">VI. ALAMAT SELAMA MENJALANKAN CUTI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:315pt;border:1pt solid #000;" rowspan="4">
-				<p class="s1">{{alamatCuti}}</p>
-			</td>
-			<td style="width:51pt;border:1pt solid #000;">
-				<p class="s1">TELP</p>
-			</td>
-			<td style="width:139pt;border:1pt solid #000;">
-				<p class="s1">{{pegawai.noHp}}</p>
-			</td>
-		</tr>
-		<tr style="height:65pt">
-			<td style="width:190pt;border:1pt solid #000;text-align:center;vertical-align:middle" colspan="2">
-				<p class="s1" style="text-align: center;">Hormat saya,</p>
-				<img src="{{qrCodePengaju}}" width="70" height="70" alt="QR Kepala Balai"
-						style="padding-bottom: 0.5pt;" />
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:190pt;border:1pt solid #000;" colspan="2">
-				<p class="s1" style="text-align: center;">{{pegawai.nama}}</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:190pt;border:1pt solid #000;" colspan="2">
-				<p class="s1" style="text-align: center;">NIP. {{pegawai.nip}}</p>
-			</td>
-		</tr>
-	</table>
-	<p><br /></p>
-
-	{{! VII. PERTIMBANGAN ATASAN LANGSUNG }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:14pt">
-			<td style="width:504pt;border:1pt solid #000;" colspan="4">
-				<p class="s1" style="padding-left: 6pt;line-height: 12pt;text-align: left;">VII. PERTIMBANGAN ATASAN
-					LANGSUNG</p>
-			</td>
-		</tr>
-		{{#each filteredVerifikator}}
-		<tr style="height: 13pt;">
-			<td style="width:504pt;border:1pt solid #000;" colspan="4">
-				<p class="s1" style="text-align: center;">
-					PERTIMBANGAN
-					{{uppercase jenis}}</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:122pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">DISETUJUI
-				</p>
-			</td>
-			<td style="width:105pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">PERUBAHAN
-				</p>
-			</td>
-			<td style="width:128pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;"> DITANGGUHKAN</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">TIDAK DISETUJUI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:122pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq status "Disetujui")}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:105pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-			<td style="width:128pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-		</tr>
-		<tr style="height:15pt">
-			<td style="width:355pt;border:1pt solid #000;" colspan="3">
-				<p class="s1">CATATAN ATASAN</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{jenis}}</p>
-			</td>
-		</tr>
-		<tr style="height:65pt">
-			<td style="width:355pt;border:1pt solid #000;" colspan="3" rowspan="3">
-				<p class="s1" style="text-align: left;">{{komentar}}</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;text-align:center;vertical-align:middle">
-				<img src="{{qrCode}}" width="70" height="70" alt="QR Verifikasi" style="display:block; margin:0 auto" />
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{nama}}</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">NIP. {{nip}}</p>
-			</td>
-		</tr>
-		{{/each}}
-	</table>
-	<p><br /></p>
-
-	{{! VIII. KEPUTUSAN PEJABAT YANG BERWENANG MEMBERIKAN CUTI }}
-	<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-		<tr style="height:13pt">
-			<td style="width:505pt;border:1pt solid #000;" colspan="4">
-				<p class="s1" style="padding-left: 6pt;line-height: 12pt;text-align: left;">VIII. KEPUTUSAN PEJABAT YANG
-					BERWENANG MEMBERIKAN CUTI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:122pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">DISETUJUI
-				</p>
-			</td>
-			<td style="width:105pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">PERUBAHAN
-				</p>
-			</td>
-			<td style="width:128pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;"> DITANGGUHKAN</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">TIDAK DISETUJUI</p>
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:122pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					{{#if (eq kepalaBalai.status "Disetujui")}}✓{{else}}
-					-
-					{{/if}}
-				</p>
-			</td>
-			<td style="width:105pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-			<td style="width:128pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-			<td style="width:149pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">
-					-
-				</p>
-			</td>
-		</tr>
-		<tr style="height:15pt">
-			<td style="width:355pt;border:1pt solid #000;" colspan="3">
-				<p class="s1">CATATAN ATASAN</p>
-			</td>
-			<td style="width:150pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">Kepala Balai Besar</p>
-			</td>
-		</tr>
-		<tr style="height:65pt">
-			<td style="width:355pt;border:1pt solid #000;" colspan="3" rowspan="3">
-				<p class="s1" style="text-align: left;">{{kepalaBalai.komentar}}</p>
-			</td>
-			<td style="width:150pt;border:1pt solid #000;text-align:center;vertical-align:middle">
-				<img src="{{kepalaBalai.qrCode}}" width="70" height="70" alt="QR Kepala Balai"
-					style="display:block; margin:0 auto" />
-			</td>
-		</tr>
-		<tr style="height:13pt">
-			<td style="width:150pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">{{kepalaBalai.nama}}</p>
-			</td>
-		</tr>
-		<tr style="height:14pt">
-			<td style="width:150pt;border:1pt solid #000;">
-				<p class="s1" style="text-align: center;">NIP. {{kepalaBalai.nip}}</p>
-			</td>
-		</tr>
-	</table>
-
-	{{#if pelimpahan}}
-	<div style="page-break-before: always;">
-		<h1 style="padding-left: 11pt;text-align: center;">SURAT PELIMPAHAN
-			TUGAS</h1>
+	<body>
+		<div style="display: flex;flex-direction: column;align-items: flex-end;">
+			<p style="text-align: right;">Balikpapan, {{tanggalPengajuan}}</p>
+			<p style="margin-right: 150pt;text-align: left;">Kepada</p>
+			<p style="text-align: left;">Yth. Kepala Balai Besar Karantina Hewan,<br
+				/>Ikan dan Tumbuhan Kalimantan Timur
+			</p>
+		</div>
 		<p><br /></p>
-		<p class="s1">Saya yang bertanda tangan di bawah ini :</p>
+		<h1 style="text-align: center;">FORMULIR PERMINTAAN DAN PEMBERIAN CUTI</h1>
 		<p><br /></p>
 
+		{{! I. DATA PEGAWAI }}
 		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-			<tr style="height:17pt">
-				<td style="width:90pt;">
+			<tr style="height:14pt">
+				<td style="width:503pt;border:1pt solid #000;" colspan="4">
+					<p class="s1">I. DATA PEGAWAI</p>
+				</td>
+			</tr>
+			<tr style="height:14pt">
+				<td style="width:58pt;border:1pt solid #000;">
 					<p class="s1">Nama</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pegawai.nama}}</p>
+				<td style="width:181pt;border:1pt solid #000;">
+					<p class="s1" class="s1">{{pegawai.nama}}</p>
 				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
+				<td style="width:66pt;border:1pt solid #000;">
 					<p class="s1">NIP</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pegawai.nip}}</p>
+				<td style="width:198pt;border:1pt solid #000;">
+					<p class="s1">{{pegawai.nip}}</p>
 				</td>
 			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">Pangkat / Gol</p>
-				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pegawai.pangkat}} / {{pegawai.golongan}}</p>
-				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
+			<tr style="height:14pt">
+				<td style="width:58pt;border:1pt solid #000;">
 					<p class="s1">Jabatan</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pegawai.jabatanFungsional}}</p>
+				<td style="width:181pt;border:1pt solid #000;">
+					<p class="s1">{{pegawai.jabatanFungsional}}</p>
+				</td>
+				<td style="width:66pt;border:1pt solid #000;">
+					<p class="s1">Masa Kerja
+					</p>
+				</td>
+				<td style="width:198pt;border:1pt solid #000;">
+					<p class="s1"><br /></p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:58pt;border:1pt solid #000;">
+					<p
+						class="s1"
+						style="padding-left: 6pt;line-height: 12pt;text-align: left;"
+					>Unit Kerja
+					</p>
+				</td>
+				<td style="width:445pt;border:1pt solid #000;" colspan="3">
+					<p class="s1">{{pegawai.satuanKerja}}</p>
 				</td>
 			</tr>
 		</table>
 		<p><br /></p>
 
-		<p class="s1">Dengan ini melimpahkan Tugas dan Kewenangan yang berkaitan
-			dengan kegiatan teknis kepada :</p>
-		<p><br /></p>
-
+		{{! II. JENIS CUTI YANG DIAMBIL }}
 		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">Nama</p>
-				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pelimpahan.nama}}</p>
+			<tr style="height:14pt">
+				<td style="width:503pt;border:1pt solid #000;" colspan="4">
+					<p class="s1">II. JENIS CUTI YANG DIAMBIL</p>
 				</td>
 			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">NIP</p>
+			<tr style="height:13pt">
+				<td style="width:156pt;border:1pt solid #000;">
+					<p class="s1">1. Cuti Tahunan</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pelimpahan.nip}}</p>
+				<td style="width:83pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Tahunan")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
 				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">Pangkat / Gol</p>
+				<td style="width:171pt;border:1pt solid #000;">
+					<p class="s1">2. Cuti Besar</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">:
-						{{pelimpahan.pangkat}}
-						/
-						{{pelimpahan.golongan}}</p>
-				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">Jabatan</p>
-				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pelimpahan.jabatanFungsional}}</p>
+				<td style="width:93pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Besar")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
 				</td>
 			</tr>
-			<tr style="height:17pt">
-				<td style="width:90pt;">
-					<p class="s1">Satuan Pelayanan</p>
+			<tr style="height:13pt">
+				<td style="width:156pt;border:1pt solid #000;">
+					<p class="s1">3. Cuti Sakit</p>
 				</td>
-				<td style="width:410pt;">
-					<p class="s1">: {{pelimpahan.satuanKerja}}</p>
+				<td style="width:83pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Sakit")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
+				</td>
+				<td style="width:171pt;border:1pt solid #000;">
+					<p class="s1">4. Cuti Melahirkan</p>
+				</td>
+				<td style="width:93pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Melahirkan")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:156pt;border:1pt solid #000;">
+					<p class="s1">5. Cuti Karena Alasan Penting</p>
+				</td>
+				<td style="width:83pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Karena Alasan Penting")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
+				</td>
+				<td style="width:171pt;border:1pt solid #000;">
+					<p class="s1">6. Cuti Diluar Tanggungan Negara</p>
+				</td>
+				<td style="width:93pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{#if
+							(eq jenisCuti "Cuti Di Luar Tanggungan Negara")
+						}}✓{{else}}
+							-
+						{{/if}}
+					</p>
 				</td>
 			</tr>
 		</table>
 		<p><br /></p>
 
-		<p class="s1">Surat pelimpahan tugas ini berlaku mulai tanggal
-			{{tanggalMulai}}
-			dan tidak berlaku lagi setelah saya bertugas kembali.
-		</p>
+		{{! III. ALASAN CUTI }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:14pt">
+				<td style="width:503pt;border:1pt solid #000;" colspan="0">
+					<p class="s1">III. ALASAN CUTI</p>
+				</td>
+			</tr>
+			<tr style="height:14pt">
+				<td style="width:503pt;border:1pt solid #000;" colspan="0">
+					<p class="s1">{{alasanCuti}}</p>
+				</td>
+			</tr>
+		</table>
 		<p><br /></p>
 
-		<p style="padding-bottom: 5pt;padding-left: 315pt;text-align: left;">Balikpapan, {{tanggalPengajuan}}</p>
-		<table style="border-collapse:collapse;margin-left:40.2pt" cellspacing="0">
-			<tr style="height:17pt">
-				<td style="width:195pt;">
-					<p class="s1" style="padding-left: 2pt;text-align: left;">Yang Menerima Tugas,</p>
-				</td>
-				<td style="width:209pt;">
-					<p class="s1" style="padding-left: 80pt;text-align: left;">Yang Menyerahkan Tugas,
-					</p>
+		{{! IV. LAMANYA CUTI }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:13pt">
+				<td style="width:504pt;border:1pt solid #000;" colspan="6">
+					<p class="s1">IV . LAMANYA CUTI</p>
 				</td>
 			</tr>
-			<tr>
-				<td style="text-align:left;padding: 3pt 0pt;padding-left: 25pt;">
-					{{!-- <img src="{{kepalaBalai.qrCode}}" width="70" height="70" alt="QR Kepala Balai"
-						style="margin:0 auto" /> --}}
+			<tr style="height:13pt">
+				<td style="width:47pt;border:1pt solid #000;">
+					<p class="s1">Selama</p>
 				</td>
-				<td style="text-align:left;padding: 3pt 0pt;padding-left: 105pt;">
-					<img src="{{qrCodePengaju}}" width="70" height="70" alt="QR Kepala Balai"
-						style="padding-bottom: 0.5pt;" />
+				<td style="width:112pt;border:1pt solid #000;">
+					<p class="s1">{{durasi}} hari</p>
 				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:195pt;">
-					<p class="s1" style="padding-left: 2pt;text-align: left;">{{pelimpahan.nama}}</p>
+				<td style="width:86pt;border:1pt solid #000;">
+					<p class="s1">Mulai tanggal</p>
 				</td>
-				<td style="width:209pt;">
-					<p class="s1" style="padding-left: 80pt;text-align: left;">{{pegawai.nama}}</p>
+				<td style="width:107pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{tanggalMulai}}</p>
 				</td>
-			</tr>
-			<tr style="height:17pt">
-				<td style="width:195pt;">
-					<p class="s1" style="padding-left: 2pt;line-height: 12pt;text-align: left;">NIP. {{pelimpahan.nip}}
-					</p>
+				<td style="width:30pt;border:1pt solid #000;">
+					<p class="s1">s.d</p>
 				</td>
-				<td style="width:209pt;">
-					<p class="s1" style="padding-left: 80pt;line-height: 12pt;text-align: left;">NIP. {{pegawai.nip}}
-					</p>
+				<td style="width:122pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{tanggalSelesai}}</p>
 				</td>
 			</tr>
-			<tr>
-				<td style="width:404pt;" colspan="2">
-					<p><br /></p>
-					<p><br /></p>
-					<p class="s1" style="padding-top: 5pt;text-align: center;">
-						Mengetahui,</p>
+		</table>
+		<p><br /></p>
+
+		{{! V. CATATAN CUTI }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:13pt">
+				<td style="width:504pt;border:1pt solid #000;" colspan="5">
+					<p class="s1">V. CATATAN CUTI</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:184pt;border:1pt solid #000;" colspan="3">
+					<p class="s1">1. CUTI TAHUNAN</p>
+				</td>
+				<td style="width:223pt;border:1pt solid #000;">
+					<p class="s1">2. CUTI BESAR</p>
+				</td>
+				<td style="width:97pt;border:1pt solid #000;">
 					<p class="s1" style="text-align: center;">
-						Kepala Balai Besar Karantina Hewan, Ikan dan Tumbuhan
-						<br />
-						Kalimantan Timur
+						{{getKuota kuota "Cuti Besar"}}
 					</p>
 				</td>
 			</tr>
-			<tr>
-				<td style="text-align:center;vertical-align:middle;padding: 3pt 0pt;" colspan="2">
-					<img src="{{kepalaBalai.qrCode}}" width="70" height="70" alt="QR Kepala Balai"
-						style="display:block; margin:0 auto" />
+			<tr style="height:13pt">
+				<td style="width:50pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">Tahun</p>
+				</td>
+				<td style="width:44pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">Sisa</p>
+				</td>
+				<td style="width:90pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">Keterangan</p>
+				</td>
+				<td style="width:223pt;border:1pt solid #000;">
+					<p class="s1">3. CUTI SAKIT</p>
+				</td>
+				<td style="width:97pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Sakit"}}
+					</p>
 				</td>
 			</tr>
-			<tr style="height:17pt">
-				<td style="width:404pt;" colspan="2">
+			<tr style="height:13pt">
+				<td style="width:50pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">N-2</p>
+				</td>
+				<td style="width:44pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Tahunan N-2"}}
+					</p>
+				</td>
+				<td style="width:90pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{tahunN2}}</p>
+				</td>
+				<td style="width:223pt;border:1pt solid #000;">
+					<p class="s1">4. CUTI MELAHIRKAN</p>
+				</td>
+				<td style="width:97pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Melahirkan"}}
+					</p>
+				</td>
+			</tr>
+			<tr style="height:14pt">
+				<td style="width:50pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">N-1</p>
+				</td>
+				<td style="width:44pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Tahunan N-1"}}
+					</p>
+				</td>
+				<td style="width:90pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{tahunN1}}</p>
+				</td>
+				<td style="width:223pt;border:1pt solid #000;">
+					<p class="s1">5. CUTI KARENA ALASAN PENTING</p>
+				</td>
+				<td style="width:97pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Alasan Penting"}}
+					</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:50pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">N</p>
+				</td>
+				<td style="width:44pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Tahunan"}}
+					</p>
+				</td>
+				<td style="width:90pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">{{tahunN}}</p>
+				</td>
+				<td style="width:223pt;border:1pt solid #000;">
+					<p class="s1">6. CUTI DILUAR TANGGUNGAN NEGARA</p>
+				</td>
+				<td style="width:97pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{getKuota kuota "Cuti Di Luar Tanggungan Negara"}}
+					</p>
+				</td>
+			</tr>
+		</table>
+		<p><br /></p>
+
+		{{! VI. ALAMAT SELAMA MENJALANKAN CUTI }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:13pt">
+				<td style="width:505pt;border:1pt solid #000;" colspan="3">
+					<p class="s1">VI. ALAMAT SELAMA MENJALANKAN CUTI</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:315pt;border:1pt solid #000;" rowspan="4">
+					<p class="s1">{{alamatCuti}}</p>
+				</td>
+				<td style="width:51pt;border:1pt solid #000;">
+					<p class="s1">TELP</p>
+				</td>
+				<td style="width:139pt;border:1pt solid #000;">
+					<p class="s1">{{pegawai.noHp}}</p>
+				</td>
+			</tr>
+			<tr style="height:65pt">
+				<td
+					style="width:190pt;border:1pt solid #000;text-align:center;vertical-align:middle"
+					colspan="2"
+				>
+					<p class="s1" style="text-align: center;">Hormat saya,</p>
+					<img
+						src="{{qrCodePengaju}}"
+						width="70"
+						height="70"
+						alt="QR Kepala Balai"
+						style="padding-bottom: 0.5pt;"
+					/>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:190pt;border:1pt solid #000;" colspan="2">
+					<p class="s1" style="text-align: center;">{{pegawai.nama}}</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:190pt;border:1pt solid #000;" colspan="2">
+					<p class="s1" style="text-align: center;">NIP. {{pegawai.nip}}</p>
+				</td>
+			</tr>
+		</table>
+		<p><br /></p>
+
+		{{! VII. PERTIMBANGAN ATASAN LANGSUNG }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:14pt">
+				<td style="width:504pt;border:1pt solid #000;" colspan="4">
+					<p
+						class="s1"
+						style="padding-left: 6pt;line-height: 12pt;text-align: left;"
+					>VII. PERTIMBANGAN ATASAN LANGSUNG</p>
+				</td>
+			</tr>
+			{{#each filteredVerifikator}}
+				<tr style="height: 13pt;">
+					<td style="width:504pt;border:1pt solid #000;" colspan="4">
+						<p class="s1" style="text-align: center;">
+							PERTIMBANGAN
+							{{uppercase jenis}}</p>
+					</td>
+				</tr>
+				<tr style="height:13pt">
+					<td style="width:122pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">DISETUJUI
+						</p>
+					</td>
+					<td style="width:105pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">PERUBAHAN
+						</p>
+					</td>
+					<td style="width:128pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;"> DITANGGUHKAN</p>
+					</td>
+					<td style="width:149pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">TIDAK DISETUJUI</p>
+					</td>
+				</tr>
+				<tr style="height:13pt">
+					<td style="width:122pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">
+							{{#if (eq status "Disetujui")}}✓{{else}}
+								-
+							{{/if}}
+						</p>
+					</td>
+					<td style="width:105pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">
+							-
+						</p>
+					</td>
+					<td style="width:128pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">
+							-
+						</p>
+					</td>
+					<td style="width:149pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">
+							-
+						</p>
+					</td>
+				</tr>
+				<tr style="height:15pt">
+					<td style="width:355pt;border:1pt solid #000;" colspan="3">
+						<p class="s1">CATATAN ATASAN</p>
+					</td>
+					<td style="width:149pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">{{jenis}}</p>
+					</td>
+				</tr>
+				<tr style="height:65pt">
+					<td
+						style="width:355pt;border:1pt solid #000;"
+						colspan="3"
+						rowspan="3"
+					>
+						<p class="s1" style="text-align: left;">{{komentar}}</p>
+					</td>
+					<td
+						style="width:149pt;border:1pt solid #000;text-align:center;vertical-align:middle"
+					>
+						<img
+							src="{{qrCode}}"
+							width="70"
+							height="70"
+							alt="QR Verifikasi"
+							style="display:block; margin:0 auto"
+						/>
+					</td>
+				</tr>
+				<tr style="height:13pt">
+					<td style="width:149pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">{{nama}}</p>
+					</td>
+				</tr>
+				<tr style="height:13pt">
+					<td style="width:149pt;border:1pt solid #000;">
+						<p class="s1" style="text-align: center;">NIP. {{nip}}</p>
+					</td>
+				</tr>
+			{{/each}}
+		</table>
+		<p><br /></p>
+
+		{{! VIII. KEPUTUSAN PEJABAT YANG BERWENANG MEMBERIKAN CUTI }}
+		<table style="border-collapse:collapse;margin-left:6.5pt" cellspacing="0">
+			<tr style="height:13pt">
+				<td style="width:505pt;border:1pt solid #000;" colspan="4">
+					<p
+						class="s1"
+						style="padding-left: 6pt;line-height: 12pt;text-align: left;"
+					>VIII. KEPUTUSAN PEJABAT YANG BERWENANG MEMBERIKAN CUTI</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:122pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">DISETUJUI
+					</p>
+				</td>
+				<td style="width:105pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">PERUBAHAN
+					</p>
+				</td>
+				<td style="width:128pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;"> DITANGGUHKAN</p>
+				</td>
+				<td style="width:149pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">TIDAK DISETUJUI</p>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:122pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						{{#if (eq kepalaBalai.status "Disetujui")}}✓{{else}}
+							-
+						{{/if}}
+					</p>
+				</td>
+				<td style="width:105pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						-
+					</p>
+				</td>
+				<td style="width:128pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						-
+					</p>
+				</td>
+				<td style="width:149pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">
+						-
+					</p>
+				</td>
+			</tr>
+			<tr style="height:15pt">
+				<td style="width:355pt;border:1pt solid #000;" colspan="3">
+					<p class="s1">CATATAN ATASAN</p>
+				</td>
+				<td style="width:150pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">Kepala Balai Besar</p>
+				</td>
+			</tr>
+			<tr style="height:65pt">
+				<td style="width:355pt;border:1pt solid #000;" colspan="3" rowspan="3">
+					<p class="s1" style="text-align: left;">{{kepalaBalai.komentar}}</p>
+				</td>
+				<td
+					style="width:150pt;border:1pt solid #000;text-align:center;vertical-align:middle"
+				>
+					<img
+						src="{{kepalaBalai.qrCode}}"
+						width="70"
+						height="70"
+						alt="QR Kepala Balai"
+						style="display:block; margin:0 auto"
+					/>
+				</td>
+			</tr>
+			<tr style="height:13pt">
+				<td style="width:150pt;border:1pt solid #000;">
 					<p class="s1" style="text-align: center;">{{kepalaBalai.nama}}</p>
 				</td>
 			</tr>
-			<tr style="height:17pt">
-				<td style="width:404pt;" colspan="2">
-					<p class="s1" style="text-align: center;">NIP.
-						{{kepalaBalai.nip}}</p>
+			<tr style="height:14pt">
+				<td style="width:150pt;border:1pt solid #000;">
+					<p class="s1" style="text-align: center;">NIP. {{kepalaBalai.nip}}</p>
 				</td>
 			</tr>
 		</table>
-	</div>
-	{{/if}}
-</body>
+
+		{{#if pelimpahan}}
+			<div style="page-break-before: always;">
+				<h1 style="padding-left: 11pt;text-align: center;">SURAT PELIMPAHAN
+					TUGAS</h1>
+				<p><br /></p>
+				<p class="s1">Saya yang bertanda tangan di bawah ini :</p>
+				<p><br /></p>
+
+				<table
+					style="border-collapse:collapse;margin-left:6.5pt"
+					cellspacing="0"
+				>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Nama</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">NIP</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.nip}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Pangkat / Gol</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.pangkat}} / {{pegawai.golongan}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Jabatan</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.jabatanFungsional}}</p>
+						</td>
+					</tr>
+				</table>
+				<p><br /></p>
+
+				<p class="s1">Dengan ini melimpahkan Tugas dan Kewenangan yang berkaitan
+					dengan kegiatan teknis kepada :</p>
+				<p><br /></p>
+
+				<table
+					style="border-collapse:collapse;margin-left:6.5pt"
+					cellspacing="0"
+				>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Nama</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pelimpahan.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">NIP</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pelimpahan.nip}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Pangkat / Gol</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">:
+								{{pelimpahan.pangkat}}
+								/
+								{{pelimpahan.golongan}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Jabatan</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pelimpahan.jabatanFungsional}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:90pt;">
+							<p class="s1">Satuan Pelayanan</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pelimpahan.satuanKerja}}</p>
+						</td>
+					</tr>
+				</table>
+				<p><br /></p>
+
+				<p class="s1">Surat pelimpahan tugas ini berlaku mulai tanggal
+					{{tanggalMulai}}
+					dan tidak berlaku lagi setelah saya bertugas kembali.
+				</p>
+				<p><br /></p>
+
+				<p
+					style="padding-bottom: 5pt;padding-left: 315pt;text-align: left;"
+				>Balikpapan, {{tanggalPengajuan}}</p>
+				<table
+					style="border-collapse:collapse;margin-left:40.2pt"
+					cellspacing="0"
+				>
+					<tr style="height:17pt">
+						<td style="width:195pt;">
+							<p class="s1" style="padding-left: 2pt;text-align: left;">Yang
+								Menerima Tugas,</p>
+						</td>
+						<td style="width:209pt;">
+							<p class="s1" style="padding-left: 80pt;text-align: left;">Yang
+								Menyerahkan Tugas,
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align:left;padding: 3pt 0pt;padding-left: 25pt;">
+							{{!-- <img src="{{kepalaBalai.qrCode}}" width="70" height="70" alt="QR Kepala Balai"
+						style="margin:0 auto" /> --}}
+						</td>
+						<td style="text-align:left;padding: 3pt 0pt;padding-left: 105pt;">
+							<img
+								src="{{qrCodePengaju}}"
+								width="70"
+								height="70"
+								alt="QR Kepala Balai"
+								style="padding-bottom: 0.5pt;"
+							/>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:195pt;">
+							<p
+								class="s1"
+								style="padding-left: 2pt;text-align: left;"
+							>{{pelimpahan.nama}}</p>
+						</td>
+						<td style="width:209pt;">
+							<p
+								class="s1"
+								style="padding-left: 80pt;text-align: left;"
+							>{{pegawai.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:195pt;">
+							<p
+								class="s1"
+								style="padding-left: 2pt;line-height: 12pt;text-align: left;"
+							>NIP.
+								{{pelimpahan.nip}}
+							</p>
+						</td>
+						<td style="width:209pt;">
+							<p
+								class="s1"
+								style="padding-left: 80pt;line-height: 12pt;text-align: left;"
+							>NIP.
+								{{pegawai.nip}}
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:404pt;" colspan="2">
+							<p><br /></p>
+							<p><br /></p>
+							<p class="s1" style="padding-top: 5pt;text-align: center;">
+								Mengetahui,</p>
+							<p class="s1" style="text-align: center;">
+								Kepala Balai Besar Karantina Hewan, Ikan dan Tumbuhan
+								<br />
+								Kalimantan Timur
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td
+							style="text-align:center;vertical-align:middle;padding: 3pt 0pt;"
+							colspan="2"
+						>
+							<img
+								src="{{kepalaBalai.qrCode}}"
+								width="70"
+								height="70"
+								alt="QR Kepala Balai"
+								style="display:block; margin:0 auto"
+							/>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:404pt;" colspan="2">
+							<p class="s1" style="text-align: center;">{{kepalaBalai.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:404pt;" colspan="2">
+							<p class="s1" style="text-align: center;">NIP.
+								{{kepalaBalai.nip}}</p>
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
+	</body>
 
 </html>

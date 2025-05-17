@@ -143,28 +143,10 @@ const DetailCuti = () => {
 		}
 	};
 
-	const handleCetakSurat = async (id) => {
-		try {
-			setIsDownloading(true);
-			const res = await axios.get(`/pengajuan-cuti/cetak/${id}`, {
-				responseType: "blob",
-			});
-
-			const fileURL = window.URL.createObjectURL(
-				new Blob([res.data], { type: "application/pdf" })
-			);
-			const link = document.createElement("a");
-			link.href = fileURL;
-			link.setAttribute("download", `SuratCuti_${id}.pdf`);
-			document.body.appendChild(link);
-			link.click();
-			link.remove();
-		} catch (error) {
-			console.error("Gagal mencetak surat:", error);
-			toast.error("Gagal mengunduh surat cuti.");
-		} finally {
-			setIsDownloading(false);
-		}
+	const handleCetakSurat = async () => {
+		if (!data.suratCuti || data.status !== "Disetujui") return;
+		const url = `http://localhost:3000/uploads/surat-cuti/${data.suratCuti}`;
+		window.open(url, "_blank");
 	};
 
 	return (
@@ -199,30 +181,19 @@ const DetailCuti = () => {
 							</button>
 						)}
 						<button
-							onClick={() => handleCetakSurat(data.id)}
-							disabled={data.status !== "Disetujui" || isDownloading}
+							onClick={handleCetakSurat}
+							disabled={data.status !== "Disetujui" && !data.suratCuti}
 							className={`flex px-4 py-2 rounded-md items-center gap-2 text-white ${
-								data.status === "Disetujui" && !isDownloading
+								data.status === "Disetujui" && data.suratCuti
 									? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
 									: "bg-gray-700 cursor-not-allowed"
 							}`}
 							title={
-								data.status !== "Disetujui"
+								data.status !== "Disetujui" && !data.suratCuti
 									? "Hanya pengajuan yang disetujui yang dapat mencetak surat cuti"
-									: isDownloading
-									? "Sedang mencetak..."
 									: "Cetak surat cuti"
 							}>
-							{isDownloading ? (
-								<>
-									<div className="w-5 h-5 border-3 border-white border-dashed rounded-full animate-spin"></div>
-									<span>Mencetak...</span>
-								</>
-							) : (
-								<>
-									<MdPrint className="text-xl" /> Cetak Dokumen
-								</>
-							)}
+							<MdPrint className="text-xl" /> Cetak Dokumen
 						</button>
 					</div>
 				</div>
@@ -420,13 +391,13 @@ const DetailCuti = () => {
 					<div className="flex flex-col sm:flex-row justify-between gap-20">
 						<button
 							onClick={() => handleVerifikasi("Ditolak")}
-							className="w-full bg-red-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-red-700">
+							className="w-full bg-red-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer">
 							<FaTimesCircle className="text-lg" />
 							Ditolak
 						</button>
 						<button
 							onClick={() => handleVerifikasi("Disetujui")}
-							className="w-full bg-green-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-green-700">
+							className="w-full bg-green-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-green-700 cursor-pointer">
 							<FaCheckCircle className="text-lg" />
 							Disetujui
 						</button>

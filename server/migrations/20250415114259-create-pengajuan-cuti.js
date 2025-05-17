@@ -61,6 +61,10 @@ module.exports = {
         type: Sequelize.ENUM('Draft', 'Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'),
         allowNull: false
       },
+      suratCuti: {
+        type: Sequelize.STRING,
+        allowNull: true, 
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

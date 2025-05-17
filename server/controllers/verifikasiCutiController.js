@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { VerifikasiCuti, PengajuanCuti, Pegawai, KuotaCuti } = require('../models');
+const { generateSuratCuti } = require('./cetakSuratCutiController');
 
 const getDataPermohonanCuti = async (req, res) => {
     try {
@@ -132,12 +133,17 @@ const verifikasiCuti = async (req, res) => {
             );
 
             if (semuaSetuju) {
-                await PengajuanCuti.update(
-                    { status: "Disetujui" },
-                    { where: { id: verifikasi.idPengajuan } }
-                );
-
                 const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan);
+
+                await pengajuan.update({ status: "Disetujui" });
+
+                generateSuratCuti(pengajuan.id)
+                    .then((namaFile) => {
+                        return pengajuan.update({ suratCuti: namaFile });
+                    })
+                    .catch((err) => {
+                        console.error("Gagal generate surat cuti:", err);
+                    });
 
                 if (pengajuan.jenisCuti === "Cuti Tahunan") {
                     let sisaCuti = pengajuan.durasi;
