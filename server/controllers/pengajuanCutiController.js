@@ -1,4 +1,4 @@
-const { PengajuanCuti, VerifikasiCuti, Pegawai } = require("../models");
+const { PengajuanCuti, VerifikasiCuti, Pegawai, Notifikasi } = require("../models");
 const { Op } = require("sequelize");
 
 const getPengajuanCutiById = async (req, res) => {
@@ -17,12 +17,12 @@ const getPengajuanCutiById = async (req, res) => {
                 },
                 {
                     model: Pegawai,
-                    as: 'Pegawai' 
+                    as: 'Pegawai'
                 },
                 {
                     model: Pegawai,
-                    as: 'PenerimaTugas', 
-                    foreignKey: 'idPenerimaTugas' 
+                    as: 'PenerimaTugas',
+                    foreignKey: 'idPenerimaTugas'
                 }
             ],
         });
@@ -182,6 +182,21 @@ const createPengajuanCuti = async (req, res) => {
             });
         }
 
+        if (isDraft !== 'true') {
+            const verifikatorPertama = await VerifikasiCuti.findOne({
+                where: { idPengajuan: pengajuanId, urutanVerifikasi: 1 },
+            });
+            const pegawai = await Pegawai.findByPk(pengajuan.idPegawai);
+            if (verifikatorPertama) {
+                await Notifikasi.create({
+                    idPenerima: verifikatorPertama.idPimpinan,
+                    idPengajuan: pengajuanId,
+                    judul: "Permohonan Cuti Baru",
+                    pesan: `Anda perlu memverifikasi permohonan ${pengajuan.jenisCuti} dari ${pegawai.nama}.`,
+                });
+            }
+        }
+
         res.status(201).json({ msg: "Pengajuan cuti berhasil dibuat", data: pengajuan });
     } catch (error) {
         console.error(error);
@@ -238,7 +253,7 @@ const updatePengajuanCuti = async (req, res) => {
             idPenerimaTugas,
             status: statusPengajuan,
         });
-
+        //hapus dulu daftar verifikasi di database
         await VerifikasiCuti.destroy({ where: { idPengajuan: id } });
 
         // 2. Ambil daftar atasan dari frontend (opsional)
@@ -255,7 +270,6 @@ const updatePengajuanCuti = async (req, res) => {
                 jenisVerifikator: verifikator.jenis,
             });
         }
-
 
         // 4. Cari Kepala Sub Bagian Umum
         const kasubag = await Pegawai.findOne({
@@ -283,6 +297,21 @@ const updatePengajuanCuti = async (req, res) => {
                 statusVerifikasi,
                 jenisVerifikator: "Kepala Balai Besar",
             });
+        }
+
+        if (isDraft !== 'true') {
+            const verifikatorPertama = await VerifikasiCuti.findOne({
+                where: { idPengajuan: pengajuan.id, urutanVerifikasi: 1 },
+            });
+            const pegawai = await Pegawai.findByPk(pengajuan.idPegawai);
+            if (verifikatorPertama) {
+                await Notifikasi.create({
+                    idPenerima: verifikatorPertama.idPimpinan,
+                    idPengajuan: pengajuan.id,
+                    judul: "Permohonan Cuti Baru",
+                    pesan: `Anda perlu memverifikasi permohonan ${pengajuan.jenisCuti} dari ${pegawai.nama}.`,
+                });
+            }
         }
 
         res.status(200).json({ msg: "Pengajuan cuti berhasil diperbarui / diajukan", data: pengajuan });

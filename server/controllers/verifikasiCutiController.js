@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { VerifikasiCuti, PengajuanCuti, Pegawai, KuotaCuti } = require('../models');
+const { VerifikasiCuti, PengajuanCuti, Pegawai, KuotaCuti, Notifikasi } = require('../models');
 const { generateSuratCuti } = require('./cetakSuratCutiController');
 
 const getDataPermohonanCuti = async (req, res) => {
@@ -77,15 +77,16 @@ const getDataPermohonanCuti = async (req, res) => {
 
 const updateStatusToDiproses = async (req, res) => {
     try {
-        const { idVerifikasi, statusVerifikasi } = req.body;
+        const { idVerifikasi } = req.body;
+        let verifikasi = null;
 
-        const verifikasi = await VerifikasiCuti.findByPk(idVerifikasi);
+        verifikasi = await VerifikasiCuti.findByPk(idVerifikasi);
+
         if (!verifikasi) {
             return res.status(404).json({ message: 'Data tidak ditemukan' });
         }
 
-        // Update status
-        verifikasi.statusVerifikasi = statusVerifikasi;
+        verifikasi.statusVerifikasi = "Diproses";
         await verifikasi.save();
 
         res.status(200).json({ message: 'Status verifikasi diperbarui', data: verifikasi });
@@ -121,21 +122,59 @@ const verifikasiCuti = async (req, res) => {
                 { status: "Ditolak" },
                 { where: { id: verifikasi.idPengajuan } }
             );
+
+            // membuat notifikasi untuk pegawai
+            const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan);
+            const verifikator = await Pegawai.findByPk(idPegawai);
+            await Notifikasi.create({
+                idPenerima: pengajuan.idPegawai,
+                idPengajuan: pengajuan.id,
+                judul: "Permohonan Cuti Ditolak",
+                pesan: `Permohonan ${pengajuan.jenisCuti} Anda telah ditolak oleh ${verifikator.nama}.`,
+            });
         }
 
         if (statusVerifikasi === "Disetujui") {
+            const verifikatorSelanjutnya = await VerifikasiCuti.findOne({
+                where: {
+                    idPengajuan: verifikasi.idPengajuan,
+                    urutanVerifikasi: verifikasi.urutanVerifikasi + 1,
+                    statusVerifikasi: "Belum Diverifikasi",
+                },
+            });
+            const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan, {
+                include: { model: Pegawai, as: "Pegawai" },
+            });
+            // Membuat notifikasi untuk verifikator selanjutnya
+            if (verifikatorSelanjutnya) {
+                await Notifikasi.create({
+                    idPenerima: verifikatorSelanjutnya.idPimpinan,
+                    idPengajuan: verifikasi.idPengajuan,
+                    judul: "Permohonan Cuti Baru",
+                    pesan: `Anda perlu memverifikasi permohonan ${pengajuan.jenisCuti} dari ${pengajuan.Pegawai.nama}.`,
+                });
+            }
+
             const semuaVerifikasi = await VerifikasiCuti.findAll({
                 where: { idPengajuan: verifikasi.idPengajuan },
             });
-
+            // Mengecek apakah semua verifikator telah menyetujui
             const semuaSetuju = semuaVerifikasi.every(
                 (v) => v.statusVerifikasi === "Disetujui"
             );
-
+            // Jika semua verifikator telah menyetujui
             if (semuaSetuju) {
                 const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan);
 
                 await pengajuan.update({ status: "Disetujui" });
+
+                // Membuat notifikasi untuk pegawai
+                await Notifikasi.create({
+                    idPenerima: pengajuan.idPegawai,
+                    idPengajuan: pengajuan.id,
+                    judul: "Permohonan Cuti Disetujui",
+                    pesan: `Permohonan ${pengajuan.jenisCuti} Anda telah disetujui oleh seluruh verifikator.`,
+                });
 
                 generateSuratCuti(pengajuan.id)
                     .then((namaFile) => {
@@ -182,6 +221,7 @@ const verifikasiCuti = async (req, res) => {
                         await kuota.save();
                     }
                 }
+
             }
         }
 
@@ -232,7 +272,7 @@ const batalCutiOlehAdmin = async (req, res) => {
             const urutanKuota = [
                 "Cuti Tahunan",
                 "Cuti Tahunan N-1",
-                "Cuti Tahunan  N-2",
+                "Cuti Tahunan N-2",
             ];
 
             for (const jenis of urutanKuota) {
@@ -266,8 +306,14 @@ const batalCutiOlehAdmin = async (req, res) => {
             }
         }
 
-        res.json({ msg: "Cuti berhasil dibatalkan oleh admin" });
+        await Notifikasi.create({
+            idPenerima: pengajuan.idPegawai,
+            idPengajuan: pengajuan.id,
+            judul: "Cuti Dibatalkan oleh Admin",
+            pesan: `Pengajuan cuti Anda telah dibatalkan oleh admin. Dan kuota cuti anda telah dikembalikan.`,
+        });
 
+        res.json({ msg: "Cuti berhasil dibatalkan oleh admin" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }

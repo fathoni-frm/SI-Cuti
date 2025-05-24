@@ -25,14 +25,9 @@ const TabelPermohonan = ({
 
 		if (user.role === "Atasan" && statusVerifikasi === "Belum Diverifikasi") {
 			try {
-				await axios.patch(
-					`/status-to-diproses/${idVerifikasi}`,
-					{
-						idVerifikasi,
-						statusVerifikasi: "Diproses",
-					},
-					{ withCredentials: true }
-				);
+				await axios.patch(`/status-to-diproses/${idVerifikasi}`, {
+					idVerifikasi,
+				});
 
 				navigate(`/detail-cuti/${idPengajuan}`);
 			} catch (error) {
@@ -113,7 +108,11 @@ const TabelPermohonan = ({
 		<>
 			<div
 				className={`rounded-b-lg
-			${isDashboard ? "overflow-x-hidden overflow-y-visible" : "rounded-t-lg overflow-auto"}
+			${
+				isDashboard
+					? "overflow-x-hidden overflow-y-visible"
+					: "rounded-t-lg overflow-auto"
+			}
 			`}>
 				<table className="w-full">
 					<thead className="bg-gray-200">

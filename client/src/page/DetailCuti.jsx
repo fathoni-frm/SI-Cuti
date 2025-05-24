@@ -101,7 +101,7 @@ const DetailCuti = () => {
 					`Cuti telah ${status.toLowerCase()}.`,
 					"success"
 				);
-				navigate(-1); // atau fetch ulang data jika ingin tetap di halaman ini
+				navigate("/permohonan-cuti"); 
 			} catch (error) {
 				Swal.fire(
 					"Gagal",
@@ -137,7 +137,7 @@ const DetailCuti = () => {
 			);
 
 			Swal.fire("Berhasil", "Pengajuan cuti telah dibatalkan.", "success");
-			navigate(-1);
+			navigate("/permohonan-cuti");
 		} catch (error) {
 			Swal.fire("Gagal", "Terjadi kesalahan saat membatalkan cuti.", "error");
 		}

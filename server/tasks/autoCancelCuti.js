@@ -32,6 +32,13 @@ cron.schedule('0 0 * * *', async () => {
             }
         );
 
+        await Notifikasi.create({
+            idPenerima: pengajuan.idPegawai,
+            idPengajuan: pengajuan.id,
+            judul: "Cuti Dibatalkan Otomatis",
+            pesan: `Permohonan cuti Anda dibatalkan otomatis oleh sistem karena tidak diverifikasi dalam waktu 3 hari.`,
+        });
+
         console.log(`Pengajuan ID ${pengajuan.id} dibatalkan karena melewati batas waktu.`);
     }
 });
