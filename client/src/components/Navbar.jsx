@@ -10,8 +10,9 @@ import {
 	FaUserCog,
 	FaSignOutAlt,
 	FaTrash,
-	FaCheck,
 } from "react-icons/fa";
+import { MdMarkEmailRead } from "react-icons/md";
+import { IoMdTrash } from "react-icons/io";
 
 const Navbar = () => {
 	const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Navbar = () => {
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const [notifikasi, setNotifikasi] = useState([]);
 	const [notifOpen, setNotifOpen] = useState(false);
-	
+
 	if (isLoading || !detailPegawai) {
 		return <Spinner />;
 	}
@@ -79,7 +80,12 @@ const Navbar = () => {
 
 		try {
 			await Promise.all(
-				belumDibaca.map((n) => axios.patch(`/notifikasi/${n.id}/baca`))
+				belumDibaca.map((n) => {
+					axios.patch(`/notifikasi/${n.id}/baca`, {
+						idPegawai: user.idPegawai,
+						idPengajuan: n.idPengajuan,
+					});
+				})
 			);
 			setNotifikasi((prev) =>
 				prev.map((n) =>
@@ -154,20 +160,20 @@ const Navbar = () => {
 								</p>
 							) : (
 								<div className="max-h-80 overflow-y-auto">
-									<div className="text-right px-4 pb-1 border-b-1 border-black space-x-3 bg-gray-200">
+									<div className="text-lg flex items-center justify-end text-right px-4 p-1.5 border-b-1 border-black space-x-3 bg-gray-200">
 										<button
 											onClick={handleTandaiSemuaDibaca}
-											className="text-xs text-blue-500 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+											className="text-blue-500 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 											title="Tandai semua telah dibaca"
 											disabled={!notifikasi.some((n) => !n.isRead)}>
-											<FaCheck />
+											<MdMarkEmailRead />
 										</button>
 										<button
 											onClick={handleHapusNotifikasiTerbaca}
-											className="text-xs text-red-500 hover:text-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+											className="text-red-500 hover:text-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 											title="Hapus semua yang telah dibaca"
 											disabled={!notifikasi.some((n) => n.isRead)}>
-											<FaTrash />
+											<IoMdTrash />
 										</button>
 									</div>
 									{notifikasi.map((notif) => (
