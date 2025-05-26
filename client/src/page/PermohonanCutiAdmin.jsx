@@ -166,7 +166,7 @@ const PermohonanCutiAdmin = () => {
 					<h1 className="text-2xl font-bold">Permohonan Cuti</h1>
 					<button
 						onClick={() => exportToExcel()}
-						className="bg-[#2c3e50] text-white px-4 py-2 rounded-lg flex items-center gap-2">
+						className="bg-[#2c3e50] text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
 						<LuDownload className="text-xl text-white" /> Ekspor Data
 					</button>
 				</div>

@@ -24,7 +24,6 @@ const DetailCuti = () => {
 	const { id } = useParams();
 	const { user } = useAuthStore();
 	const [data, setData] = useState(null);
-	const [isDownloading, setIsDownloading] = useState(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -51,16 +50,22 @@ const DetailCuti = () => {
 	const isCutiSudahLewat = new Date() > batasPembatalan;
 
 	const verifikasiList = data.VerifikasiCutis;
-
 	const giliran = verifikasiList.find(
 		(item) =>
 			item.idPimpinan === user.idPegawai &&
 			(item.statusVerifikasi === "Belum Diverifikasi" ||
 				item.statusVerifikasi === "Diproses")
 	);
-
 	const bisaVerifikasi =
 		user.role === "Atasan" && giliran && giliran.idPimpinan === user.idPegawai;
+
+	const verifikatorTertampil = [];
+	for (const v of data.VerifikasiCutis) {
+		verifikatorTertampil.push(v);
+		if (["Belum Diverifikasi", "Diproses"].includes(v.statusVerifikasi)) {
+			break;
+		}
+	}
 
 	const handleVerifikasi = async (status) => {
 		const { value: komentar } = await Swal.fire({
@@ -101,7 +106,7 @@ const DetailCuti = () => {
 					`Cuti telah ${status.toLowerCase()}.`,
 					"success"
 				);
-				navigate("/permohonan-cuti"); 
+				navigate("/permohonan-cuti");
 			} catch (error) {
 				Swal.fire(
 					"Gagal",
@@ -155,45 +160,44 @@ const DetailCuti = () => {
 				<h1 className="text-2xl font-bold">
 					<span className="text-gray-400">Detail Cuti</span> / {data.jenisCuti}
 				</h1>
-				<div className="flex justify-between ">
+				<div className="flex justify-between items-center flex-wrap gap-3">
 					<button
 						onClick={() => navigate(-1)}
-						className="flex bg-gray-700 text-white px-4 py-2 rounded-md cursor-pointer">
-						<FaArrowLeft className="text-sm text-white my-auto mr-2" /> Kembali
+						className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition cursor-pointer">
+						<FaArrowLeft className="text-sm" /> Kembali
 					</button>
 
-					<div className="flex space-x-3">
+					<div className="flex gap-3">
+						{/* Tombol Batalkan */}
 						{user.role === "Admin" && data.status === "Disetujui" && (
 							<button
 								onClick={handleBatalkanCuti}
 								disabled={isCutiSudahLewat}
+								className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
+									isCutiSudahLewat
+										? "bg-gray-300 cursor-not-allowed"
+										: "bg-red-600 hover:bg-red-700 cursor-pointer"
+								}`}
 								title={
 									isCutiSudahLewat
-										? "Tidak dapat membatalkan cuti, karena cuti sudah lewat lebih dari 3 hari."
+										? "Tidak dapat membatalkan cuti karena cuti sudah lewat lebih dari 3 hari."
 										: "Batalkan pengajuan cuti ini."
-								}
-								className={`flex px-4 py-2 rounded-md items-center gap-2 text-white ${
-									isCutiSudahLewat
-										? "bg-gray-400 cursor-not-allowed"
-										: "bg-red-600 cursor-pointer hover:bg-red-700"
-								}`}>
-								<FaTimesCircle className="text-xl" /> Batalkan Cuti
+								}>
+								<FaTimesCircle /> Batalkan Cuti
 							</button>
 						)}
+
+						{/* Tombol Cetak */}
 						<button
 							onClick={handleCetakSurat}
 							disabled={data.status !== "Disetujui" && !data.suratCuti}
-							className={`flex px-4 py-2 rounded-md items-center gap-2 text-white ${
+							className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
 								data.status === "Disetujui" && data.suratCuti
 									? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-									: "bg-gray-700 cursor-not-allowed"
+									: "bg-gray-300 cursor-not-allowed"
 							}`}
-							title={
-								data.status !== "Disetujui" && !data.suratCuti
-									? "Hanya pengajuan yang disetujui yang dapat mencetak surat cuti"
-									: "Cetak surat cuti"
-							}>
-							<MdPrint className="text-xl" /> Cetak Dokumen
+							title="Cetak surat cuti">
+							<MdPrint /> Cetak Dokumen
 						</button>
 					</div>
 				</div>
@@ -244,60 +248,59 @@ const DetailCuti = () => {
 
 				{/* Keterangan Cuti */}
 				<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
-					<table className="w-full my-2">
+					<table className="w-full my-2 font-medium text-gray-600">
 						<tbody>
 							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Jenis Cuti
-								</td>
+								<td className="w-1/6 py-2">Jenis Cuti</td>
 								<td>:</td>
-								<td className="w-2/6 font-medium">{data.jenisCuti}</td>
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Status Permohonan
-								</td>
+								<td className="w-2/6 ">{data.jenisCuti}</td>
+								<td className="w-1/6 py-2">Status Permohonan</td>
 								<td>:</td>
-								<td className="font-medium">{data.status}</td>
+								<td>
+									<span
+										className={`text-sm px-3 py-1 rounded-full ${
+											data.status === "Disetujui"
+												? "bg-green-100 text-green-800"
+												: data.status === "Ditolak"
+												? "bg-red-100 text-red-800"
+												: data.status === "Diproses"
+												? "bg-yellow-100 text-yellow-800"
+												: data.status === "Dibatalkan"
+												? "bg-red-100 text-red-800"
+												: "bg-gray-200 text-gray-800"
+										}`}>
+										{data.status}
+									</span>
+								</td>
 							</tr>
 							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Kuota Cuti
-								</td>
+								<td className="w-1/6 py-2">Kuota Cuti</td>
 								<td>:</td>
-								<td className="font-medium">{data.totalKuota}</td>
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Sisa Kuota Cuti
-								</td>
+								<td>{data.totalKuota}</td>
+								<td className="w-1/6 py-2">Sisa Kuota Cuti</td>
 								<td>:</td>
-								<td className="font-medium">{data.sisaKuota}</td>
+								<td>{data.sisaKuota}</td>
 							</tr>
 							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Periode Cuti
-								</td>
+								<td className="w-1/6 py-2">Periode Cuti</td>
 								<td>:</td>
-								<td className="font-medium">
+								<td>
 									{formatGMT8(data.tanggalMulai, { showTime: false })} s.d.{" "}
 									{formatGMT8(data.tanggalSelesai, { showTime: false })}
 								</td>
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Durasi Cuti
-								</td>
+								<td className="w-1/6 py-2">Durasi Cuti</td>
 								<td>:</td>
-								<td className="font-medium">{data.durasi}</td>
+								<td>{data.durasi}</td>
 							</tr>
 							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Alasan Cuti
-								</td>
+								<td className="w-1/6 py-2">Alasan Cuti</td>
 								<td>:</td>
-								<td className="font-medium">{data.alasanCuti}</td>
+								<td>{data.alasanCuti}</td>
 							</tr>
 							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Alamat Selama Cuti
-								</td>
+								<td className="w-1/6 py-2">Alamat Selama Cuti</td>
 								<td>:</td>
-								<td className="font-medium">{data.alamatCuti}</td>
+								<td>{data.alamatCuti}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -305,48 +308,53 @@ const DetailCuti = () => {
 
 				{/* Yang Menyetujui */}
 				<BackgroundItem title="Yang Menyetujui" icon={<FaCheckCircle />}>
-					<p className="mb-2">Pejabat yang bertanggung jawab menyetujui:</p>
-					<ol className="list-decimal ml-6">
-						{data.VerifikasiCutis?.map((v, i) => (
-							<li key={i} className="py-1">
-								{v.verifikator.nama} / {v.verifikator.nip} /{" "}
-								{v.verifikator.jabatanFungsional} - Status: {v.statusVerifikasi}
-							</li>
-						))}
-					</ol>
+					<div className="font-medium text-gray-600">
+						<p className="mb-2">Pejabat yang bertanggung jawab menyetujui:</p>
+						<ol className="list-decimal ml-6">
+							{data.VerifikasiCutis?.map((v, i) => (
+								<li key={i} className="py-1">
+									{v.verifikator.nama} / {v.verifikator.nip} /{" "}
+									{v.jenisVerifikator}
+								</li>
+							))}
+						</ol>
+					</div>
 				</BackgroundItem>
 
 				{/* Formulir Pelimpahan Tugas */}
 				{data.PenerimaTugas && (
 					<BackgroundItem title="Formulir Pelimpahan Tugas" icon={<FaTasks />}>
-						<p className="mb-2">
-							Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan yang
-							berkaitan dengan kegiatan teknis kepada :
-						</p>
-						<table className="w-full">
-							<tbody>
-								<tr>
-									<td className="w-1/5 py-1">Nama / NIP</td>
-									<td>:</td>
-									<td>
-										{data.PenerimaTugas.nama} / {data.PenerimaTugas.nip}
-									</td>
-								</tr>
-								<tr>
-									<td className="w-1/5 py-1">Pangkat / Golongan / Jabatan</td>
-									<td>:</td>
-									<td>
-										{data.PenerimaTugas.pangkat} / {data.PenerimaTugas.golongan}{" "}
-										/ {data.PenerimaTugas.jabatanFungsional}
-									</td>
-								</tr>
-								<tr>
-									<td className="w-1/5 py-1">Satuan Pelayanan</td>
-									<td>:</td>
-									<td>{data.PenerimaTugas.satuanKerja}</td>
-								</tr>
-							</tbody>
-						</table>
+						<div className="font-medium text-gray-600">
+							<p className="mb-2">
+								Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan
+								yang berkaitan dengan kegiatan teknis kepada :
+							</p>
+							<table className="w-full">
+								<tbody>
+									<tr>
+										<td className="w-1/5 py-1">Nama / NIP</td>
+										<td>:</td>
+										<td>
+											{data.PenerimaTugas.nama} / {data.PenerimaTugas.nip}
+										</td>
+									</tr>
+									<tr>
+										<td className="w-1/5 py-1">Pangkat / Golongan / Jabatan</td>
+										<td>:</td>
+										<td>
+											{data.PenerimaTugas.pangkat} /{" "}
+											{data.PenerimaTugas.golongan} /{" "}
+											{data.PenerimaTugas.jabatanFungsional}
+										</td>
+									</tr>
+									<tr>
+										<td className="w-1/5 py-1">Satuan Pelayanan</td>
+										<td>:</td>
+										<td>{data.PenerimaTugas.satuanKerja}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</BackgroundItem>
 				)}
 
@@ -358,28 +366,74 @@ const DetailCuti = () => {
 								href={`http://localhost:3000/uploads/lampiran/${data.lampiran}`}
 								target="_blank"
 								rel="noreferrer"
-								className="bg-gray-200 px-4 py-2 rounded-md flex items-center gap-2">
+								className="flex items-center font-medium text-gray-700 bg-gray-100 px-4 py-2 rounded-md gap-2 shadow-inner">
 								<FaFilePdf className="fa-solid fa-file" /> {data.lampiran}
 							</a>
 						) : (
-							<p>Tidak ada lampiran</p>
+							<p className="font-medium text-gray-600">Tidak ada lampiran</p>
 						)}
 					</BackgroundItem>
 				)}
 
 				{/* Aktivitas Permohonan */}
 				<BackgroundItem title="Aktivitas Permohonan" icon={<FaClipboardList />}>
-					<div className="relative border-l-4 border-gray-700 pl-6 space-y-4">
-						{data.VerifikasiCutis?.map((v, i) => (
-							<div key={i} className="relative">
-								<div className="absolute -left-8 top-2 w-3 h-3 bg-gray-700 rounded-full"></div>
-								<div>
-									{/* <p className="font-semibold">{formatDateTime(v.updatedAt)}</p> */}
-									<p>
-										{v.verifikator.nama} / {v.verifikator.nip} -{" "}
-										{v.statusVerifikasi}
+					<div className="relative font-medium text-gray-600 border-l-4 border-gray-700 pl-3 space-y-4">
+						<div className="relative">
+							<div className="absolute -left-5 top-[calc(50%-5px)] w-3 h-3 bg-yellow-500 border-1 border-white rounded-full shadow-sm"></div>
+							<div className="bg-gray-50 p-3 rounded-md shadow-inner">
+								<div className="flex justify-between items-center">
+									<p className="text-gray-700 font-medium">
+										Cuti diajukan oleh pegawai
 									</p>
-									<p className="text-gray-600">Komentar: {v.komentar || "-"}</p>
+									<p className="text-sm text-gray-500">
+										{formatGMT8(data.tanggalPengajuan)}
+									</p>
+								</div>
+							</div>
+						</div>
+						{verifikatorTertampil?.map((v, i) => (
+							<div key={i} className="relative">
+								<div className="absolute -left-5 top-[calc(50%-5px)] w-3 h-3 bg-yellow-500 border-1 border-white rounded-full shadow-sm"></div>
+								<div className="bg-gray-50 p-3 rounded-md shadow-inner">
+									<div className="flex justify-between items-center">
+										<p className="text-gray-700 font-medium">
+											{v.jenisVerifikator}
+											<span
+												className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
+												${
+													v.statusVerifikasi === "Disetujui"
+														? "bg-green-100 text-green-800"
+														: v.statusVerifikasi === "Ditolak"
+														? "bg-red-100 text-red-800"
+														: v.statusVerifikasi === "Diproses"
+														? "bg-yellow-100 text-yellow-800"
+														: v.statusVerifikasi === "Belum Diverifikasi"
+														? "bg-blue-100 text-blue-800"
+														: v.statusVerifikasi === "Dibatalkan"
+														? "bg-red-100 text-red-800"
+														: "bg-gray-200 text-gray-800"
+												}`}>
+												{v.statusVerifikasi}
+											</span>
+										</p>
+										<p className="text-sm text-gray-500">
+											{v.updatedAt !== data.tanggalPengajuan
+												? formatGMT8(v.updatedAt)
+												: ""}
+										</p>
+									</div>
+									<p className="text-gray-600">
+										{v.verifikator.nama} / {v.verifikator.nip}
+									</p>
+									<p className="text-gray-500 italic">
+										{v.komentar
+											? `Komentar : ${v.komentar}`
+											: v.statusVerifikasi === "Belum Diverifikasi"
+											? "Keterangan : Verifikator belum melihat pengajuan cuti anda. Hubungi verifikator apabila belum diverifikasi dalam 24 jam"
+											: v.statusVerifikasi === "Diproses"
+											? "Keterangan : Verifikator telah melihat pengajuan cuti anda. Hubungi verifikator apabila belum diverifikasi dalam 24 jam"
+											: ""}
+									</p>
 								</div>
 							</div>
 						))}
@@ -391,14 +445,14 @@ const DetailCuti = () => {
 					<div className="flex flex-col sm:flex-row justify-between gap-20">
 						<button
 							onClick={() => handleVerifikasi("Ditolak")}
-							className="w-full bg-red-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer">
-							<FaTimesCircle className="text-lg" />
+							className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md flex items-center justify-center gap-2 transition cursor-pointer">
+							<FaTimesCircle />
 							Ditolak
 						</button>
 						<button
 							onClick={() => handleVerifikasi("Disetujui")}
-							className="w-full bg-green-500 text-white flex items-center justify-center gap-2 px-4 py-2 rounded-md hover:bg-green-700 cursor-pointer">
-							<FaCheckCircle className="text-lg" />
+							className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-md flex items-center justify-center gap-2 transition cursor-pointer">
+							<FaCheckCircle />
 							Disetujui
 						</button>
 					</div>

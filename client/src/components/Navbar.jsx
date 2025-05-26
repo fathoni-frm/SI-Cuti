@@ -9,7 +9,6 @@ import {
 	FaChevronDown,
 	FaUserCog,
 	FaSignOutAlt,
-	FaTrash,
 } from "react-icons/fa";
 import { MdMarkEmailRead } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";

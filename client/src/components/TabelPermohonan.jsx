@@ -158,14 +158,16 @@ const TabelPermohonan = ({
 								)}
 								<td className="py-3">
 									<span
-										className={`px-2 py-1 text-white rounded-md ${
-											item.status === "Dibatalkan"
-												? "bg-gray-400"
+										className={`text-sm font-semibold px-3 py-1 rounded-full ${
+											item.status === "Disetujui"
+												? "bg-green-100 text-green-800"
+												: item.status === "Ditolak"
+												? "bg-red-100 text-red-800"
 												: item.status === "Diproses"
-												? "bg-blue-500"
-												: item.status === "Disetujui"
-												? "bg-green-500"
-												: "bg-red-500"
+												? "bg-yellow-100 text-yellow-800"
+												: item.status === "Dibatalkan"
+												? "bg-red-100 text-red-800"
+												: "bg-gray-200 text-gray-800"
 										}`}>
 										{item.status}
 									</span>

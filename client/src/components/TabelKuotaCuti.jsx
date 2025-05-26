@@ -50,11 +50,11 @@ const TabelKuotaCuti = forwardRef(({ data = [], isEditing = false, roundedTop = 
 			case "Cuti Besar":
 				return `30 Desember ${currentYear}`;
 			case "Cuti Tahunan":
-				return `30 Desember ${currentYear}`;
+				return `30 Desember ${currentYear + 2}`;
 			case "Cuti Tahunan N-1":
-				return `30 Desember ${currentYear - 1}`;
+				return `30 Desember ${currentYear + 1}`;
 			case "Cuti Tahunan N-2":
-				return `30 Desember ${currentYear - 2}`;
+				return `30 Desember ${currentYear}`;
 			default:
 				return "-";
 		}

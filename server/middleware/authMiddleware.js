@@ -11,7 +11,6 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded; 
-    // console.log("Auth:", req.user);
     next();
   } catch (error) {
     return res.status(403).json({ msg: 'Token tidak valid' });
@@ -56,7 +55,6 @@ const checkNotLoggedIn = (req, res, next) => {
     next();
   });
 };
-
 
 module.exports = {
   verifyToken,

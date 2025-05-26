@@ -3,7 +3,7 @@ const router = express.Router();
 const upload = require('../middleware/addLampiranMiddleware');
 const pengajuanCutiController = require("../controllers/pengajuanCutiController");
 const cetakSuratCutiController = require("../controllers/cetakSuratCutiController");
-const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 router.use(verifyToken);
 
