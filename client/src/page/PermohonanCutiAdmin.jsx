@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
 import { formatGMT8 } from "../schemas/timeFormatter";
@@ -13,6 +13,8 @@ import { LuDownload } from "react-icons/lu";
 const PermohonanCutiAdmin = () => {
 	const { user, accessToken } = useAuthStore();
 	const MySwal = withReactContent(Swal);
+	const [data, setData] = useState([]);
+
 
 	const exportToExcel = async () => {
 		const { value: formValues } = await MySwal.fire({
@@ -93,12 +95,6 @@ const PermohonanCutiAdmin = () => {
 		try {
 			const { tahun, status } = formValues;
 
-			const res = await axios.get("/permohonan-cuti", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-			const data = res.data;
 			const filteredData = data.filter((item) => {
 				const tanggal = item.tanggalPengajuan
 				? new Date(item.tanggalPengajuan)
@@ -159,6 +155,19 @@ const PermohonanCutiAdmin = () => {
 		}
 	};
 
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const res = await axios.get("/permohonan-cuti");
+				setData(res.data);
+			} catch (err) {
+				console.error("Gagal memuat data permohonan cuti:", err);
+			}
+		};
+
+		fetchData();
+	}, [accessToken]);
+
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full">
@@ -175,6 +184,7 @@ const PermohonanCutiAdmin = () => {
 						Daftar Permohonan Cuti
 					</h2>
 					<TabelPermohonan
+						data={data}
 						showQuota={true}
 						showPagination={true}
 						lihat={false}

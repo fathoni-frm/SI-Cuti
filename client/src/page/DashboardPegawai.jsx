@@ -7,30 +7,32 @@ import BackgroundItem from "../components/BackgroundItem";
 import TabelKuotaCuti from "../components/TabelKuotaCuti";
 import TabelRiwayat from "../components/TabelRiwayat";
 import NationalHolidays from "../components/NationalHolidays";
+import Spinner from "../components/Spinner";
 import { FaCheckCircle, FaSpinner, FaTimesCircle } from "react-icons/fa";
 
 const DashboardPegawai = () => {
-	const { user, accessToken } = useAuthStore();
+	const { user } = useAuthStore();
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
+	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
 
 	const dataPengajuanAnda = [
 		{
 			label: "Disetujui",
-			count: 17,
+			count: dataRiwayatCuti.filter((item) => item.status === "Disetujui").length,
 			unit: "Pengajuan",
 			icon: <FaCheckCircle className="text-5xl text-white" />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Sedang Diproses",
-			count: 40,
+			count: dataRiwayatCuti.filter((item) => item.status === "Diproses").length,
 			unit: "Pengajuan",
 			icon: <FaSpinner className="text-5xl text-white" />,
 			bgColor: "bg-blue-600",
 		},
 		{
-			label: "Tidak Disetujui",
-			count: 9,
+			label: "Tidak Disetujui / Dibatalkan",
+			count: dataRiwayatCuti.filter((item) => item.status === "Ditolak" || item.status === "Dibatalkan").length,
 			unit: "Pengajuan",
 			icon: <FaTimesCircle className="text-5xl text-white" />,
 			bgColor: "bg-red-600",
@@ -38,13 +40,28 @@ const DashboardPegawai = () => {
 	];
 
 	useEffect(() => {
-		const kuotaCuti = async () => {
-			const kuotaRes = await axios.get(`/kuota-cuti/${user.idPegawai}`, {
-				headers: { Authorization: `Bearer ${accessToken}` },
-			});
-			setDataKuotaCuti(kuotaRes.data);
+		const fetchKuotaCuti = async () => {
+			try {
+				const kuotaRes = await axios.get(`/kuota-cuti/${user.idPegawai}`);
+				setDataKuotaCuti(kuotaRes.data);
+			} catch (err) {
+				console.error("Gagal ambil kuota cuti:", err);
+			}
 		};
-		kuotaCuti();
+
+		const fetchRiwayat = async () => {
+			try {
+				const res = await axios.get(
+					`/pengajuan-cuti/riwayat/${user.idPegawai}`
+				);
+				setDataRiwayatCuti(res.data);
+			} catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchKuotaCuti();
+		fetchRiwayat();
 	}, []);
 
 	return (
@@ -59,13 +76,19 @@ const DashboardPegawai = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem title="Sisa Kuota Cuti Anda" marginX={false} marginY={false}>
+					<BackgroundItem
+						title="Sisa Kuota Cuti Anda"
+						marginX={false}
+						marginY={false}>
 						<TabelKuotaCuti data={dataKuotaCuti} />
 					</BackgroundItem>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
-					<BackgroundItem title="Riwayat Pengajuan Cuti Anda" marginX={false} marginY={false}>
-						<TabelRiwayat showPagination={false} isDashboard={true} />
+					<BackgroundItem
+						title="Riwayat Pengajuan Cuti Anda"
+						marginX={false}
+						marginY={false}>
+						<TabelRiwayat data={dataRiwayatCuti} showPagination={false} isDashboard={true} />
 					</BackgroundItem>
 				</div>
 

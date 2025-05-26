@@ -6,29 +6,19 @@ import { formatGMT8 } from "../schemas/timeFormatter";
 import Pagination from "./Pagination";
 import { FaEllipsisV, FaFileAlt, FaPrint } from "react-icons/fa";
 
-const TabelRiwayat = ({ showPagination = true, isDashboard = false }) => {
-	const { user } = useAuthStore();
-	const [data, setData] = useState([]);
+const TabelRiwayat = ({
+	data = [],
+	showPagination = true,
+	isDashboard = false,
+}) => {
 	const [selectedRow, setSelectedRow] = useState(null);
 	const dropdownRef = useRef(null);
-
-	const fetchRiwayat = async () => {
-		try {
-			const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
-			setData(res.data);
-		} catch (err) {
-			console.error(err);
-		}
-	};
 
 	const toggleMenu = (index) => {
 		setSelectedRow(selectedRow === index ? null : index);
 	};
 
 	useEffect(() => {
-		if (user?.idPegawai) {
-			fetchRiwayat();
-		}
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
 				setSelectedRow(null);
@@ -36,7 +26,11 @@ const TabelRiwayat = ({ showPagination = true, isDashboard = false }) => {
 		};
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [user]);
+	}, []);
+
+	if (!data || data.length === 0) {
+		return <p className="flex justify-center ml-5 my-5">Tidak ada data riwayat cuti</p>;
+	}
 
 	return (
 		<>

@@ -1,14 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useAuthStore from "../store/authStore";
+import axios from "../api/axios";
 import MainLayout from "../Layouts/MainLayout";
 import TabelPermohonan from "../components/TabelPermohonan";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import Spinner from "../components/Spinner";
 
 const PermohonanCutiAtasan = () => {
-	const { user } = useAuthStore();
+	const { user, isLoading } = useAuthStore();
 	const [showBelumDiproses, setShowBelumDiproses] = useState(true);
 	const [showDisetujui, setShowDisetujui] = useState(false);
 	const [showTidakDisetujui, setShowTidakDisetujui] = useState(false);
+	const [permohonanCuti, setPermohonanCuti] = useState([]);
+	const [disetujui, setDisetujui] = useState([]);
+	const [ditolak, setDitolak] = useState([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const res = await axios.get("/permohonan-cuti");
+
+				const normalisasi = (array) =>
+					array.map((item) => ({
+						idVerifikasi: item.id,
+						idPengajuan: item.idPengajuan,
+						tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
+						jenisCuti: item.PengajuanCuti.jenisCuti,
+						tanggalMulai: item.PengajuanCuti.tanggalMulai,
+						tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
+						totalKuota: item.PengajuanCuti.totalKuota,
+						sisaKuota: item.PengajuanCuti.sisaKuota,
+						status: item.PengajuanCuti.status,
+						statusVerifikasi: item.statusVerifikasi,
+						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
+					}));
+
+				setPermohonanCuti(normalisasi(res.data.permohonanCuti));
+				setDisetujui(normalisasi(res.data.disetujui));
+				setDitolak(normalisasi(res.data.ditolak));
+			} catch (err) {
+				console.error("Gagal mengambil data permohonan:", err);
+			}
+		};
+
+		fetchData();
+	}, []);
+
+	if (isLoading) return <Spinner />;
 
 	return (
 		<MainLayout role={user.role}>
@@ -29,7 +67,7 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showBelumDiproses && (
 						<TabelPermohonan
-							tipe="permohonanCuti"
+							data={permohonanCuti}
 							showQuota={true}
 							showPagination={false}
 							lihat={true}
@@ -51,7 +89,7 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showDisetujui && (
 						<TabelPermohonan
-							tipe="disetujui"
+							data={disetujui}
 							showQuota={false}
 							showPagination={false}
 							lihat={false}
@@ -73,7 +111,7 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showTidakDisetujui && (
 						<TabelPermohonan
-							tipe="ditolak"
+							data={ditolak}
 							showQuota={false}
 							showPagination={false}
 							lihat={false}

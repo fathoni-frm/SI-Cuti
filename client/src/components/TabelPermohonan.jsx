@@ -8,15 +8,14 @@ import { FaEllipsisV, FaFileAlt, FaPrint } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 
 const TabelPermohonan = ({
-	tipe,
+	data = [],
 	isDashboard = false,
 	showQuota = true,
 	showPagination = true,
 	lihat = false,
 }) => {
-	const { user, accessToken, isLoading } = useAuthStore();
+	const { user, accessToken } = useAuthStore();
 	const [selectedRow, setSelectedRow] = useState(null);
-	const [data, setData] = useState([]);
 	const dropdownRef = useRef(null);
 	const navigate = useNavigate();
 
@@ -45,51 +44,6 @@ const TabelPermohonan = ({
 	};
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const res = await axios.get("/permohonan-cuti", {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				});
-
-				if (!user) return;
-
-				let hasil = [];
-
-				if (user.role === "Atasan") {
-					// Ambil array yang sesuai dengan tipe
-					const verifikasiSaya = res.data[tipe] || [];
-
-					// Normalisasi struktur data untuk kebutuhan tampilan
-					hasil = verifikasiSaya.map((item) => ({
-						idVerifikasi: item.id,
-						idPengajuan: item.idPengajuan,
-						tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
-						jenisCuti: item.PengajuanCuti.jenisCuti,
-						tanggalMulai: item.PengajuanCuti.tanggalMulai,
-						tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
-						totalKuota: item.PengajuanCuti.totalKuota,
-						sisaKuota: item.PengajuanCuti.sisaKuota,
-						status: item.PengajuanCuti.status,
-						statusVerifikasi: item.statusVerifikasi,
-						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
-					}));
-				} else {
-					// untuk Admin, data belum dikelompokkan
-					hasil = res.data;
-				}
-
-				setData(hasil);
-			} catch (error) {
-				console.error("Gagal fetch data cuti:", error);
-			}
-		};
-
-		fetchData();
-	}, [tipe]);
-
-	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
 				setSelectedRow(null);
@@ -102,7 +56,7 @@ const TabelPermohonan = ({
 	}, []);
 
 	if (!data || data.length === 0)
-		return <p className="ml-5 my-5">Tidak ada permohonan untuk saat ini.</p>;
+		return <p className="flex justify-center ml-5 my-5">Tidak ada data permohonan</p>;
 
 	return (
 		<>

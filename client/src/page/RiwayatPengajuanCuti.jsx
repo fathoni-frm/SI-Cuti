@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useAuthStore from "../store/authStore";
+import axios from "../api/axios";
 import MainLayout from "../Layouts/MainLayout";
 import TabelRiwayat from "../components/TabelRiwayat";
 import BackgroundItem from "../components/BackgroundItem";
+import Spinner from "../components/Spinner";
 
 const RiwayatPengajuanCuti = () => {
-	const { user } = useAuthStore();
+	const { user, isLoading } = useAuthStore();
+	const [data, setData] = useState([]);
+
+	useEffect(() => {
+		const fetchRiwayat = async () => {
+			try {
+				const res = await axios.get(
+					`/pengajuan-cuti/riwayat/${user.idPegawai}`
+				);
+				setData(res.data);
+			} catch (err) {
+				console.error(err);
+			}
+		};
+		fetchRiwayat();
+	}, []);
+
+	if (isLoading) return <Spinner />;
+
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full">
@@ -16,7 +36,7 @@ const RiwayatPengajuanCuti = () => {
 					<h2 className="text-2xl font-bold mb-4 text-center">
 						Riwayat Pengajuan Cuti Anda
 					</h2>
-					<TabelRiwayat />
+					<TabelRiwayat data={data} />
 				</BackgroundItem>
 			</div>
 		</MainLayout>

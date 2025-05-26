@@ -13,7 +13,7 @@ const SummaryCards = ({ title, data }) => {
             <div className="mr-4">{item.icon}</div>
             <div>
               <p className="text-md">{item.count} {item.unit}</p>
-              <p className="text-lg font-semibold">{item.label}</p>
+              <p className="text-md font-semibold">{item.label}</p>
             </div>
           </div>
         ))}

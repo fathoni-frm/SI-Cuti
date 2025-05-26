@@ -8,6 +8,7 @@ import TabelKuotaCuti from "../components/TabelKuotaCuti";
 import TabelPermohonan from "../components/TabelPermohonan";
 import TabelRiwayat from "../components/TabelRiwayat";
 import NationalHolidays from "../components/NationalHolidays";
+import Spinner from "../components/Spinner";
 import {
 	FaCheckCircle,
 	FaClock,
@@ -16,27 +17,31 @@ import {
 } from "react-icons/fa";
 
 const DashboardAtasan = () => {
-	const { user, accessToken } = useAuthStore();
+	const { user, isLoading } = useAuthStore();
+	const [dataPermohonan, setDataPermohonan] = useState([]);
+	const [disetujui, setDisetujui] = useState(0);
+	const [ditolak, setDitolak] = useState(0);
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
+	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
 
 	const dataPermohonanPegawai = [
 		{
 			label: "Belum Anda Proses",
-			count: 9,
+			count: dataPermohonan.length,
 			unit: "Permohonan",
 			icon: <FaClock className="text-5xl text-white" />,
 			bgColor: "bg-amber-500",
 		},
 		{
 			label: "Anda Setujui",
-			count: 17,
+			count: disetujui,
 			unit: "Permohonan",
 			icon: <FaCheckCircle className="text-5xl text-white" />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Anda Tolak",
-			count: 17,
+			count: ditolak,
 			unit: "Permohonan",
 			icon: <FaTimesCircle className="text-5xl text-white" />,
 			bgColor: "bg-red-600",
@@ -46,21 +51,21 @@ const DashboardAtasan = () => {
 	const dataPengajuanAnda = [
 		{
 			label: "Disetujui",
-			count: 17,
+			count: dataRiwayatCuti.filter(item => item.status === "Disetujui").length,
 			unit: "Pengajuan",
 			icon: <FaCheckCircle className="text-5xl text-white" />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Sedang Diproses",
-			count: 40,
+			count: dataRiwayatCuti.filter(item => item.status === "Diproses").length,
 			unit: "Pengajuan",
 			icon: <FaSpinner className="text-5xl text-white" />,
 			bgColor: "bg-blue-600",
 		},
 		{
-			label: "Tidak Disetujui",
-			count: 9,
+			label: "Tidak Disetujui / Dibatalkan",
+			count: dataRiwayatCuti.filter(item => item.status === "Ditolak" || item.status === "Dibatalkan").length,
 			unit: "Pengajuan",
 			icon: <FaTimesCircle className="text-5xl text-white" />,
 			bgColor: "bg-red-600",
@@ -68,14 +73,60 @@ const DashboardAtasan = () => {
 	];
 
 	useEffect(() => {
-		const kuotaCuti = async () => {
-			const kuotaRes = await axios.get(`/kuota-cuti/${user.idPegawai}`, {
-				headers: { Authorization: `Bearer ${accessToken}` },
-			});
-			setDataKuotaCuti(kuotaRes.data);
+		const fetchVerifikasi = async () => {
+			try {
+				const res = await axios.get("/permohonan-cuti");
+				
+				const disetujui = res.data.disetujui.length;
+				const ditolak = res.data.ditolak.length;
+				
+				const permohonanCuti = res.data.permohonanCuti;
+				const hasil = permohonanCuti.map((item) => ({
+					idVerifikasi: item.id,
+					idPengajuan: item.idPengajuan,
+					tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
+					jenisCuti: item.PengajuanCuti.jenisCuti,
+					tanggalMulai: item.PengajuanCuti.tanggalMulai,
+					tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
+					totalKuota: item.PengajuanCuti.totalKuota,
+					sisaKuota: item.PengajuanCuti.sisaKuota,
+					status: item.PengajuanCuti.status,
+					statusVerifikasi: item.statusVerifikasi,
+					Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
+				}));
+
+				setDisetujui(disetujui);
+				setDitolak(ditolak);
+				setDataPermohonan(hasil);
+			} catch (err) {
+				console.error("Gagal ambil data permohonan:", err);
+			}
 		};
-		kuotaCuti();
+
+		const fetchKuotaCuti = async () => {
+			try {
+				const kuotaRes = await axios.get(`/kuota-cuti/${user.idPegawai}`);
+				setDataKuotaCuti(kuotaRes.data);
+			} catch (err) {
+				console.error("Gagal ambil kuota cuti:", err);
+			}
+		};
+
+		const fetchRiwayat = async () => {
+			try {
+				const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
+				setDataRiwayatCuti(res.data);
+			} catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchVerifikasi();
+		fetchKuotaCuti();
+		fetchRiwayat();
 	}, []);
+
+	if (isLoading) return <Spinner />;
 
 	return (
 		<MainLayout role="Atasan">
@@ -95,7 +146,7 @@ const DashboardAtasan = () => {
 						marginX={false}
 						marginY={false}>
 						<TabelPermohonan
-							tipe="permohonanCuti"
+							data={dataPermohonan}
 							isDashboard={true}
 							showQuota={false}
 							showPagination={false}
@@ -112,13 +163,19 @@ const DashboardAtasan = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem title="Sisa Kuota Cuti Anda" marginX={false} marginY={false}>
+					<BackgroundItem
+						title="Sisa Kuota Cuti Anda"
+						marginX={false}
+						marginY={false}>
 						<TabelKuotaCuti data={dataKuotaCuti} />
 					</BackgroundItem>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
-					<BackgroundItem title="Riwayat Pengajuan Cuti Anda" marginX={false} marginY={false}>
-						<TabelRiwayat showPagination={false} isDashboard={true} />
+					<BackgroundItem
+						title="Riwayat Pengajuan Cuti Anda"
+						marginX={false}
+						marginY={false}>
+						<TabelRiwayat data={dataRiwayatCuti} showPagination={false} isDashboard={true} />
 					</BackgroundItem>
 				</div>
 

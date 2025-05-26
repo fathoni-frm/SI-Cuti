@@ -206,9 +206,9 @@ const DetailCuti = () => {
 				{/* Profil Pegawai */}
 				<BackgroundItem
 					title="Profil Pegawai"
-					marginY={false}
-					icon={<FaUser />}>
-					<table className="w-full my-2">
+					icon={<FaUser />}
+					marginY={false}>
+					<table className="w-full my-4">
 						<tbody>
 							<tr className="hover:bg-gray-50">
 								<td className="w-1/6 py-2 font-medium text-gray-600">
@@ -247,8 +247,11 @@ const DetailCuti = () => {
 				</BackgroundItem>
 
 				{/* Keterangan Cuti */}
-				<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
-					<table className="w-full my-2 font-medium text-gray-600">
+				<BackgroundItem
+					title="Keterangan Cuti"
+					icon={<FaClipboardList />}
+					marginY={false}>
+					<table className="w-full my-4 font-medium text-gray-600">
 						<tbody>
 							<tr className="hover:bg-gray-50">
 								<td className="w-1/6 py-2">Jenis Cuti</td>
@@ -307,11 +310,16 @@ const DetailCuti = () => {
 				</BackgroundItem>
 
 				{/* Yang Menyetujui */}
-				<BackgroundItem title="Yang Menyetujui" icon={<FaCheckCircle />}>
-					<div className="font-medium text-gray-600">
+				<BackgroundItem
+					title="Yang Menyetujui"
+					icon={<FaCheckCircle />}
+					marginY={false}>
+					<div className="font-medium text-gray-600 my-4">
 						<p className="mb-2">Pejabat yang bertanggung jawab menyetujui:</p>
 						<ol className="list-decimal ml-6">
-							{data.VerifikasiCutis?.map((v, i) => (
+							{data.VerifikasiCutis?.filter(
+								(v) => v.jenisVerifikator !== "Admin"
+							).map((v, i) => (
 								<li key={i} className="py-1">
 									{v.verifikator.nama} / {v.verifikator.nip} /{" "}
 									{v.jenisVerifikator}
@@ -323,8 +331,11 @@ const DetailCuti = () => {
 
 				{/* Formulir Pelimpahan Tugas */}
 				{data.PenerimaTugas && (
-					<BackgroundItem title="Formulir Pelimpahan Tugas" icon={<FaTasks />}>
-						<div className="font-medium text-gray-600">
+					<BackgroundItem
+						title="Formulir Pelimpahan Tugas"
+						icon={<FaTasks />}
+						marginY={false}>
+						<div className="font-medium text-gray-600 my-4">
 							<p className="mb-2">
 								Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan
 								yang berkaitan dengan kegiatan teknis kepada :
@@ -360,13 +371,13 @@ const DetailCuti = () => {
 
 				{/* Lampiran */}
 				{data.lampiran && (
-					<BackgroundItem title="Lampiran" icon={<FaFileAlt />}>
+					<BackgroundItem title="Lampiran" icon={<FaFileAlt />} marginY={false}>
 						{data.lampiran ? (
 							<a
 								href={`http://localhost:3000/uploads/lampiran/${data.lampiran}`}
 								target="_blank"
 								rel="noreferrer"
-								className="flex items-center font-medium text-gray-700 bg-gray-100 px-4 py-2 rounded-md gap-2 shadow-inner">
+								className="flex items-center font-medium text-gray-700 bg-gray-100 px-4 py-2 my-4 rounded-md gap-2 shadow-inner">
 								<FaFilePdf className="fa-solid fa-file" /> {data.lampiran}
 							</a>
 						) : (
@@ -376,8 +387,11 @@ const DetailCuti = () => {
 				)}
 
 				{/* Aktivitas Permohonan */}
-				<BackgroundItem title="Aktivitas Permohonan" icon={<FaClipboardList />}>
-					<div className="relative font-medium text-gray-600 border-l-4 border-gray-700 pl-3 space-y-4">
+				<BackgroundItem
+					title="Aktivitas Permohonan"
+					icon={<FaClipboardList />}
+					marginY={false}>
+					<div className="relative font-medium text-gray-600 border-l-4 border-gray-700 pl-3 my-4 space-y-4">
 						<div className="relative">
 							<div className="absolute -left-5 top-[calc(50%-5px)] w-3 h-3 bg-yellow-500 border-1 border-white rounded-full shadow-sm"></div>
 							<div className="bg-gray-50 p-3 rounded-md shadow-inner">
