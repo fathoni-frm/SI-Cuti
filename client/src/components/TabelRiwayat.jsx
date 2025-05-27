@@ -122,7 +122,7 @@ const TabelRiwayat = ({
 											</div>
 											<div className="pb-2">
 												<button
-													onClick={handleCetakSurat(item)}
+													onClick={() => handleCetakSurat(item)}
 													disabled={
 														item.status !== "Disetujui" && !item.suratCuti
 													}

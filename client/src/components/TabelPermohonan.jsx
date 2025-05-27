@@ -80,12 +80,12 @@ const TabelPermohonan = ({
 				<table className="w-full">
 					<thead className="bg-gray-200">
 						<tr className="text-sm text-black uppercase tracking-wider">
-							<th className="py-3 px-1">No</th>
+							<th className="w-[40px] py-3 px-1">No</th>
 							<th className="py-3">Tanggal Pengajuan</th>
 							<th className="py-3">Nama Pemohon</th>
 							<th className="py-3">Jenis Cuti</th>
 							<th className="py-3">Mulai</th>
-							<th className="py-3">Akhir</th>
+							<th className="w-[60px] py-3">Akhir</th>
 							{showQuota && (
 								<>
 									<th className="py-3">Kuota Cuti</th>
@@ -169,7 +169,7 @@ const TabelPermohonan = ({
 													</div>
 													<div className="pb-2">
 														<button
-															onClick={handleCetakSurat(item)}
+															onClick={() => handleCetakSurat(item)}
 															disabled={
 																item.status !== "Disetujui" && !item.suratCuti
 															}

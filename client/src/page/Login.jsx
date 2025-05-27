@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import Swal from "sweetalert2";
 
 const Login = () => {
 	const [username, setUsername] = useState("");
@@ -12,10 +13,13 @@ const Login = () => {
 		e.preventDefault();
 		try {
 			await login({ username, password });
-			const role = useAuthStore.getState().user.role;
 			navigate("/dashboard");
 		} catch (err) {
-			alert(err.msg || "Login gagal");
+			Swal.fire({
+				icon: "error",
+				title: "Terjadi Kesalahan Saat Login",
+				text: "Pastikan Username Dan Password Anda Benar",
+			})
 		}
 	};
 
@@ -55,6 +59,7 @@ const Login = () => {
 										onChange={(e) => setUsername(e.target.value)}
 										type="text"
 										placeholder="Username"
+										required
 									/>
 								</div>
 								<div className="mb-6 relative">
@@ -70,6 +75,7 @@ const Login = () => {
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
 										placeholder="******************"
+										required
 									/>
 									<button
 										type="submit"

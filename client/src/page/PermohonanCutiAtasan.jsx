@@ -39,10 +39,14 @@ const PermohonanCutiAtasan = () => {
 						statusVerifikasi: item.statusVerifikasi,
 						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
 					}));
+				
+				const hasilPermohonanCuti = normalisasi(res.data.permohonanCuti);
+				const hasilDisetujui = normalisasi(res.data.disetujui);
+				const hasilditolak = normalisasi(res.data.ditolak);
 
-				setPermohonanCuti(normalisasi(res.data.permohonanCuti));
-				setDisetujui(normalisasi(res.data.disetujui));
-				setDitolak(normalisasi(res.data.ditolak));
+				setPermohonanCuti(hasilPermohonanCuti.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)));
+				setDisetujui(hasilDisetujui.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)));
+				setDitolak(hasilditolak.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)));
 			} catch (err) {
 				console.error("Gagal mengambil data permohonan:", err);
 			}
