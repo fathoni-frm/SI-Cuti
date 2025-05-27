@@ -9,9 +9,9 @@ import { FaTimesCircle, FaSpinner, FaCheckCircle } from "react-icons/fa";
 
 const DashboardAdmin = () => {
 	const [semuaData, setSemuaData] = useState([]);
-	const dataDiproses = semuaData.filter(item => item.status === "Diproses");
-	const dataSelesai = semuaData.filter(item => item.status === "Disetujui" || item.status === "Ditolak");
-	const dataDibatalkan = semuaData.filter(item => item.status === "Dibatalkan");
+	const dataDiproses = semuaData.filter(item => item.status === "Diproses").sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+	const dataSelesai = semuaData.filter(item => item.status === "Disetujui" || item.status === "Ditolak").sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+	const dataDibatalkan = semuaData.filter(item => item.status === "Dibatalkan").sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
 
 	const dataPermohonanPegawai = [
 		{

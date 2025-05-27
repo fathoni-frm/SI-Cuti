@@ -93,7 +93,7 @@ const DashboardAtasan = () => {
 					status: item.PengajuanCuti.status,
 					statusVerifikasi: item.statusVerifikasi,
 					Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
-				}));
+				})).sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
 
 				setDisetujui(disetujui);
 				setDitolak(ditolak);
@@ -115,7 +115,8 @@ const DashboardAtasan = () => {
 		const fetchRiwayat = async () => {
 			try {
 				const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
-				setDataRiwayatCuti(res.data);
+				const hasil = res.data.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+				setDataRiwayatCuti(hasil);
 			} catch (err) {
 				console.error(err);
 			}

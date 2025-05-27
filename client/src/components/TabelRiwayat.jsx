@@ -10,9 +10,18 @@ const TabelRiwayat = ({
 	data = [],
 	showPagination = true,
 	isDashboard = false,
+	currentPage = 1,
+	totalPages = 1,
+	onPageChange = () => {},
 }) => {
 	const [selectedRow, setSelectedRow] = useState(null);
 	const dropdownRef = useRef(null);
+
+	const handleCetakSurat = async (item) => {
+		if (!item.suratCuti || item.status !== "Disetujui") return;
+		const url = `http://localhost:3000/uploads/surat-cuti/${item.suratCuti}`;
+		window.open(url, "_blank");
+	};
 
 	const toggleMenu = (index) => {
 		setSelectedRow(selectedRow === index ? null : index);
@@ -29,7 +38,11 @@ const TabelRiwayat = ({
 	}, []);
 
 	if (!data || data.length === 0) {
-		return <p className="flex justify-center ml-5 my-5">Tidak ada data riwayat cuti</p>;
+		return (
+			<p className="flex justify-center ml-5 my-5">
+				Tidak ada data riwayat cuti
+			</p>
+		);
 	}
 
 	return (
@@ -102,15 +115,22 @@ const TabelRiwayat = ({
 											<div className="py-2 px-1.5">
 												<Link
 													to={`/detail-cuti/${item.id}`}
-													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-blue-500 hover:bg-blue-200 transition-all duration-150 rounded-md">
+													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white bg-blue-500 hover:bg-blue-200 transition-all duration-150 rounded-md">
 													<FaFileAlt />
 													<span>Detail</span>
 												</Link>
 											</div>
 											<div className="pb-2">
 												<button
-													onClick={() => console.log("Cetak clicked")}
-													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-gray-500 hover:bg-gray-200 transition-all duration-150 rounded-md">
+													onClick={handleCetakSurat(item)}
+													disabled={
+														item.status !== "Disetujui" && !item.suratCuti
+													}
+													className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${
+														item.status === "Disetujui" && item.suratCuti
+															? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+															: "bg-gray-300 cursor-not-allowed"
+													}`}>
 													<FaPrint />
 													<span>Cetak</span>
 												</button>
@@ -127,7 +147,11 @@ const TabelRiwayat = ({
 			{/* Komponen Pagination */}
 			{showPagination && (
 				<div className="mt-4">
-					<Pagination />
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={onPageChange}
+					/>
 				</div>
 			)}
 		</>

@@ -15,6 +15,12 @@ const PermohonanCutiAdmin = () => {
 	const MySwal = withReactContent(Swal);
 	const [data, setData] = useState([]);
 
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 10;
+	const indexOfLastItem = currentPage * itemsPerPage;
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+	const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+	const totalPages = Math.ceil(data.length / itemsPerPage);
 
 	const exportToExcel = async () => {
 		const { value: formValues } = await MySwal.fire({
@@ -97,19 +103,19 @@ const PermohonanCutiAdmin = () => {
 
 			const filteredData = data.filter((item) => {
 				const tanggal = item.tanggalPengajuan
-				? new Date(item.tanggalPengajuan)
-				: null;
+					? new Date(item.tanggalPengajuan)
+					: null;
 				const year =
-				tanggal instanceof Date && !isNaN(tanggal)
-				? tanggal.getFullYear().toString()
-				: "";
-				
+					tanggal instanceof Date && !isNaN(tanggal)
+						? tanggal.getFullYear().toString()
+						: "";
+
 				const yearMatch = tahun ? year === tahun : true;
 				const statusMatch = status ? item.status === status : true;
-				
+
 				return yearMatch && statusMatch;
 			});
-			
+
 			if (filteredData.length === 0) {
 				return Swal.fire(
 					"Tidak Ada Data",
@@ -159,7 +165,8 @@ const PermohonanCutiAdmin = () => {
 		const fetchData = async () => {
 			try {
 				const res = await axios.get("/permohonan-cuti");
-				setData(res.data);
+				const hasil = res.data.filter((item) => item.status !== "Draft");
+				setData(hasil);
 			} catch (err) {
 				console.error("Gagal memuat data permohonan cuti:", err);
 			}
@@ -184,10 +191,13 @@ const PermohonanCutiAdmin = () => {
 						Daftar Permohonan Cuti
 					</h2>
 					<TabelPermohonan
-						data={data}
+						data={currentItems}
 						showQuota={true}
 						showPagination={true}
 						lihat={false}
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={setCurrentPage}
 					/>
 				</BackgroundItem>
 			</div>

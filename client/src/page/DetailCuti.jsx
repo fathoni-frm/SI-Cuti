@@ -193,7 +193,7 @@ const DetailCuti = () => {
 							disabled={data.status !== "Disetujui" && !data.suratCuti}
 							className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
 								data.status === "Disetujui" && data.suratCuti
-									? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+									? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
 									: "bg-gray-300 cursor-not-allowed"
 							}`}
 							title="Cetak surat cuti">

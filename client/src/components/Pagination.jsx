@@ -1,4 +1,3 @@
-// Pagination.jsx
 import React from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
@@ -27,14 +26,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 		}
 
 		if (startPage > 1) {
-			// pages.push(
-			// 	<button
-			// 		key={1}
-			// 		onClick={() => onPageChange(1)}
-			// 		className="px-2 py-1 text-gray-500 hover:underline">
-			// 		1
-			// 	</button>
-			// );
+			pages.push(
+				<button
+					key={1}
+					onClick={() => onPageChange(1)}
+					className="px-2 py-1 text-gray-500 hover:underline cursor-pointer">
+					1
+				</button>
+			);
 			if (startPage > 1) {
 				pages.push(
 					<span key="start-ellipsis" className="px-2">
@@ -68,14 +67,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 					</span>
 				);
 			}
-			// pages.push(
-			// 	<button
-			// 		key={totalPages}
-			// 		onClick={() => onPageChange(totalPages)}
-			// 		className="px-2 py-1 text-gray-500 hover:underline">
-			// 		{totalPages}
-			// 	</button>
-			// );
+			pages.push(
+				<button
+					key={totalPages}
+					onClick={() => onPageChange(totalPages)}
+					className="px-2 py-1 text-gray-500 hover:underline cursor-pointer">
+					{totalPages}
+				</button>
+			);
 		}
 
 		return pages;
@@ -87,7 +86,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 				onClick={handlePrev}
 				disabled={currentPage === 1}
 				className={`px-3 py-2 rounded mr-2 text-white ${
-					currentPage === 1 ? "bg-gray-300" : "bg-gray-500 hover:bg-gray-700 cursor-pointer"
+					currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-gray-500 hover:bg-gray-700 cursor-pointer"
 				}`}>
 				<FaArrowLeft />
 			</button>
@@ -98,7 +97,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 				onClick={handleNext}
 				disabled={currentPage === totalPages}
 				className={`px-3 py-2 rounded ml-2 text-white ${
-					currentPage === totalPages ? "bg-gray-300" : "bg-gray-500 hover:bg-gray-700 cursor-pointer"
+					currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-gray-500 hover:bg-gray-700 cursor-pointer"
 				}`}>
 				<FaArrowRight />
 			</button>

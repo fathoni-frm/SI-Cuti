@@ -24,23 +24,22 @@ const ManajemenPegawai = () => {
 	const dropdownRef = useRef(null);
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const itemsPerPage = 20;
+	const itemsPerPage = 10;
 	const indexOfLastItem = currentPage * itemsPerPage;
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 	const currentItems = pegawaiList.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(pegawaiList.length / itemsPerPage);
 
-	const fetchPegawai = async () => {
-		try {
-			const res = await axios.get("/pegawai");
-			setPegawaiList(res.data);
-		} catch (err) {
-			console.error("Gagal mengambil data pegawai", err);
-		}
-	};
-
 	//Mengambil data seluruh pegawai
 	useEffect(() => {
+		const fetchPegawai = async () => {
+			try {
+				const res = await axios.get("/pegawai");
+				setPegawaiList(res.data);
+			} catch (err) {
+				console.error("Gagal mengambil data pegawai", err);
+			}
+		};
 		fetchPegawai();
 	}, []);
 

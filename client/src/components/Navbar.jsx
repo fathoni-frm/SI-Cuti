@@ -7,6 +7,7 @@ import Spinner from "./Spinner";
 import {
 	FaBell,
 	FaChevronDown,
+	FaChevronUp,
 	FaUserCog,
 	FaSignOutAlt,
 } from "react-icons/fa";
@@ -125,7 +126,9 @@ const Navbar = () => {
 
 	return (
 		<nav className="bg-[#133130] flex justify-between items-center px-6 py-3 text-white">
-			<div className="flex items-center">
+			<div
+				className="flex items-center cursor-pointer"
+				onClick={() => navigate("/dashboard")}>
 				<img
 					src="https://bbkhit.com/public/img/logo.png"
 					alt="logo"
@@ -218,13 +221,17 @@ const Navbar = () => {
 						<div
 							className="flex items-center cursor-pointer"
 							onClick={() => setDropdownOpen(!dropdownOpen)}>
-							<img
+							{/* <img
 								src="https://storage.googleapis.com/a1aa/image/XBXRVUF75QQnMaQt9gHGU1As5wT3qbrv3HIR6KqqS88.jpg"
 								alt="Admin Profile"
 								className="h-10 w-10 rounded-full"
-							/>
+							/> */}
 							<span className="ml-2">Halo, {detailPegawai.nama}</span>
-							<FaChevronDown className="ml-2" />
+							{dropdownOpen ? (
+								<FaChevronUp className="ml-2" />
+							) : (
+								<FaChevronDown className="ml-2" />
+							)}
 						</div>
 
 						{dropdownOpen && (

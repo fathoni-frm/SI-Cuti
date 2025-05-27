@@ -51,10 +51,9 @@ const DashboardPegawai = () => {
 
 		const fetchRiwayat = async () => {
 			try {
-				const res = await axios.get(
-					`/pengajuan-cuti/riwayat/${user.idPegawai}`
-				);
-				setDataRiwayatCuti(res.data);
+				const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
+				const hasil = res.data.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+				setDataRiwayatCuti(hasil);
 			} catch (err) {
 				console.error(err);
 			}

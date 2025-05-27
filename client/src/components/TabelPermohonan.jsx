@@ -13,8 +13,11 @@ const TabelPermohonan = ({
 	showQuota = true,
 	showPagination = true,
 	lihat = false,
+	currentPage = 1,
+	totalPages = 1,
+	onPageChange = () => {},
 }) => {
-	const { user, accessToken } = useAuthStore();
+	const { user } = useAuthStore();
 	const [selectedRow, setSelectedRow] = useState(null);
 	const dropdownRef = useRef(null);
 	const navigate = useNavigate();
@@ -39,6 +42,12 @@ const TabelPermohonan = ({
 		}
 	};
 
+	const handleCetakSurat = async (item) => {
+		if (!item.suratCuti || item.status !== "Disetujui") return;
+		const url = `http://localhost:3000/uploads/surat-cuti/${item.suratCuti}`;
+		window.open(url, "_blank");
+	};
+
 	const toggleMenu = (index) => {
 		setSelectedRow(selectedRow === index ? null : index);
 	};
@@ -56,18 +65,18 @@ const TabelPermohonan = ({
 	}, []);
 
 	if (!data || data.length === 0)
-		return <p className="flex justify-center ml-5 my-5">Tidak ada data permohonan</p>;
+		return (
+			<p className="flex justify-center ml-5 my-5">Tidak ada data permohonan</p>
+		);
 
 	return (
 		<>
 			<div
-				className={`rounded-b-lg
-			${
-				isDashboard
-					? "overflow-x-hidden overflow-y-visible"
-					: "rounded-t-lg overflow-auto"
-			}
-			`}>
+				className={`rounded-b-lg ${
+					isDashboard
+						? "overflow-x-hidden overflow-y-visible"
+						: "rounded-t-lg overflow-auto"
+				}`}>
 				<table className="w-full">
 					<thead className="bg-gray-200">
 						<tr className="text-sm text-black uppercase tracking-wider">
@@ -153,15 +162,22 @@ const TabelPermohonan = ({
 													<div className="py-2 px-1.5">
 														<Link
 															to={`/detail-cuti/${item.idPengajuan || item.id}`}
-															className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-blue-500 hover:bg-blue-200 transition-all duration-150 rounded-md">
+															className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition bg-blue-500 hover:bg-blue-600 duration-150 rounded-md">
 															<FaFileAlt />
 															<span>Detail</span>
 														</Link>
 													</div>
 													<div className="pb-2">
 														<button
-															onClick={() => console.log("Cetak clicked")}
-															className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-gray-500 hover:bg-gray-200 transition-all duration-150 rounded-md">
+															onClick={handleCetakSurat(item)}
+															disabled={
+																item.status !== "Disetujui" && !item.suratCuti
+															}
+															className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${
+																item.status === "Disetujui" && item.suratCuti
+																	? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+																	: "bg-gray-300 cursor-not-allowed"
+															}`}>
 															<FaPrint />
 															<span>Cetak</span>
 														</button>
@@ -179,7 +195,11 @@ const TabelPermohonan = ({
 
 			{showPagination && (
 				<div className="mt-4">
-					<Pagination />
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={onPageChange}
+					/>
 				</div>
 			)}
 		</>

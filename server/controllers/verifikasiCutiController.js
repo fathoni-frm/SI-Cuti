@@ -59,7 +59,7 @@ const getDataPermohonanCuti = async (req, res) => {
                     permohonanCuti.push(v);
                 } else if (statusSaya === 'Disetujui') {
                     disetujui.push(v);
-                } else if (statusSaya === 'Ditolak' || statusSaya === 'Dibatalkan') {
+                } else if (statusSaya === 'Ditolak') {
                     ditolak.push(v);
                 }
             }

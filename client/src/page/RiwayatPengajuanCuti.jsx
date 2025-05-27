@@ -10,6 +10,13 @@ const RiwayatPengajuanCuti = () => {
 	const { user, isLoading } = useAuthStore();
 	const [data, setData] = useState([]);
 
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 10;
+	const indexOfLastItem = currentPage * itemsPerPage;
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+	const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+	const totalPages = Math.ceil(data.length / itemsPerPage);
+
 	useEffect(() => {
 		const fetchRiwayat = async () => {
 			try {
@@ -36,7 +43,12 @@ const RiwayatPengajuanCuti = () => {
 					<h2 className="text-2xl font-bold mb-4 text-center">
 						Riwayat Pengajuan Cuti Anda
 					</h2>
-					<TabelRiwayat data={data} />
+					<TabelRiwayat
+						data={currentItems}
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={setCurrentPage}
+					/>
 				</BackgroundItem>
 			</div>
 		</MainLayout>

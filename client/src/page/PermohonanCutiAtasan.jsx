@@ -9,11 +9,16 @@ import Spinner from "../components/Spinner";
 const PermohonanCutiAtasan = () => {
 	const { user, isLoading } = useAuthStore();
 	const [showBelumDiproses, setShowBelumDiproses] = useState(true);
-	const [showDisetujui, setShowDisetujui] = useState(false);
-	const [showTidakDisetujui, setShowTidakDisetujui] = useState(false);
+	const [showDisetujui, setShowDisetujui] = useState(true);
+	const [showTidakDisetujui, setShowTidakDisetujui] = useState(true);
 	const [permohonanCuti, setPermohonanCuti] = useState([]);
 	const [disetujui, setDisetujui] = useState([]);
 	const [ditolak, setDitolak] = useState([]);
+
+	const itemsPerPage = 10;
+	const [currentPageBelum, setCurrentPageBelum] = useState(1);
+	const [currentPageDisetujui, setCurrentPageDisetujui] = useState(1);
+	const [currentPageDitolak, setCurrentPageDitolak] = useState(1);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -48,13 +53,23 @@ const PermohonanCutiAtasan = () => {
 
 	if (isLoading) return <Spinner />;
 
+	const paginate = (data, currentPage) => {
+		const start = (currentPage - 1) * itemsPerPage;
+		const end = start + itemsPerPage;
+		return data.slice(start, end);
+	};
+
+	const totalPagesBelum = Math.ceil(permohonanCuti.length / itemsPerPage);
+	const totalPagesDisetujui = Math.ceil(disetujui.length / itemsPerPage);
+	const totalPagesDitolak = Math.ceil(ditolak.length / itemsPerPage);
+
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full">
 				<h1 className="text-2xl font-bold mb-6">Permohonan Cuti</h1>
 
 				{/* Belum Diproses */}
-				<div className="bg-white rounded-md shadow-sm p-4 mb-6">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 mb-6">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowBelumDiproses(!showBelumDiproses)}>
@@ -67,16 +82,18 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showBelumDiproses && (
 						<TabelPermohonan
-							data={permohonanCuti}
+							data={paginate(permohonanCuti, currentPageBelum)}
 							showQuota={true}
-							showPagination={false}
 							lihat={true}
+							currentPage={currentPageBelum}
+							totalPages={totalPagesBelum}
+							onPageChange={setCurrentPageBelum}
 						/>
 					)}
 				</div>
 
 				{/* Disetujui */}
-				<div className="bg-white rounded-md shadow-sm p-4 mb-6">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 mb-6">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowDisetujui(!showDisetujui)}>
@@ -89,16 +106,18 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showDisetujui && (
 						<TabelPermohonan
-							data={disetujui}
+							data={paginate(disetujui, currentPageDisetujui)}
 							showQuota={false}
-							showPagination={false}
 							lihat={false}
+							currentPage={currentPageDisetujui}
+							totalPages={totalPagesDisetujui}
+							onPageChange={setCurrentPageDisetujui}
 						/>
 					)}
 				</div>
 
 				{/* Tidak Disetujui */}
-				<div className="bg-white rounded-md shadow-sm p-4">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowTidakDisetujui(!showTidakDisetujui)}>
@@ -111,10 +130,12 @@ const PermohonanCutiAtasan = () => {
 					</div>
 					{showTidakDisetujui && (
 						<TabelPermohonan
-							data={ditolak}
+							data={paginate(ditolak, currentPageDitolak)}
 							showQuota={false}
-							showPagination={false}
 							lihat={false}
+							currentPage={currentPageDitolak}
+							totalPages={totalPagesDitolak}
+							onPageChange={setCurrentPageDitolak}
 						/>
 					)}
 				</div>

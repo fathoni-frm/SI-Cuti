@@ -14,6 +14,13 @@ const TabelDraftPengajuan = () => {
 	const [selectedRow, setSelectedRow] = useState(null);
 	const dropdownRef = useRef(null);
 
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 10;
+	const indexOfLastItem = currentPage * itemsPerPage;
+	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+	const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+	const totalPages = Math.ceil(data.length / itemsPerPage);
+
 	const fetchDraft = async () => {
 		try {
 			const res = await axios.get(`/pengajuan-cuti/draft/${user.idPegawai}`);
@@ -68,72 +75,84 @@ const TabelDraftPengajuan = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [user]);
 
+	if (!data || data.length === 0) {
+		return (
+			<p className="flex justify-center ml-5 my-5">Tidak ada data draft cuti</p>
+		);
+	}
+
 	return (
 		<>
-			<table className="w-full border-collapse">
-				<thead>
-					<tr className="bg-gray-200">
-						<th className="w-[40px] border border-gray-300 p-2">No</th>
-						<th className="w-[400px] border border-gray-300 py-2">
-							Tanggal pembuatan draft
-						</th>
-						<th className="border border-gray-300 p-2">Jenis Cuti</th>
-						<th className="border border-gray-300 p-2">Tanggal Mulai</th>
-						<th className="border border-gray-300 p-2">Tanggal Selesai</th>
-						<th className="w-[60px] border border-gray-300 p-2">Aksi</th>
-					</tr>
-				</thead>
-				<tbody>
-					{data.map((item, index) => (
-						<tr key={item.id} className="text-center relative">
-							<td className="border border-gray-300 p-2">{index + 1}</td>
-							<td className="border border-gray-300 p-2">
-								{formatGMT8(item.updatedAt)}
-							</td>
-							<td className="border border-gray-300 p-2">{item.jenisCuti}</td>
-							<td className="border border-gray-300 p-2">
-								{formatGMT8(item.tanggalMulai, { showTime: false })}
-							</td>
-							<td className="border border-gray-300 p-2">
-								{formatGMT8(item.tanggalSelesai, { showTime: false })}
-							</td>
-							<td className="border border-gray-300 p-2 relative">
-								<button
-									onClick={() => toggleMenu(index)}
-									className="text-gray-800 hover:text-gray-300">
-									<FaEllipsisV className="cursor-pointer mx-auto" />
-								</button>
-
-								{selectedRow === index && (
-									<div
-										ref={dropdownRef}
-										className="absolute right-1.5 z-20 mt-0.5 w-22 bg-white border border-gray-300 rounded-md shadow-md text-left">
-										<div className="absolute -top-2 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45 z-10"></div>
-										<div className="py-2 px-1">
-											<Link
-												to={`/pengajuan-cuti/edit/${item.id}`}
-												className="flex items-center gap-2 px-3.5 py-0.5 mx-auto text-sm font-bold text-white bg-yellow-500 hover:bg-yellow-200 transition-all duration-150 rounded-md">
-												<FaEdit />
-												Edit
-											</Link>
-										</div>
-										<div className="pb-2">
-											<button
-												onClick={() => handleDelete(item.id)}
-												className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-red-500 hover:bg-red-200 transition-all duration-150 rounded-md cursor-pointer">
-												<FaTrash />
-												Hapus
-											</button>
-										</div>
-									</div>
-								)}
-							</td>
+			<div className="rounded-t-lg rounded-b-lg overflow-auto">
+				<table className="w-full">
+					<thead className="bg-gray-200">
+						<tr className="text-sm text-black uppercase tracking-wider">
+							<th className="w-[40px] p-2">No</th>
+							<th className="w-[400px] py-2">Tanggal pembuatan draft</th>
+							<th className="p-2">Jenis Cuti</th>
+							<th className="p-2">Tanggal Mulai</th>
+							<th className="p-2">Tanggal Selesai</th>
+							<th className="w-[60px] p-2">Aksi</th>
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+					<tbody className="divide-y divide-gray-200">
+						{currentItems.map((item, index) => (
+							<tr
+								key={item.id}
+								className={`${
+									index % 2 === 0 ? "bg-white" : "bg-gray-50"
+								} text-center whitespace-nowrap text-sm text-gray-700 hover:bg-gray-100`}>
+								<td className="py-3">{index + 1}</td>
+								<td className="py-3">{formatGMT8(item.updatedAt)}</td>
+								<td className="py-3">{item.jenisCuti}</td>
+								<td className="py-3">
+									{formatGMT8(item.tanggalMulai, { showTime: false })}
+								</td>
+								<td className="py-3">
+									{formatGMT8(item.tanggalSelesai, { showTime: false })}
+								</td>
+								<td className="py-3 relative">
+									<button
+										onClick={() => toggleMenu(index)}
+										className="text-gray-800 hover:text-gray-300">
+										<FaEllipsisV className="cursor-pointer mx-auto" />
+									</button>
 
-			<Pagination />
+									{selectedRow === index && (
+										<div
+											ref={dropdownRef}
+											className="absolute right-1.5 z-20 mt-0.5 w-22 bg-white rounded-md shadow-md text-left">
+											<div className="absolute -top-2 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45 z-10"></div>
+											<div className="py-2 px-1">
+												<Link
+													to={`/pengajuan-cuti/edit/${item.id}`}
+													className="flex items-center gap-2 px-3.5 py-0.5 mx-auto text-sm font-bold text-white bg-yellow-500 hover:bg-yellow-200 transition-all duration-150 rounded-md">
+													<FaEdit />
+													Edit
+												</Link>
+											</div>
+											<div className="pb-2">
+												<button
+													onClick={() => handleDelete(item.id)}
+													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-bold text-white bg-red-500 hover:bg-red-200 transition-all duration-150 rounded-md cursor-pointer">
+													<FaTrash />
+													Hapus
+												</button>
+											</div>
+										</div>
+									)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={(page) => setCurrentPage(page)}
+			/>
 		</>
 	);
 };
