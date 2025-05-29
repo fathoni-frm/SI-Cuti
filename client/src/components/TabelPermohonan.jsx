@@ -72,54 +72,66 @@ const TabelPermohonan = ({
 	return (
 		<>
 			<div
-				className={`rounded-b-lg ${
+				className={`flex max-w-full border border-gray-200 rounded-b-lg shadow-sm overflow-auto ${
 					isDashboard
-						? "overflow-x-hidden overflow-y-visible"
-						: "rounded-t-lg overflow-auto"
+						? ""
+						: "rounded-t-lg"
 				}`}>
-				<table className="w-full">
+				<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
 					<thead className="bg-gray-200">
-						<tr className="text-sm text-black uppercase tracking-wider">
-							<th className="w-[40px] py-3 px-1">No</th>
-							<th className="py-3">Tanggal Pengajuan</th>
-							<th className="py-3">Nama Pemohon</th>
-							<th className="py-3">Jenis Cuti</th>
-							<th className="py-3">Mulai</th>
-							<th className="w-[60px] py-3">Akhir</th>
+						<tr className="text-sm text-black tracking-wider">
+							<th className="w-[35px] px-1 py-2">NO</th>
+							<th className="w-[140px] px-1 py-2">TANGGAL PENGAJUAN</th>
+							<th className="w-[200px] px-1 py-2">NAMA PEMOHON</th>
+							<th className="w-[100px] px-1 py-2">JENIS CUTI</th>
+							<th className="w-[100px] px-1 py-2">MULAI</th>
+							<th className="w-[100px] px-1 py-2">AKHIR</th>
 							{showQuota && (
 								<>
-									<th className="py-3">Kuota Cuti</th>
-									<th className="py-3">Sisa Kuota Cuti</th>
+									<th className="w-[60px] px-1 py-2">TOTAL KUOTA</th>
+									<th className="w-[60px] px-1 py-2">SISA KUOTA</th>
 								</>
 							)}
-							<th className="py-3">Status</th>
-							<th className="py-3 px-1">Aksi</th>
+							<th className="w-[60px] px-1 py-2">STATUS</th>
+							<th className="w-[40px] px-1 py-2">AKSI</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
 						{data.map((item, index) => (
 							<tr
 								key={item.idPengajuan || item.id}
-								className={`${
+								className={`text-sm text-gray-700 text-center ${
 									index % 2 === 0 ? "bg-white" : "bg-gray-50"
-								} text-center whitespace-nowrap text-sm text-gray-700 hover:bg-gray-100`}>
-								<td className="py-3">{index + 1}</td>
-								<td className="py-3">{formatGMT8(item.tanggalPengajuan)}</td>
-								<td className="py-3">{item.Pegawai.nama}</td>
-								<td className="py-3">{item.jenisCuti}</td>
-								<td className="py-3">
+								} hover:bg-gray-100`}>
+								<td className="px-1 py-2 font-medium text-black break-words whitespace-normal">
+									{index + 1}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
+									{formatGMT8(item.tanggalPengajuan)}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
+									{item.Pegawai.nama}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
+									{item.jenisCuti}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
 									{formatGMT8(item.tanggalMulai, { showTime: false })}
 								</td>
-								<td className="py-3">
+								<td className="px-1 py-2 break-words whitespace-normal">
 									{formatGMT8(item.tanggalSelesai, { showTime: false })}
 								</td>
 								{showQuota && (
 									<>
-										<td className="py-3">{item.totalKuota}</td>
-										<td className="py-3">{item.sisaKuota}</td>
+										<td className="px-1 py-2 break-words whitespace-normal">
+											{item.totalKuota}
+										</td>
+										<td className="px-1 py-2 break-words whitespace-normal">
+											{item.sisaKuota}
+										</td>
 									</>
 								)}
-								<td className="py-3">
+								<td className="px-1 py-2 break-words whitespace-normal">
 									<span
 										className={`text-sm font-semibold px-3 py-1 rounded-full ${
 											item.status === "Disetujui"
@@ -157,8 +169,17 @@ const TabelPermohonan = ({
 											{selectedRow === index && (
 												<div
 													ref={dropdownRef}
-													className="absolute right-3.5 z-20 mt-0.5 w-22 bg-white border border-gray-300 rounded-md shadow-md text-left">
-													<div className="absolute -top-2 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45 z-10"></div>
+													className={`absolute z-20 ${
+														index >= data.length - 2
+															? "bottom-full -mb-3"
+															: "top-full -mt-4"
+													} right-1 w-21 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
+													<div
+														className={`absolute ${
+															index >= data.length - 2
+																? "-bottom-1.5 border-b border-r"
+																: "-top-1.5 border-t border-l"
+														} right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10`}></div>
 													<div className="py-2 px-1.5">
 														<Link
 															to={`/detail-cuti/${item.idPengajuan || item.id}`}
@@ -177,7 +198,13 @@ const TabelPermohonan = ({
 																item.status === "Disetujui" && item.suratCuti
 																	? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
 																	: "bg-gray-300 cursor-not-allowed"
-															}`}>
+															}`}
+															title={`
+																${
+																	item.status === "Disetujui" && item.suratCuti
+																		? "Cetak surat cuti."
+																		: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
+																}`}>
 															<FaPrint />
 															<span>Cetak</span>
 														</button>

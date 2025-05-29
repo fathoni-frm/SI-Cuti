@@ -75,27 +75,27 @@ const TabelKuotaCuti = forwardRef(({ data = [], isEditing = false, roundedTop = 
 	}
 
 	return (
-		<div className={`${roundedTop ? 'rounded-t-lg' : ''} rounded-b-lg overflow-hidden`}>
-		  <table className="w-full">
+		<div className={`flex border border-gray-200 shadow-sm overflow-x-auto max-w-full ${roundedTop ? 'rounded-t-lg' : ''} rounded-b-lg`}>
+		  <table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
 			{/* Header */}
 			<thead className="bg-gray-200">
 			  <tr className="text-sm text-black uppercase tracking-wider">
-				<th className="w-[280px] pl-4 py-3 text-left">
+				<th className="w-[280px] pl-3 px-1 py-2 text-left">
 				  Jenis Cuti
 				</th>
-				<th className="py-3">
+				<th className="px-1 py-2">
 				  Periode
 				</th>
-				<th className="py-3">
+				<th className="px-1 py-2">
 				  Tanggal Berlaku
 				</th>
-				<th className="py-3">
+				<th className="px-1 py-2">
 				  Tanggal Berakhir
 				</th>
-				<th className="py-3">
+				<th className="px-1 py-2">
 				  Kuota
 				</th>
-				<th className="py-3">
+				<th className="px-1 py-2">
 				  Sisa Kuota
 				</th>
 			  </tr>
@@ -105,7 +105,7 @@ const TabelKuotaCuti = forwardRef(({ data = [], isEditing = false, roundedTop = 
 			<tbody className="divide-y divide-gray-200">
 			  {data.map((item, index) => (
 				<tr key={item.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} whitespace-nowrap text-sm text-gray-700 hover:bg-gray-100`}>
-				  <td className="pl-4 py-3">
+				  <td className="pl-3 py-3">
 					{item.jenisCuti}
 				  </td>
 				  <td className="py-3 text-center">

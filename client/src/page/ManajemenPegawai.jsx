@@ -108,33 +108,33 @@ const ManajemenPegawai = () => {
 					</div>
 
 					{/* Tabel */}
-					<div className="border border-gray-200 rounded-lg shadow-sm">
-						<table className="table-fixed min-w-full divide-y divide-gray-200">
+					<div className="flex border border-gray-200 rounded-lg shadow-sm overflow-x-auto max-w-full">
+						<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
 							{/* Header Tabel */}
 							<thead className="bg-gray-200">
-								<tr className="text-center">
-									<th className="w-10 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
-										No
+								<tr className="text-sm text-black tracking-wider">
+									<th className="w-[35px] px-1 py-2">
+										NO
 									</th>
-									<th className="w-60 px-2 py-3 text-left text-sm font-medium text-black tracking-wider">
+									<th className="w-[230px] px-1 py-2 text-left">
 										NAMA
 									</th>
-									<th className="w-36 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[100px] px-1 py-2">
 										NIP
 									</th>
-									<th className="w-28 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[100px] px-1 py-2">
 										UNIT KERJA
 									</th>
-									<th className="w-28 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[100px] px-1 py-2">
 										GOLONGAN
 									</th>
-									<th className="w-40 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[150px] px-1 py-2">
 										JABATAN STRUKTURAL
 									</th>
-									<th className="w-40 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[150px] px-1 py-2">
 										JABATAN FUNGSIONAL
 									</th>
-									<th className="w-10 px-2 py-3 text-center text-sm font-medium text-black tracking-wider">
+									<th className="w-[40px] px-1 py-2">
 										AKSI
 									</th>
 								</tr>
@@ -145,47 +145,56 @@ const ManajemenPegawai = () => {
 								{currentItems.map((pegawai, index) => (
 									<tr
 										key={pegawai.id}
-										className={`${
+										className={`text-sm text-gray-700 text-center ${
 											index % 2 === 0 ? "bg-white" : "bg-gray-50"
 										} hover:bg-gray-100`}>
-										<td className="px-2 py-3 text-center text-sm font-medium text-gray-900 whitespace-normal">
+										<td className="px-1 py-2 font-medium text-black break-words whitespace-normal">
 											{indexOfFirstItem + index + 1}
 										</td>
-										<td className="px-2 py-4 text-left text-sm text-gray-900 font-medium break-words whitespace-normal">
+										<td className="px-1 py-2 text-left font-medium text-black break-words whitespace-normal">
 											{pegawai.nama}
 										</td>
-										<td className="px-2 py-4 text-center text-sm text-gray-700 break-words whitespace-normal">
+										<td className="px-1 py-2 break-words whitespace-normal">
 											{pegawai.nip}
 										</td>
-										<td className="px-2 py-4 text-center text-sm text-gray-700 break-words whitespace-normal">
+										<td className="px-1 py-2 break-words whitespace-normal">
 											{pegawai.unitKerja}
 										</td>
-										<td className="px-2 py-4 text-center text-sm text-gray-700 break-words whitespace-normal">
+										<td className="px-1 py-2 break-words whitespace-normal">
 											{pegawai.golongan}
 										</td>
-										<td className="px-2 py-4 text-center text-sm text-gray-700 break-words whitespace-normal">
+										<td className="px-1 py-2 break-words whitespace-normal">
 											{pegawai.jabatanStruktural}
 										</td>
-										<td className="px-2 py-4 text-center text-sm text-gray-700 break-words whitespace-normal">
+										<td className="px-1 py-2 break-words whitespace-normal">
 											{pegawai.jabatanFungsional}
 										</td>
-										<td className="px-2 py-4 text-center text-sm font-medium relative whitespace-normal">
+										<td className="px-1 py-2 font-medium relative whitespace-normal">
 											<div
 												onClick={() =>
 													setOpenDropdownIndex(
 														openDropdownIndex === index ? null : index
 													)
 												}
-												className="flex justify-center text-gray-400 hover:text-gray-600 focus:outline-none">
+												className="flex justify-center text-gray-500 hover:text-gray-300 cursor-pointer">
 												<FaEllipsisV className="h-5 w-5" />
 
 												{/* Dropdown Aksi */}
 												{openDropdownIndex === index && (
 													<div
 														ref={dropdownRef}
-														className="absolute right-1 z-20 mt-7 w-24 bg-white border border-gray-300 rounded-md shadow-md text-left">
-														<div className="absolute -top-2 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45 z-10"></div>
-														<div className="py-2 flex flex-col gap-2 px-2">
+														className={`absolute z-20 ${
+															index >= currentItems.length - 2
+																? "bottom-full -mb-4"
+																: "top-full -mt-6"
+														} right-1 w-24 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
+														<div
+															className={`absolute ${
+																index >= currentItems.length - 2
+																	? "-bottom-1.5 border-b border-r"
+																	: "-top-1.5 border-t border-l"
+															} right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10`}></div>
+														<div className="py-2.5 flex flex-col gap-1.5 px-2">
 															<Link
 																to={`/detail-pegawai/${pegawai.id}`}
 																className="flex items-center gap-2 px-2 py-1 text-sm font-medium text-white bg-blue-500 hover:bg-blue-200 rounded">

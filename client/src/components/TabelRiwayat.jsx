@@ -48,42 +48,44 @@ const TabelRiwayat = ({
 	return (
 		<>
 			<div
-				className={`rounded-b-lg
-					${
-						isDashboard
-							? "overflow-x-hidden overflow-y-visible"
-							: "rounded-t-lg overflow-auto"
-					}
+				className={`flex max-w-full rounded-b-lg overflow-auto
+					${isDashboard ? "" : "rounded-t-lg"}
 					`}>
-				<table className="w-full">
+				<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
 					<thead className="bg-gray-200">
 						<tr className="text-sm text-black uppercase tracking-wider">
-							<th className="w-[40px] py-3 px-1">No</th>
-							<th className="py-3">Tanggal Pengajuan</th>
-							<th className="py-3">Jenis Cuti</th>
-							<th className="py-3">Tanggal Mulai</th>
-							<th className="py-3">Tanggal Selesai</th>
-							<th className="py-3">Status</th>
-							<th className="w-[60px] py-3">Aksi</th>
+							<th className="w-[10px] px-1 py-2">No</th>
+							<th className="w-[120px] px-1 py-2">
+								Tanggal Pengajuan
+							</th>
+							<th className="w-[100px] px-1 py-2">Jenis Cuti</th>
+							<th className="w-[100px] px-1 py-2">Tanggal Mulai</th>
+							<th className="w-[100px] px-1 py-2">Tanggal Selesai</th>
+							<th className="w-[40px] px-1 py-2">Status</th>
+							<th className="w-[40px] px-1 py-2">Aksi</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
 						{data.map((item, index) => (
 							<tr
 								key={item.id}
-								className={`${
+								className={`text-sm text-gray-700 text-center ${
 									index % 2 === 0 ? "bg-white" : "bg-gray-50"
-								} text-center whitespace-nowrap text-sm text-gray-700 hover:bg-gray-100`}>
-								<td className="py-3">{index + 1}</td>
-								<td className="py-3">{formatGMT8(item.tanggalPengajuan)}</td>
-								<td className="py-3">{item.jenisCuti}</td>
-								<td className="py-3">
+								} hover:bg-gray-100`}>
+								<td className="px-1 py-2 break-words whitespace-normal">{index + 1}</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
+									{formatGMT8(item.tanggalPengajuan)}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
+									{item.jenisCuti}
+								</td>
+								<td className="px-1 py-2 break-words whitespace-normal">
 									{formatGMT8(item.tanggalMulai, { showTime: false })}
 								</td>
-								<td className="py-3">
+								<td className="px-1 py-2 break-words whitespace-normal">
 									{formatGMT8(item.tanggalSelesai, { showTime: false })}
 								</td>
-								<td className="py-3">
+								<td className="px-1 py-2 break-words whitespace-normal">
 									<span
 										className={`text-sm font-semibold px-3 py-1 rounded-full ${
 											item.status === "Disetujui"
@@ -99,7 +101,7 @@ const TabelRiwayat = ({
 										{item.status}
 									</span>
 								</td>
-								<td className="py-3 relative">
+								<td className="px-1 py-2 break-words whitespace-normal relative">
 									<button
 										onClick={() => toggleMenu(index)}
 										className="text-gray-800 hover:text-gray-300">
@@ -110,8 +112,16 @@ const TabelRiwayat = ({
 									{selectedRow === index && (
 										<div
 											ref={dropdownRef}
-											className="absolute right-1.5 z-20 mt-0.5 w-22 bg-white border border-gray-300 rounded-md shadow-md text-left">
-											<div className="absolute -top-2 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45 z-10"></div>
+											className={`absolute z-20 ${
+												index >= data.length - 2
+													? "bottom-full -mb-2"
+													: "top-full -mt-3"
+											} right-5 w-21 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
+											<div className={`absolute ${
+															index >= data.length - 2
+																? "-bottom-1.5 border-b border-r"
+																: "-top-1.5 border-t border-l"
+														} right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10`}></div>
 											<div className="py-2 px-1.5">
 												<Link
 													to={`/detail-cuti/${item.id}`}

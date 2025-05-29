@@ -196,7 +196,12 @@ const DetailCuti = () => {
 									? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
 									: "bg-gray-300 cursor-not-allowed"
 							}`}
-							title="Cetak surat cuti">
+							title={`
+								${
+									data.status === "Disetujui" && data.suratCuti
+										? "Cetak surat cuti."
+										: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
+								}`}>
 							<MdPrint /> Cetak Dokumen
 						</button>
 					</div>
