@@ -69,15 +69,15 @@ const PermohonanCutiAtasan = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full">
-				<h1 className="text-2xl font-bold mb-6">Permohonan Cuti</h1>
+			<div className="p-4 sm:p-6 w-full">
+				<h1 className="text-center sm:text-left text-xl lg:text-2xl font-bold text-gray-800 mb-6">Permohonan Cuti</h1>
 
 				{/* Belum Diproses */}
-				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 mb-6">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 sm:p-6 mb-6">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowBelumDiproses(!showBelumDiproses)}>
-						<h2 className="text-lg font-semibold">Belum Anda Proses</h2>
+						<h2 className="text-base sm:text-lg font-semibold">Belum Anda Proses</h2>
 						{showBelumDiproses ? (
 							<FaChevronUp className="text-gray-500" />
 						) : (
@@ -97,11 +97,11 @@ const PermohonanCutiAtasan = () => {
 				</div>
 
 				{/* Disetujui */}
-				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 mb-6">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 sm:p-6 mb-6">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowDisetujui(!showDisetujui)}>
-						<h2 className="text-lg font-semibold">Disetujui Anda</h2>
+						<h2 className="text-base sm:text-lg font-semibold">Disetujui Anda</h2>
 						{showDisetujui ? (
 							<FaChevronUp className="text-gray-500" />
 						) : (
@@ -121,11 +121,11 @@ const PermohonanCutiAtasan = () => {
 				</div>
 
 				{/* Tidak Disetujui */}
-				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4">
+				<div className="bg-white rounded-md drop-shadow-sm shadow-inner p-4 sm:p-6">
 					<div
 						className="flex justify-between items-center mb-2 cursor-pointer"
 						onClick={() => setShowTidakDisetujui(!showTidakDisetujui)}>
-						<h2 className="text-lg font-semibold">Tidak Disetujui Anda</h2>
+						<h2 className="text-base sm:text-lg font-semibold">Tidak Disetujui Anda</h2>
 						{showTidakDisetujui ? (
 							<FaChevronUp className="text-gray-500" />
 						) : (

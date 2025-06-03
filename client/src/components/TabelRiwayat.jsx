@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import useAuthStore from "../store/authStore";
-import axios from "../api/axios";
 import { formatGMT8 } from "../schemas/timeFormatter";
 import Pagination from "./Pagination";
 import { FaEllipsisV, FaFileAlt, FaPrint } from "react-icons/fa";
@@ -48,46 +46,46 @@ const TabelRiwayat = ({
 	return (
 		<>
 			<div
-				className={`flex max-w-full rounded-b-lg overflow-auto
+				className={`border-gray-200 rounded-b-lg shadow-sm overflow-x-auto
 					${isDashboard ? "" : "rounded-t-lg"}
 					`}>
-				<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
+				<table className="w-full text-sm">
 					<thead className="bg-gray-200">
-						<tr className="text-sm text-black uppercase tracking-wider">
-							<th className="w-[10px] px-1 py-2">No</th>
-							<th className="w-[120px] px-1 py-2">
+						<tr className="text-xs text-black uppercase tracking-wider">
+							<th className="px-2 py-3">No</th>
+							<th className="px-2 py-3">
 								Tanggal Pengajuan
 							</th>
-							<th className="w-[100px] px-1 py-2">Jenis Cuti</th>
-							<th className="w-[100px] px-1 py-2">Tanggal Mulai</th>
-							<th className="w-[100px] px-1 py-2">Tanggal Selesai</th>
-							<th className="w-[40px] px-1 py-2">Status</th>
-							<th className="w-[40px] px-1 py-2">Aksi</th>
+							<th className="px-2 py-3">Jenis Cuti</th>
+							<th className="px-2 py-3">Tanggal Mulai</th>
+							<th className="px-2 py-3">Tanggal Selesai</th>
+							<th className="px-2 py-3">Status</th>
+							<th className="px-2 py-3">Aksi</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
 						{data.map((item, index) => (
 							<tr
 								key={item.id}
-								className={`text-sm text-gray-700 text-center ${
+								className={`text-gray-700 text-center ${
 									index % 2 === 0 ? "bg-white" : "bg-gray-50"
 								} hover:bg-gray-100`}>
-								<td className="px-1 py-2 break-words whitespace-normal">{index + 1}</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 font-medium">{index + 1}</td>
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalPengajuan)}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{item.jenisCuti}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalMulai, { showTime: false })}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalSelesai, { showTime: false })}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									<span
-										className={`text-sm font-semibold px-3 py-1 rounded-full ${
+										className={`text-xs font-semibold px-3 py-1 rounded-full ${
 											item.status === "Disetujui"
 												? "bg-green-100 text-green-800"
 												: item.status === "Ditolak"
@@ -101,11 +99,11 @@ const TabelRiwayat = ({
 										{item.status}
 									</span>
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal relative">
+								<td className="px-2 py-2 relative">
 									<button
 										onClick={() => toggleMenu(index)}
-										className="text-gray-800 hover:text-gray-300">
-										<FaEllipsisV className="cursor-pointer mx-auto" />
+										className="text-gray-500 p-1 rounded-xl hover:text-gray-700 hover:bg-gray-200 cursor-pointer">
+										<FaEllipsisV />
 									</button>
 
 									{/* Dropdown Menu */}
@@ -116,7 +114,7 @@ const TabelRiwayat = ({
 												index >= data.length - 2
 													? "bottom-full -mb-2"
 													: "top-full -mt-3"
-											} right-5 w-21 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
+											} right-2 w-21 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
 											<div className={`absolute ${
 															index >= data.length - 2
 																? "-bottom-1.5 border-b border-r"
@@ -125,7 +123,7 @@ const TabelRiwayat = ({
 											<div className="py-2 px-1.5">
 												<Link
 													to={`/detail-cuti/${item.id}`}
-													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white bg-blue-500 hover:bg-blue-200 transition-all duration-150 rounded-md">
+													className="flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white bg-blue-500 hover:bg-blue-800 transition-all duration-150 rounded-md">
 													<FaFileAlt />
 													<span>Detail</span>
 												</Link>
@@ -138,7 +136,7 @@ const TabelRiwayat = ({
 													}
 													className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${
 														item.status === "Disetujui" && item.suratCuti
-															? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+															? "bg-emerald-600 hover:bg-emerald-800 cursor-pointer"
 															: "bg-gray-300 cursor-not-allowed"
 													}`}>
 													<FaPrint />

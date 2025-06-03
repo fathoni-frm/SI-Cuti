@@ -29,21 +29,21 @@ const DashboardAtasan = () => {
 			label: "Belum Anda Proses",
 			count: dataPermohonan.length,
 			unit: "Permohonan",
-			icon: <FaClock className="text-5xl text-white" />,
+			icon: <FaClock />,
 			bgColor: "bg-amber-500",
 		},
 		{
 			label: "Anda Setujui",
 			count: disetujui,
 			unit: "Permohonan",
-			icon: <FaCheckCircle className="text-5xl text-white" />,
+			icon: <FaCheckCircle />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Anda Tolak",
 			count: ditolak,
 			unit: "Permohonan",
-			icon: <FaTimesCircle className="text-5xl text-white" />,
+			icon: <FaTimesCircle />,
 			bgColor: "bg-red-600",
 		},
 	];
@@ -51,23 +51,27 @@ const DashboardAtasan = () => {
 	const dataPengajuanAnda = [
 		{
 			label: "Disetujui",
-			count: dataRiwayatCuti.filter(item => item.status === "Disetujui").length,
+			count: dataRiwayatCuti.filter((item) => item.status === "Disetujui")
+				.length,
 			unit: "Pengajuan",
-			icon: <FaCheckCircle className="text-5xl text-white" />,
+			icon: <FaCheckCircle />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Sedang Diproses",
-			count: dataRiwayatCuti.filter(item => item.status === "Diproses").length,
+			count: dataRiwayatCuti.filter((item) => item.status === "Diproses")
+				.length,
 			unit: "Pengajuan",
-			icon: <FaSpinner className="text-5xl text-white" />,
+			icon: <FaSpinner />,
 			bgColor: "bg-blue-600",
 		},
 		{
 			label: "Tidak Disetujui / Dibatalkan",
-			count: dataRiwayatCuti.filter(item => item.status === "Ditolak" || item.status === "Dibatalkan").length,
+			count: dataRiwayatCuti.filter(
+				(item) => item.status === "Ditolak" || item.status === "Dibatalkan"
+			).length,
 			unit: "Pengajuan",
-			icon: <FaTimesCircle className="text-5xl text-white" />,
+			icon: <FaTimesCircle />,
 			bgColor: "bg-red-600",
 		},
 	];
@@ -76,24 +80,30 @@ const DashboardAtasan = () => {
 		const fetchVerifikasi = async () => {
 			try {
 				const res = await axios.get("/permohonan-cuti");
-				
+
 				const disetujui = res.data.disetujui.length;
 				const ditolak = res.data.ditolak.length;
-				
+
 				const permohonanCuti = res.data.permohonanCuti;
-				const hasil = permohonanCuti.map((item) => ({
-					idVerifikasi: item.id,
-					idPengajuan: item.idPengajuan,
-					tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
-					jenisCuti: item.PengajuanCuti.jenisCuti,
-					tanggalMulai: item.PengajuanCuti.tanggalMulai,
-					tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
-					totalKuota: item.PengajuanCuti.totalKuota,
-					sisaKuota: item.PengajuanCuti.sisaKuota,
-					status: item.PengajuanCuti.status,
-					statusVerifikasi: item.statusVerifikasi,
-					Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
-				})).sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+				const hasil = permohonanCuti
+					.map((item) => ({
+						idVerifikasi: item.id,
+						idPengajuan: item.idPengajuan,
+						tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
+						jenisCuti: item.PengajuanCuti.jenisCuti,
+						tanggalMulai: item.PengajuanCuti.tanggalMulai,
+						tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
+						totalKuota: item.PengajuanCuti.totalKuota,
+						sisaKuota: item.PengajuanCuti.sisaKuota,
+						status: item.PengajuanCuti.status,
+						statusVerifikasi: item.statusVerifikasi,
+						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
+					}))
+					.sort(
+						(a, b) =>
+							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+					)
+					.slice(0, 5);
 
 				setDisetujui(disetujui);
 				setDitolak(ditolak);
@@ -114,8 +124,15 @@ const DashboardAtasan = () => {
 
 		const fetchRiwayat = async () => {
 			try {
-				const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
-				const hasil = res.data.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+				const res = await axios.get(
+					`/pengajuan-cuti/riwayat/${user.idPegawai}`
+				);
+				const hasil = res.data
+					.sort(
+						(a, b) =>
+							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+					)
+					.slice(0, 5);
 				setDataRiwayatCuti(hasil);
 			} catch (err) {
 				console.error(err);
@@ -131,8 +148,8 @@ const DashboardAtasan = () => {
 
 	return (
 		<MainLayout role="Atasan">
-			<div className="flex flex-grow min-h-0 h-full">
-				<div className="flex-grow h-full bg-gray-100 p-6 w-5/6 overflow-auto space-y-5">
+			<div className="flex flex-col lg:flex-row flex-grow">
+				<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5">
 					<h1 className="text-2xl font-bold">Dashboard</h1>
 
 					{/* Rekap Permohonan Cuti Pegawai */}
@@ -142,10 +159,7 @@ const DashboardAtasan = () => {
 					/>
 
 					{/* Permohonan Cuti Belum Diproses */}
-					<BackgroundItem
-						title="Permohonan Cuti Yang Belum Anda Proses"
-						marginX={false}
-						marginY={false}>
+					<BackgroundItem title="Permohonan Cuti Yang Belum Anda Proses">
 						<TabelPermohonan
 							data={dataPermohonan}
 							isDashboard={true}
@@ -164,19 +178,17 @@ const DashboardAtasan = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem
-						title="Sisa Kuota Cuti Anda"
-						marginX={false}
-						marginY={false}>
+					<BackgroundItem title="Sisa Kuota Cuti Anda">
 						<TabelKuotaCuti data={dataKuotaCuti} />
 					</BackgroundItem>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
-					<BackgroundItem
-						title="Riwayat Pengajuan Cuti Anda"
-						marginX={false}
-						marginY={false}>
-						<TabelRiwayat data={dataRiwayatCuti} showPagination={false} isDashboard={true} />
+					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
+						<TabelRiwayat
+							data={dataRiwayatCuti}
+							showPagination={false}
+							isDashboard={true}
+						/>
 					</BackgroundItem>
 				</div>
 

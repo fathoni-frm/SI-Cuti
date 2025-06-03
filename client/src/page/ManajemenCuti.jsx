@@ -115,16 +115,18 @@ const ManajemenCuti = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full space-y-8">
-				<h1 className="text-2xl font-bold mb-6">
+			<div className="p-4 sm:p-6 w-full space-y-6 ">
+				<h1 className="text-xl lg:text-2xl font-bold text-gray-800">
 					Manajemen Kuota Cuti Pegawai
 				</h1>
 
 				{/* Form 1: Pilih Pegawai */}
 				<BackgroundItem>
-					<form onSubmit={formikSelectPegawai.handleSubmit}>
-						<div className="mb-4">
-							<label className="font-medium">Nama Pegawai</label>
+					<div className="p-4 sm:p-6">
+						<form onSubmit={formikSelectPegawai.handleSubmit}>
+							<label className="font-medium text-lg text-gray-700 block mb-3">
+								Nama Pegawai
+							</label>
 							<Select
 								options={optionsPegawai}
 								name="pegawai"
@@ -144,93 +146,107 @@ const ManajemenCuti = () => {
 										{formikSelectPegawai.errors.pegawai}
 									</div>
 								)}
-						</div>
-						<div className="flex justify-end">
-							<button
-								type="submit"
-								className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600">
-								<FaSearch /> Detail Kuota Cuti
-							</button>
-						</div>
-					</form>
+							<div className="flex justify-end mt-4">
+								<button
+									type="submit"
+									className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors duration-150 w-full sm:w-auto font-medium text-sm lg:text-base hover:bg-blue-600 cursor-pointer">
+									<FaSearch /> Detail Kuota Cuti
+								</button>
+							</div>
+						</form>
+					</div>
 				</BackgroundItem>
 
 				{/* Form 2: Tampil setelah pegawai dipilih */}
 				{selectedPegawai && (
 					<BackgroundItem>
-						<h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-							Tambah Kuota Cuti
-						</h2>
+						<div className="p-4 sm:p-6">
+							<h2 className="text-xl lg:text-2xl font-bold mb-4 text-center text-gray-800">
+								Tambah Kuota Cuti Kepada :
+							</h2>
 
-						{/* Card Identitas Pegawai */}
-						<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm mb-8">
-							<h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-								Identitas Pegawai
-							</h3>
-							<div className="grid grid-cols-2 gap-y-5 gap-x-6  text-gray-600">
-								<div>
-									<span className="font-semibold">Nama :</span>{" "}
-									{selectedPegawai.label}
-								</div>
-								<div>
-									<span className="font-semibold">NIP :</span>{" "}
-									{selectedPegawai.nip}
-								</div>
-								<div>
-									<span className="font-semibold">Pangkat :</span>{" "}
-									{selectedPegawai.pangkat}
-								</div>
-								<div>
-									<span className="font-semibold">Golongan :</span>{" "}
-									{selectedPegawai.golongan}
-								</div>
-								<div>
-									<span className="font-semibold">Satuan Kerja :</span>{" "}
-									{selectedPegawai.satuanKerja}
-								</div>
-								<div>
-									<span className="font-semibold">Jabatan :</span>{" "}
-									{selectedPegawai.jabatan}
-								</div>
-							</div>
-						</div>
-
-						{/* Form Tambah Kuota */}
-						<form onSubmit={formikTambahKuota.handleSubmit}>
-							<div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-								<h3 className="text-lg font-semibold text-gray-700 mb-4">
-									Tambahkan Kuota Cuti Pegawai
+							{/* Card Identitas Pegawai */}
+							<div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm mb-4 md:mb-6">
+								<h3 className="text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b border-gray-300 pb-2">
+									Identitas Pegawai
 								</h3>
-								<div className="flex items-center gap-4">
-									<input
-										type="number"
-										name="tambahKuota"
-										min={1}
-										max={10}
-										value={formikTambahKuota.values.tambahKuota}
-										onChange={formikTambahKuota.handleChange}
-										onBlur={formikTambahKuota.handleBlur}
-										placeholder="Masukkan jumlah kuota yang akan ditambahkan pada kuota cuti tahunan pegawai"
-										className="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-									/>
-									<button
-										type="submit"
-										className="w-[250px] bg-gradient-to-r from-green-400 to-green-500 text-white py-2 rounded-lg shadow-lg font-semibold hover:brightness-80 transition flex items-center justify-center gap-2">
-										<FaPlus /> Tambahkan Kuota
-									</button>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-4 sm:gap-x-6 text-sm lg:text-base text-gray-600">
+									<div>
+										<span className="font-semibold">Nama : </span>
+										{selectedPegawai.label}
+									</div>
+									<div>
+										<span className="font-semibold">NIP : </span>
+										{selectedPegawai.nip}
+									</div>
+									<div>
+										<span className="font-semibold">Pangkat : </span>
+										{selectedPegawai.pangkat}
+									</div>
+									<div>
+										<span className="font-semibold">Golongan : </span>
+										{selectedPegawai.golongan}
+									</div>
+									<div>
+										<span className="font-semibold">Satuan Kerja : </span>
+										{selectedPegawai.satuanKerja}
+									</div>
+									<div>
+										<span className="font-semibold">Jabatan : </span>
+										{selectedPegawai.jabatan}
+									</div>
 								</div>
-								{formikTambahKuota.errors.tambahKuota &&
-									formikTambahKuota.touched.tambahKuota && (
-										<div className="text-sm text-red-500 mt-2">
-											{formikTambahKuota.errors.tambahKuota}
-										</div>
-									)}
 							</div>
-						</form>
 
-						{/* Tabel Kuota */}
-						<div className="mt-8">
-							<TabelKuotaCuti data={dataKuotaCuti} roundedTop={true} />
+							{/* Form Tambah Kuota */}
+							<form
+								onSubmit={formikTambahKuota.handleSubmit}
+								className="mb-4 md:mb-6">
+								<div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+									<h3 className="text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b border-gray-300 pb-2">
+										Tambahkan Kuota Cuti Pegawai
+									</h3>
+									<div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+										<label
+											htmlFor="tambahKuotaInput"
+											className="flex-shrink-0 text-base lg:text-lg font-medium text-gray-700">
+											Jumlah Kuota :
+										</label>
+										<input
+											id="tambahKuotaInput"
+											type="number"
+											name="tambahKuota"
+											min={1}
+											max={100}
+											title="Masukkan jumlah kuota yang akan ditambahkan pada kuota cuti tahunan pegawai"
+											value={formikTambahKuota.values.tambahKuota}
+											onChange={formikTambahKuota.handleChange}
+											onBlur={formikTambahKuota.handleBlur}
+											placeholder="Masukkan penambahan kuota cuti tahunan pegawai"
+											className="w-full border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm lg:text-base"
+										/>
+										<button
+											type="submit"
+											className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2 px-4 sm:px-5 rounded-lg shadow-md font-semibold transition flex items-center justify-center gap-2 text-sm sm:text-base flex-shrink-0">
+											<FaPlus /> Tambahkan Kuota
+										</button>
+									</div>
+									{formikTambahKuota.errors.tambahKuota &&
+										formikTambahKuota.touched.tambahKuota && (
+											<div className="text-sm text-red-500 mt-2">
+												{formikTambahKuota.errors.tambahKuota}
+											</div>
+										)}
+								</div>
+							</form>
+
+							{/* Tabel Kuota */}
+							<div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+								<h3 className="text-lg font-semibold text-gray-700 mb-3 sm:mb-4 border-b border-gray-300 pb-2">
+									Daftar Kuota Cuti Pegawai Saat Ini
+								</h3>
+								<TabelKuotaCuti data={dataKuotaCuti} roundedTop={true} />
+							</div>
 						</div>
 					</BackgroundItem>
 				)}

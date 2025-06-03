@@ -99,47 +99,44 @@ const DetailPegawai = () => {
 	if (loading) return <Spinner />;
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full bg-gray-100">
+			<div className="p-4 sm:p-6 w-full">
 				{/* Title & Action Buttons */}
-				<div className="flex justify-between items-center mb-4">
-					<h1 className="text-2xl font-bold">
+				<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+					<h1 className="text-left text-xl lg:text-2xl font-bold text-gray-800">
 						<span className="text-gray-500">Manajemen Pegawai</span> / Detail
 						Pegawai
 					</h1>
-					<div className="flex gap-2">
+					<div className="flex justify-around gap-2">
 						<Link
 							to={`/manajemen-pegawai/edit/${id}`}
-							className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-md">
+							className="flex justify-center items-center w-full gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-md">
 							<FaEdit /> Edit
 						</Link>
-						<button
+						<Link
 							onClick={() => handleDelete(id)}
-							className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md cursor-pointer">
+							className="flex justify-center items-center w-full gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
 							<FaTrash /> Hapus
-						</button>
+						</Link>
 					</div>
 				</div>
 
 				{/* Informasi Pegawai */}
-				<div className="mb-4">
-					<BackgroundItem>
+				<BackgroundItem>
+					<div className="p-4 sm:p-6">
 						<Formik initialValues={initialData} enableReinitialize>
 							{(formik) => (
 								<FormDataPegawai formik={formik} isReadOnly={true} />
 							)}
 						</Formik>
-						
+
 						{/* Informasi Kuota Cuti Pegawai */}
 						<BackgroundItem
 							title="Informasi Kuota Cuti Pegawai"
-							marginX={false}
-							marginY={false}
 							icon={<FaCalendarAlt />}>
 							<TabelKuotaCuti data={kuotaCuti} />
 						</BackgroundItem>
-					</BackgroundItem>
-				</div>
-
+					</div>
+				</BackgroundItem>
 			</div>
 		</MainLayout>
 	);

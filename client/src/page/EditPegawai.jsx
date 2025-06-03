@@ -64,7 +64,7 @@ const EditPegawai = () => {
 	};
 
 	useEffect(() => {
-		let isMounted = true; 
+		let isMounted = true;
 
 		const fetchData = async () => {
 			try {
@@ -153,54 +153,55 @@ const EditPegawai = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full">
-				<div className="flex justify-between mb-4">
-					<h1 className="text-2xl font-bold">
+			<div className="p-4 sm:p-6 w-full">
+				<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+					<h1 className="text-left text-xl lg:text-2xl font-bold text-gray-800">
 						<span className="text-gray-500">Manajemen Pegawai</span> / Edit
 						Pegawai
 					</h1>
-					<button
+					{/* <button
 						type="submit"
 						onClick={handleCombinedSubmit}
-						className="flex justify-self-end items-center bg-yellow-500 text-white px-4 py-2 gap-2 rounded-lg hover:bg-yellow-600 shadow cursor-pointer">
+						className="flex justify-center items-center bg-yellow-500 text-white px-4 py-2 gap-2 rounded-lg hover:bg-yellow-600 shadow cursor-pointer">
 						<MdEditSquare className="text-lg" />
 						Simpan Perubahan Data
-					</button>
+					</button> */}
 				</div>
 
 				{/* Form Section */}
 				<BackgroundItem>
-					{!loading && initialData && (
-						<Formik
-							initialValues={initialData}
-							validationSchema={validationSchemaEdit}
-							onSubmit={handleSubmit}
-							enableReinitialize
-							innerRef={formikRef}>
-							{(formik) => <FormDataPegawai formik={formik}></FormDataPegawai>}
-						</Formik>
-					)}
-					{/* Informasi Kuota Cuti Pegawai */}
-					<BackgroundItem
-						title="Informasi Kuota Cuti Pegawai"
-						marginX={false}
-						marginY={false}
-						icon={<FaCalendarAlt />}>
-						<TabelKuotaCuti
-							ref={tabelKuotaRef}
-							data={kuotaCuti}
-							isEditing={true}
-						/>
-					</BackgroundItem>
+					<div className="p-4 sm:p-6">
+						{!loading && initialData && (
+							<Formik
+								initialValues={initialData}
+								validationSchema={validationSchemaEdit}
+								onSubmit={handleSubmit}
+								enableReinitialize
+								innerRef={formikRef}>
+								{(formik) => (
+									<FormDataPegawai formik={formik}></FormDataPegawai>
+								)}
+							</Formik>
+						)}
+						{/* Informasi Kuota Cuti Pegawai */}
+						<BackgroundItem
+							title="Informasi Kuota Cuti Pegawai"
+							icon={<FaCalendarAlt />}>
+							<TabelKuotaCuti
+								ref={tabelKuotaRef}
+								data={kuotaCuti}
+								isEditing={true}
+							/>
+						</BackgroundItem>
+						<button
+							type="submit"
+							onClick={handleCombinedSubmit}
+							className="flex justify-self-end items-center bg-yellow-500 text-white px-4 py-2 mt-4 gap-2 rounded-lg hover:bg-yellow-600 shadow cursor-pointer">
+							<MdEditSquare className="text-lg" />
+							Simpan Perubahan Data
+						</button>
+					</div>
 				</BackgroundItem>
-
-				<button
-					type="submit"
-					onClick={handleCombinedSubmit}
-					className="flex justify-self-end items-center bg-yellow-500 text-white px-4 py-2 mt-4 gap-2 rounded-lg hover:bg-yellow-600 shadow cursor-pointer">
-					<MdEditSquare className="text-lg" />
-					Simpan Perubahan Data
-				</button>
 			</div>
 		</MainLayout>
 	);

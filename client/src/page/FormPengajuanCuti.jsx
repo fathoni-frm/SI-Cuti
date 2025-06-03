@@ -76,12 +76,24 @@ const FormPengajuanCuti = () => {
 		);
 	};
 
+	const FormFieldRow = ({ label, children }) => (
+		<div className="flex flex-col py-2 px-6 sm:flex-row sm:items-start">
+			<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
+				<div>{label}</div>
+				<div>:</div>
+			</div>
+			<div className="w-full text-base font-medium text-black md:ml-5 sm:w-3/4 lg:w-5/6">
+				{children}
+			</div>
+		</div>
+	);
+
 	const CustomDateInput = ({ value, onClick, placeholder }) => (
 		<button
 			type="button"
 			onClick={onClick}
-			className="flex items-center gap-2 w-35 p-2 border border-gray-500 rounded-lg bg-white text-left hover:ring-2 hover:ring-blue-400 transition-all">
-			<FaCalendarAlt className="text-gray-600" />
+			className="flex items-center gap-2 w-33 py-2 border border-gray-400 rounded-lg bg-white text-center hover:ring-2 hover:ring-blue-400 transition-all">
+			<FaCalendarAlt className="ml-1 text-gray-600" />
 			<span className="text-sm text-gray-700">{value || placeholder}</span>
 		</button>
 	);
@@ -105,7 +117,9 @@ const FormPengajuanCuti = () => {
 				Swal.fire({
 					icon: "error",
 					title: "Kuota Tidak Cukup",
-					text: `Sisa kuota ${jenisCuti || formik.values.jenisCuti} Anda hanya ${sisaKuota} hari, sedangkan Anda mengajukan ${durasiCuti} hari.`,
+					text: `Sisa kuota ${
+						jenisCuti || formik.values.jenisCuti
+					} Anda hanya ${sisaKuota} hari, sedangkan Anda mengajukan ${durasiCuti} hari.`,
 				});
 				return;
 			}
@@ -281,276 +295,292 @@ const FormPengajuanCuti = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full max-w-7xl mx-auto">
-				<h1 className="text-2xl font-bold mb-6">
-					<span className="text-gray-500">Pengajuan Cuti</span> /{" "}
+			<div className="w-full p-4 mx-auto sm:p-6">
+				<h1 className="mb-6 text-xl font-bold sm:text-2xl text-gray-800">
+					<span className="text-gray-500">Pengajuan Cuti / </span>
 					{formik.values.jenisCuti || jenisCuti}
 				</h1>
 				<form onSubmit={formik.handleSubmit} className="space-y-6">
 					{/* Profil Pegawai */}
 					<BackgroundItem
 						title="Profil Pegawai"
-						marginY={false}
 						icon={<FaUser />}>
-						<table className="w-full my-2 font-medium text-black">
-							<tbody>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Nama / NIP</td>
-									<td className="w-[20px] ">:</td>
-									<td>
-										{detailPegawai.nama} <span className="">/</span>{" "}
-										{detailPegawai.nip}
-									</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Golongan / Jabatan</td>
-									<td className="w-[20px] ">:</td>
-									<td>
-										{detailPegawai.golongan} <span className="">/</span>{" "}
-										{detailPegawai.jabatanFungsional}
-									</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Unit Kerja</td>
-									<td className="w-[20px] ">:</td>
-									<td>{detailPegawai.satuanKerja}</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Nomor Telepon</td>
-									<td className="w-[20px] ">:</td>
-									<td>{detailPegawai.noHp}</td>
-								</tr>
-							</tbody>
-						</table>
+						<div className="py-2">
+							<FormFieldRow label="Nama / NIP">{`${detailPegawai.nama} / ${detailPegawai.nip}`}</FormFieldRow>
+							<FormFieldRow label="Golongan / Jabatan">{`${detailPegawai.golongan} / ${detailPegawai.jabatanFungsional}`}</FormFieldRow>
+							<FormFieldRow label="Unit Kerja">
+								{detailPegawai.satuanKerja}
+							</FormFieldRow>
+							<FormFieldRow label="Nomor Telepon">
+								{detailPegawai.noHp}
+							</FormFieldRow>
+						</div>
 					</BackgroundItem>
 
 					{/* Keterangan Cuti */}
-					<BackgroundItem
-						title="Keterangan Cuti"
-						marginY={false}
-						icon={<FaClipboardList />}>
-						<table className="w-full my-2 mb-4 font-medium text-black">
-							<tbody>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Jenis Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td className="w-1/3">
-										{formik.values.jenisCuti || jenisCuti}
-									</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Total Kuota Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td>{totalKuota} hari</td>
-									<td className="w-1/6 py-3">Sisa Kuota Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td>{sisaKuota} hari</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Periode Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td>
-										<div className="flex items-center gap-2">
-											<DatePicker
-												name="tanggalMulai"
-												selected={
-													formik.values.tanggalMulai
-														? new Date(formik.values.tanggalMulai)
-														: null
+					<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
+						<div className="space-y-3 p-4 sm:px-6">
+							<div className="flex flex-col md:flex-row md:items-baseline">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
+									<div>Jenis Cuti</div>
+									<div>:</div>
+								</div>
+								<div className="w-full font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+									{formik.values.jenisCuti || jenisCuti}
+								</div>
+							</div>
+
+							<div className="flex flex-col md:flex-row md:items-baseline">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:justify-between md:w-48">
+									<div>Total Kuota</div>
+									<div>:</div>
+								</div>
+								<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
+									<span className="text-sm px-3 py-1 text-white bg-green-500 rounded-full">
+										{totalKuota} hari
+									</span>
+								</div>
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
+									<div>Sisa Kuota</div>
+									<div>:</div>
+								</div>
+								<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+									<span className="text-sm px-3 py-1 text-white bg-yellow-500 rounded-full">
+										{sisaKuota} hari
+									</span>
+								</div>
+							</div>
+
+							<div className="flex flex-col md:flex-row md:items-baseline">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-0.5 md:mb-0 md:justify-between md:place-self-center md:w-48">
+									<div>Periode Cuti</div>
+									<div>:</div>
+								</div>
+								<div className="flex justify-center space-x-1 w-fit mb-3 font-medium text-black md:ml-5 md:mb-0">
+									<div className="w-fit xs:w-auto">
+										<DatePicker
+											name="tanggalMulai"
+											selected={
+												formik.values.tanggalMulai
+													? new Date(formik.values.tanggalMulai)
+													: null
+											}
+											onChange={(date) => {
+												if (
+													formik.values.tanggalSelesai &&
+													new Date(formik.values.tanggalSelesai) < date
+												) {
+													formik.setFieldValue("tanggalSelesai", null);
 												}
-												onChange={(date) => {
-													if (
-														formik.values.tanggalSelesai &&
-														new Date(formik.values.tanggalSelesai) < date
-													) {
-														formik.setFieldValue("tanggalSelesai", null);
-													}
-													formik.setFieldValue("tanggalMulai", date);
-												}}
-												customInput={<CustomDateInput />}
-												minDate={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}
-												filterDate={(date) =>
-													date.getDay() !== 0 && date.getDay() !== 6
-												}
-												isClearable
-												placeholderText="Tanggal Mulai"
-												dateFormat="dd/MM/yyyy"
-											/>
-											{formik.touched.tanggalMulai &&
-												formik.errors.tanggalMulai && (
-													<p className="text-red-500 text-sm mt-1">
-														{formik.errors.tanggalMulai}
-													</p>
-												)}
-											<span className="pb-1">s.d.</span>
-											<DatePicker
-												name="tanggalSelesai"
-												selected={
-													formik.values.tanggalSelesai
-														? new Date(formik.values.tanggalSelesai)
-														: null
-												}
-												onChange={(date) =>
-													formik.setFieldValue("tanggalSelesai", date)
-												}
-												customInput={<CustomDateInput />}
-												minDate={
-													formik.values.tanggalMulai
-														? new Date(formik.values.tanggalMulai)
-														: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-												}
-												filterDate={(date) =>
-													date.getDay() !== 0 && date.getDay() !== 6
-												}
-												isClearable
-												placeholderText="Tanggal Selesai"
-												dateFormat="dd/MM/yyyy"
-											/>
-											{formik.touched.tanggalSelesai &&
-												formik.errors.tanggalSelesai && (
-													<p className="text-red-500 text-sm mt-1">
-														{formik.errors.tanggalSelesai}
-													</p>
-												)}
-										</div>
-									</td>
-									<td className="w-1/6 py-3">Durasi Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td>
-										<span>
-											{durasiCuti > 0 ? `${durasiCuti} hari` : "0 hari"}
-										</span>
-									</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Alasan Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td colSpan={4}>
-										<input
-											type="text"
-											className="p-1 border rounded-md w-full"
-											name="alasanCuti"
-											value={formik.values.alasanCuti}
-											onChange={formik.handleChange}
-											onBlur={formik.handleBlur}
-											aria-invalid="true"
+												formik.setFieldValue("tanggalMulai", date);
+											}}
+											customInput={<CustomDateInput />}
+											minDate={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}
+											filterDate={(date) =>
+												date.getDay() !== 0 && date.getDay() !== 6
+											}
+											isClearable
+											placeholderText="Tanggal Mulai"
+											dateFormat="dd/MM/yyyy"
 										/>
-										{formik.touched.alasanCuti && formik.errors.alasanCuti && (
-											<p className="text-red-500 text-sm">
-												{formik.errors.alasanCuti}
-											</p>
-										)}
-									</td>
-								</tr>
-								<tr className="hover:bg-gray-50">
-									<td className="w-1/6 py-3">Alamat Selama Cuti</td>
-									<td className="w-[20px]">:</td>
-									<td colSpan={4}>
-										<input
-											type="text"
-											className="p-1 border rounded-md w-full"
-											name="alamatCuti"
-											value={formik.values.alamatCuti}
-											onChange={formik.handleChange}
-											onBlur={formik.handleBlur}
-											aria-invalid="true"
+										{formik.touched.tanggalMulai &&
+											formik.errors.tanggalMulai && (
+												<p className="mt-1 text-xs text-red-500">
+													{formik.errors.tanggalMulai}
+												</p>
+											)}
+									</div>
+									<span className="text-gray-500 place-self-center">s.d.</span>
+									<div className="w-full xs:w-auto">
+										<DatePicker
+											name="tanggalSelesai"
+											selected={
+												formik.values.tanggalSelesai
+													? new Date(formik.values.tanggalSelesai)
+													: null
+											}
+											onChange={(date) =>
+												formik.setFieldValue("tanggalSelesai", date)
+											}
+											customInput={<CustomDateInput />}
+											minDate={
+												formik.values.tanggalMulai
+													? new Date(formik.values.tanggalMulai)
+													: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+											}
+											filterDate={(date) =>
+												date.getDay() !== 0 && date.getDay() !== 6
+											}
+											isClearable
+											placeholderText="Tanggal Selesai"
+											dateFormat="dd/MM/yyyy"
 										/>
-										{formik.touched.alamatCuti && formik.errors.alamatCuti && (
-											<p className="text-red-500 text-sm">
-												{formik.errors.alamatCuti}
-											</p>
-										)}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+										{formik.touched.tanggalSelesai &&
+											formik.errors.tanggalSelesai && (
+												<p className="mt-1 text-xs text-red-500">
+													{formik.errors.tanggalSelesai}
+												</p>
+											)}
+									</div>
+								</div>
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:ml-7 lg:ml-19 md:justify-between md:place-self-center md:w-25">
+									<div>Durasi Cuti</div>
+									<div>:</div>
+								</div>
+								<div className="flex w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1 md:place-self-center">
+									<span>
+										{durasiCuti > 0 ? `${durasiCuti} hari` : "0 hari"}
+									</span>
+								</div>
+							</div>
+
+							<div className="flex flex-col md:flex-row md:items-start">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
+									<div>Alasan Cuti</div>
+									<div>:</div>
+								</div>
+								<div className="w-full mt-1 md:ml-5 md:mt-0 md:flex-1">
+									<input
+										name="alasanCuti"
+										value={formik.values.alasanCuti}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										rows="3"
+										placeholder="Alasan cuti anda"
+										className="w-full p-2 transition border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									/>
+								</div>
+							</div>
+							{formik.touched.alasanCuti && formik.errors.alasanCuti && (
+								<p className="flex justify-end -mt-10 pb-3 mr-4 text-xs text-red-500">
+									{formik.errors.alasanCuti}
+								</p>
+							)}
+
+							<div className="flex flex-col md:flex-row md:items-start">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
+									<div>Alamat Cuti</div>
+									<div>:</div>
+								</div>
+								<div className="w-full mt-1 md:ml-5 md:mt-0 md:flex-1">
+									<input
+										type="text"
+										name="alamatCuti"
+										value={formik.values.alamatCuti}
+										onChange={formik.handleChange}
+										onBlur={formik.handleBlur}
+										placeholder="Alamat anda selama cuti (kota)"
+										className="w-full p-2 transition border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									/>
+								</div>
+							</div>
+							{formik.touched.alamatCuti && formik.errors.alamatCuti && (
+								<p className="flex justify-end -mt-10 pb-3 mr-4 text-xs text-red-500">
+									{formik.errors.alamatCuti}
+								</p>
+							)}
+						</div>
 					</BackgroundItem>
 
 					{/* Yang Menyetujui */}
 					<BackgroundItem title="Yang Menyetujui" icon={<FaCheckCircle />}>
-						<p className="font-medium text-black mb-3">
-							Pejabat yang bertanggung jawab menyetujui :
-						</p>
-						<ol className="list-decimal ml-8 space-y-1 font-medium text-black">
-							<li className="py-1">
-								Drh. Arum Kusnila Dewi, M.Si - Kepala Balai Besar
-							</li>
-							<li className="py-1">
-								Agus Ali Hamzah, S.H., M.A.P - Kepala Sub Bagian Umum
-							</li>
-							<li className="py-1">
-								<label htmlFor="ketuaTim">Ketua Tim (Opsional)</label>
-								<Select
-									id="ketuaTim"
-									name="ketuaTim"
-									options={optionsAtasan}
-									placeholder="Cari dan pilih nama ketua tim..."
-									className="react-select-container font-normal text-black"
-									classNamePrefix="react-select"
-									styles={{
-										control: (base) => ({
-											...base,
-											minHeight: "42px",
-											borderColor: "#d1d5db",
-											"&:hover": {
-												borderColor: "#3b82f6",
-											},
-										}),
-									}}
-									value={formik.values.ketuaTim}
-									onChange={(option) => setFieldValue("ketuaTim", option)}
-									isClearable
-								/>
-							</li>
-							<li className="py-1 font-medium text-black">
-								<label htmlFor="kaSapel">
-									Kepala Satuan Pelayanan (Opsional)
-								</label>
-								<Select
-									id="kaSapel"
-									name="kaSapel"
-									options={optionsAtasan}
-									placeholder="Cari dan pilih nama kepala satuan pelayanan..."
-									className="react-select-container font-normal text-black"
-									classNamePrefix="react-select"
-									styles={{
-										control: (base) => ({
-											...base,
-											minHeight: "42px",
-											borderColor: "#d1d5db",
-											"&:hover": {
-												borderColor: "#3b82f6",
-											},
-										}),
-									}}
-									value={formik.values.kaSapel}
-									onChange={(option) => setFieldValue("kaSapel", option)}
-									isClearable
-								/>
-							</li>
-						</ol>
+						<div className="p-4 sm:px-6">
+							<p className="mb-3 font-medium text-black">
+								Pejabat yang bertanggung jawab menyetujui :
+							</p>
+							<ol className="list-decimal ml-4.5 space-y-3 font-medium text-black">
+								<li>
+									<span className="text-gray-500">Kepala Balai Besar :</span>
+									{window.innerWidth < 640 ? <br /> : " "}
+									Drh. Arum Kusnila Dewi, M.Si
+								</li>
+								<li>
+									<span className="text-gray-500">
+										Kepala Sub Bagian Umum :
+									</span>
+									{window.innerWidth < 640 ? <br /> : " "}
+									Agus Ali Hamzah, S.H., M.A.P
+								</li>
+								<li>
+									<label className="text-gray-500" htmlFor="ketuaTim">
+										Ketua Tim (Opsional) :
+									</label>
+									<Select
+										id="ketuaTim"
+										name="ketuaTim"
+										options={optionsAtasan}
+										placeholder="Cari dan pilih nama ketua tim..."
+										className="react-select-container mt-1 font-medium text-black"
+										classNamePrefix="react-select"
+										styles={{
+											control: (base) => ({
+												...base,
+												minHeight: "35px",
+												borderColor: "#d1d5db",
+												"&:hover": {
+													borderColor: "#3b82f6",
+												},
+											}),
+										}}
+										value={formik.values.ketuaTim}
+										onChange={(option) => setFieldValue("ketuaTim", option)}
+										isClearable
+									/>
+								</li>
+								<li>
+									<label className="text-gray-500" htmlFor="kaSapel">
+										Kepala Satuan Pelayanan (Opsional) :
+									</label>
+									<Select
+										id="kaSapel"
+										name="kaSapel"
+										options={optionsAtasan}
+										placeholder="Cari dan pilih nama kepala satuan pelayanan..."
+										className="react-select-container mt-1 font-medium text-black"
+										classNamePrefix="react-select"
+										styles={{
+											control: (base) => ({
+												...base,
+												minHeight: "35px",
+												borderColor: "#d1d5db",
+												"&:hover": {
+													borderColor: "#3b82f6",
+												},
+											}),
+										}}
+										value={formik.values.kaSapel}
+										onChange={(option) => setFieldValue("kaSapel", option)}
+										isClearable
+									/>
+								</li>
+							</ol>
+						</div>
 					</BackgroundItem>
 
 					{/* Formulir Pelimpahan Tugas */}
 					<BackgroundItem
 						title="Formulir Pelimpahan Tugas (Opsional)"
 						icon={<FaTasks />}>
-						<p className="mb-3 font-medium text-black">
-							Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan yang
-							berkaitan dengan kegiatan teknis kepada :
-						</p>
-						<table className="w-full font-medium text-black">
-							<tbody>
-								<tr>
-									<td className="w-1/5 py-2">Nama / NIP</td>
-									<td className="w-[20px]">:</td>
-									<td>
-										<div className="flex gap-2">
-											<div className="w-1/2">
+						<div className="p-4 sm:px-6">
+							<p className="mb-4 font-medium text-black text-justify">
+								Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan
+								yang berkaitan dengan kegiatan teknis kepada :
+							</p>
+
+							<div className="space-y-3 md:space-y-2">
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Nama / NIP</div>
+										<div>:</div>
+									</div>
+									<div className="font-medium text-black md:ml-1 md:flex-1">
+										<div className="flex flex-col gap-y-1 md:flex-row md:items-center md:gap-2">
+											<div className="w-full md:w-3/5 lg:w-1/2">
+												{/* Lebar Select di desktop */}
 												<Select
 													name="pelimpahanNama"
 													options={optionsPegawai}
-													placeholder="Ketik Nama Pegawai..."
+													placeholder="Ketik Nama Pegawai . . ."
 													className="react-select-container"
 													classNamePrefix="react-select"
 													value={optionsPegawai.find(
@@ -559,150 +589,166 @@ const FormPengajuanCuti = () => {
 													)}
 													onChange={(option) => {
 														if (option === null) {
-															setFieldValue("idPenerimaTugas", null);
-															setFieldValue("pelimpahanNama", "");
-															setFieldValue("pelimpahanNip", "");
-															setFieldValue("pelimpahanPangkat", "");
-															setFieldValue("pelimpahanGolongan", "");
-															setFieldValue("pelimpahanJabatan", "");
-															setFieldValue("pelimpahanSatuanKerja", "");
+															formik.setFieldValue("idPenerimaTugas", null);
+															formik.setFieldValue("pelimpahanNama", "");
+															formik.setFieldValue("pelimpahanNip", "");
+															formik.setFieldValue("pelimpahanPangkat", "");
+															formik.setFieldValue("pelimpahanGolongan", "");
+															formik.setFieldValue("pelimpahanJabatan", "");
+															formik.setFieldValue("pelimpahanSatuanKerja", "");
 														} else {
-															setFieldValue("idPenerimaTugas", option.value);
-															setFieldValue("pelimpahanNama", option.label);
-															setFieldValue("pelimpahanNip", option.nip);
-															setFieldValue(
+															formik.setFieldValue(
+																"idPenerimaTugas",
+																option.value
+															);
+															formik.setFieldValue(
+																"pelimpahanNama",
+																option.label
+															);
+															formik.setFieldValue("pelimpahanNip", option.nip);
+															formik.setFieldValue(
 																"pelimpahanPangkat",
 																option.pangkat
 															);
-															setFieldValue(
+															formik.setFieldValue(
 																"pelimpahanGolongan",
 																option.golongan
 															);
-															setFieldValue(
+															formik.setFieldValue(
 																"pelimpahanJabatan",
 																option.jabatan
 															);
-															setFieldValue(
+															formik.setFieldValue(
 																"pelimpahanSatuanKerja",
 																option.satuanKerja
 															);
 														}
 													}}
 													isClearable
+													styles={{
+														// Sesuaikan styling react-select Anda
+														control: (base) => ({
+															...base,
+															minHeight: "38px",
+															borderColor: "#d1d5db",
+															"&:hover": { borderColor: "#9ca3af" },
+														}),
+														menu: (base) => ({ ...base, zIndex: 20 }),
+													}}
 												/>
 											</div>
 											{formik.values.pelimpahanNama && (
-												<span className="p-1">
+												<span className="mt-1 md:mt-0 text-gray-700">
 													/ {formik.values.pelimpahanNip}
 												</span>
 											)}
 										</div>
-									</td>
-								</tr>
-								<tr>
-									<td className="w-1/5 py-2">Pangkat / Golongan / Jabatan</td>
-									<td>:</td>
-									<td>
-										{formik.values.pelimpahanNama && (
-											<span className="p-1">
-												{formik.values.pelimpahanPangkat} /{" "}
-												{formik.values.pelimpahanGolongan} /{" "}
-												{formik.values.pelimpahanJabatan}
-											</span>
-										)}
-									</td>
-								</tr>
-								<tr>
-									<td className="w-1/5 py-2">Satuan Pelayanan</td>
-									<td>:</td>
-									<td>
-										{formik.values.pelimpahanNama && (
-											<span className="p-1">
-												{formik.values.pelimpahanSatuanKerja}
-											</span>
-										)}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+									</div>
+								</div>
+
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Pangkat / Golongan / Jabatan</div>
+										<div>:</div>
+									</div>
+									{formik.values.pelimpahanNama && (
+										<div className="font-medium text-black md:ml-1 md:flex-1">
+											{`${formik.values.pelimpahanPangkat} / ${formik.values.pelimpahanGolongan} / ${formik.values.pelimpahanJabatan}`}
+										</div>
+									)}
+								</div>
+
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Satuan Pelayanan</div>
+										<div>:</div>
+									</div>
+									<div className="font-medium text-black md:ml-1 md:flex-1">
+										{formik.values.pelimpahanSatuanKerja}
+									</div>
+								</div>
+							</div>
+						</div>
 					</BackgroundItem>
 
 					{/* Lampiran */}
 					<BackgroundItem title="Lampiran (Opsional)" icon={<FaFileAlt />}>
-						<label className="w-full border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
-							<FaPaperclip />
-							<span className="text-sm text-black text-center">
-								{formik.values.lampiran ? (
-									formik.values.lampiran instanceof File ? (
-										<span className="font-medium text-blue-600">
-											File terpilih: {formik.values.lampiran.name}
-										</span>
+						<div className="p-4 sm:px-6">
+							<label className="w-full border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
+								<FaPaperclip />
+								<span className="text-sm text-black text-center">
+									{formik.values.lampiran ? (
+										formik.values.lampiran instanceof File ? (
+											<span className="font-medium text-blue-600">
+												File terpilih: {formik.values.lampiran.name}
+											</span>
+										) : (
+											<>
+												<span className="font-medium text-blue-600">
+													File terlampir: {formik.values.lampiran}
+												</span>
+												<br />
+												<a
+													href={`http://localhost:3000/uploads/lampiran/${formik.values.lampiran}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-sm text-blue-500 underline">
+													Lihat lampiran
+												</a>
+											</>
+										)
 									) : (
 										<>
-											<span className="font-medium text-blue-600">
-												File terlampir: {formik.values.lampiran}
+											<span className="text-blue-500 font-medium mr-1">
+												Klik untuk upload
 											</span>
-											<br />
-											<a
-												href={`http://localhost:3000/uploads/lampiran/${formik.values.lampiran}`}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-sm text-blue-500 underline">
-												Lihat lampiran
-											</a>
+											atau drag file ke sini
 										</>
-									)
-								) : (
-									<>
-										<span className="text-blue-500 font-medium">
-											Klik untuk upload
-										</span>{" "}
-										atau drag file ke sini
-									</>
-								)}
-							</span>
-							<span className="text-xs text-gray-400">
-								Format: PDF, JPG, PNG (maks. 5MB)
-							</span>
-							<input
-								ref={fileInputRef}
-								name="lampiran"
-								type="file"
-								accept=".pdf,.jpg,.jpeg,.png"
-								className="hidden"
-								onChange={(event) => {
-									formik.setFieldValue(
-										"lampiran",
-										event.currentTarget.files[0]
-									);
-								}}
-							/>
-						</label>
-						{formik.values.lampiran && (
-							<div className="flex justify-center mt-2">
-								<button
-									type="button"
-									onClick={() => {
-										formik.setFieldValue("lampiran", null);
-										if (fileInputRef.current) {
-											fileInputRef.current.value = "";
-										}
+									)}
+								</span>
+								<span className="text-xs text-gray-400">
+									Format: PDF, JPG, PNG (maks. 5MB)
+								</span>
+								<input
+									ref={fileInputRef}
+									name="lampiran"
+									type="file"
+									accept=".pdf,.jpg,.jpeg,.png"
+									className="hidden"
+									onChange={(event) => {
+										formik.setFieldValue(
+											"lampiran",
+											event.currentTarget.files[0]
+										);
 									}}
-									className="inline-flex items-center px-2 py-1.5 bg-red-600 text-white text-xs font-medium rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all">
-									<FaTrashAlt className="mr-2" />
-									Hapus lampiran
-								</button>
-							</div>
-						)}
-						{formik.touched.lampiran && formik.errors.lampiran && (
-							<p className="text-red-500 text-sm mt-1">
-								{formik.errors.lampiran}
-							</p>
-						)}
+								/>
+							</label>
+							{formik.values.lampiran && (
+								<div className="flex justify-center mt-2">
+									<button
+										type="button"
+										onClick={() => {
+											formik.setFieldValue("lampiran", null);
+											if (fileInputRef.current) {
+												fileInputRef.current.value = "";
+											}
+										}}
+										className="inline-flex items-center px-2 py-1.5 bg-red-600 text-white text-xs font-medium rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all">
+										<FaTrashAlt className="mr-2" />
+										Hapus lampiran
+									</button>
+								</div>
+							)}
+							{formik.touched.lampiran && formik.errors.lampiran && (
+								<p className="text-red-500 text-sm mt-1">
+									{formik.errors.lampiran}
+								</p>
+							)}
+						</div>
 					</BackgroundItem>
 
 					{/* Tombol */}
-					<div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+					<div className="flex flex-col sm:flex-row justify-between gap-5 mt-8">
 						<button
 							type="button"
 							onClick={() => handleSubmitCuti(formik.values, true)}

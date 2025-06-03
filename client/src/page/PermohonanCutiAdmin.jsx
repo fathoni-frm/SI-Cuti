@@ -177,28 +177,33 @@ const PermohonanCutiAdmin = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full">
-				<div className="flex justify-between mb-4">
-					<h1 className="text-2xl font-bold">Permohonan Cuti</h1>
+			<div className="p-4 sm:p-6 w-full">
+				<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+					<h1 className="text-center sm:text-left text-xl lg:text-2xl font-bold text-gray-800">
+						Permohonan Cuti
+					</h1>
 					<button
 						onClick={() => exportToExcel()}
-						className="bg-[#2c3e50] text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
-						<LuDownload className="text-xl text-white" /> Ekspor Data
+						className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start gap-2 cursor-pointer transition-colors duration-150 w-full sm:w-auto text-sm sm:text-base">
+						<LuDownload className="text-lg sm:text-xl text-white flex-shrink-0" />
+						Ekspor Data
 					</button>
 				</div>
 				<BackgroundItem>
-					<h2 className="text-2xl font-bold mb-5 text-center">
-						Daftar Permohonan Cuti
-					</h2>
-					<TabelPermohonan
-						data={currentItems}
-						showQuota={true}
-						showPagination={true}
-						lihat={false}
-						currentPage={currentPage}
-						totalPages={totalPages}
-						onPageChange={setCurrentPage}
-					/>
+					<div className="p-4 sm:p-6">
+						<h2 className="text-xl sm:text-2xl font-bold mb-5 text-center">
+							Daftar Permohonan Cuti
+						</h2>
+						<TabelPermohonan
+							data={currentItems}
+							showQuota={true}
+							showPagination={true}
+							lihat={false}
+							currentPage={currentPage}
+							totalPages={totalPages}
+							onPageChange={setCurrentPage}
+						/>
+					</div>
 				</BackgroundItem>
 			</div>
 		</MainLayout>

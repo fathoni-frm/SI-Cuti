@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import Spinner from "./Spinner";
 
 // Utility functions
 const processHolidayData = (data, currentYear) => {
@@ -14,7 +15,6 @@ const processHolidayData = (data, currentYear) => {
 			return {
 				date,
 				name: holidayData.summary[0],
-				isNational: holidayData.description.includes("Hari libur nasional"),
 				isPast: holidayDate < today,
 				isToday: holidayDate.getTime() === today.getTime(),
 			};
@@ -38,19 +38,22 @@ const HolidayItem = React.memo(({ holiday, itemRef }) => {
 	return (
 		<div
 			ref={itemRef}
-			className={`relative pl-4 pb-4 transition-all duration-200 ${
+			className={`relative pl-2 pb-4 transition-all duration-200 ${
 				isPast ? "opacity-80" : ""
 			}`}>
-			<div className="absolute -left-1.5 -top-3 h-full w-0.5 bg-white/30"></div>
+			{/* Garis */}
+			<div className="absolute -left-1.5 h-full w-0.5 bg-white/30"></div>
+			{/* Titik */}
 			<div
 				className={`absolute left-[-10px] top-1.5 w-2.5 h-2.5 rounded-full ${
 					isPast ? "bg-gray-500" : "bg-yellow-500"
 				}`}></div>
+			{/* Isi */}
 			<div className={`${isPast ? "text-gray-300" : "text-white"}`}>
 				<p className="font-bold text-sm">
 					{formatHolidayDate(date)}
 					{isToday && (
-						<span className="ml-2 text-xs bg-yellow-400 text-gray-800 px-1.5 py-0.5 rounded-full">
+						<span className="ml-2 text-xs bg-yellow-400 text-gray-800 px-0.5 rounded">
 							HARI INI
 						</span>
 					)}
@@ -66,9 +69,8 @@ const NationalHolidays = () => {
 	const [holidays, setHolidays] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const currentYear = new Date().getFullYear();
-	const containerRef = useRef(null);
 	const todayRef = useRef(null);
-
+	
 	const fetchHolidays = useCallback(async () => {
 		try {
 			const res = await fetch(
@@ -81,63 +83,50 @@ const NationalHolidays = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [currentYear]);
+	}, []);
 
 	useEffect(() => {
 		fetchHolidays();
 	}, [fetchHolidays]);
 
 	useEffect(() => {
-		if (!loading && todayRef.current) {
-			setTimeout(() => {
-				todayRef.current.scrollIntoView({
-					behavior: "smooth",
-					block: "nearest",
-				});
-			}, 100);
+		if (!loading && todayRef.current && window.innerWidth >= 1024) {
+			const timer = setTimeout(() => {
+				todayRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 200);
+            return () => clearTimeout(timer);
 		}
 	}, [loading]);
 
-	const findActiveHolidayIndex = () => {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-
-		return holidays.findIndex(({ isToday, isPast }) => isToday || !isPast);
-	};
-
-	const activeIndex = findActiveHolidayIndex();
-
+	const activeIndex = holidays.findIndex(({ isToday, isPast }) => isToday || !isPast);
+	
 	return (
-		<div className="w-[260px] flex flex-col h-full bg-[#1E2D3B]">
-			<div className="py-4 pr-4 text-white h-full flex flex-col shadow-lg">
-				<h2 className="text-lg font-bold mb-4 ml-4">Libur Nasional</h2>
+		<div className="w-full lg:w-[250px] lg:flex-shrink-0 flex flex-col bg-[#1E2D3B]">
+			<div className="py-4 text-white h-full flex flex-col">
+				<h2 className="text-lg text-center lg:text-left font-bold mb-4 ml-4 flex-shrink-0">
+					Libur Nasional
+				</h2>
 
 				{loading ? (
-					<div className="flex-1 flex items-center justify-center">
-						<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-					</div>
+					<Spinner />
 				) : (
-					<div
-						className="flex-1 min-h-0 relative overflow-hidden"
-						ref={containerRef}>
-						<div className="absolute inset-0 overflow-y-auto pl-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-							<div className="pr-2">
-								{holidays.length > 0 ? (
-									holidays.map((holiday, index) => (
-										<HolidayItem
-											key={holiday.date}
-											holiday={holiday}
-											itemRef={index === activeIndex ? todayRef : null}
-										/>
-									))
-								) : (
-									<div className="h-full flex items-center justify-center">
-										<p className="text-sm italic">
-											Tidak ada data libur nasional.
-										</p>
-									</div>
-								)}
-							</div>
+					<div className="flex-1 min-h-0 relative">
+						<div className="relative lg:absolute lg:inset-0 lg:overflow-y-auto pl-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+							{holidays.length > 0 ? (
+								holidays.map((holiday, index) => (
+									<HolidayItem
+										key={holiday.date}
+										holiday={holiday}
+										itemRef={index === activeIndex ? todayRef : null}
+									/>
+								))
+							) : (
+								<div className="h-full flex items-center justify-center">
+									<p className="text-sm italic">
+										Terjadi kesalahan saat memuat data hari libur.
+									</p>
+								</div>
+							)}
 						</div>
 					</div>
 				)}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
@@ -10,17 +10,20 @@ import {
 	FaChevronUp,
 	FaUserCog,
 	FaSignOutAlt,
+	FaBars,
+	FaTimes,
 } from "react-icons/fa";
 import { MdMarkEmailRead } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
 
-const Navbar = () => {
+const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 	const navigate = useNavigate();
 	const { user, detailPegawai, logout, isLoading } = useAuthStore();
-	const dropdownRef = useRef(null);
+	const notifDropdownRef = useRef(null);
+	const profileDropdownRef = useRef(null);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const [notifikasi, setNotifikasi] = useState([]);
 	const [notifOpen, setNotifOpen] = useState(false);
+	const [notifikasi, setNotifikasi] = useState([]);
 
 	if (isLoading || !detailPegawai) {
 		return <Spinner />;
@@ -115,98 +118,136 @@ const Navbar = () => {
 	}, []);
 
 	useEffect(() => {
-		const handleClickOutside = (event) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+		function handleClickOutside(event) {
+			if (
+				notifDropdownRef.current &&
+				!notifDropdownRef.current.contains(event.target)
+			) {
+				setNotifOpen(false);
+			}
+			if (
+				profileDropdownRef.current &&
+				!profileDropdownRef.current.contains(event.target)
+			) {
 				setDropdownOpen(false);
 			}
-		};
+		}
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
 	return (
-		<nav className="bg-[#133130] flex justify-between items-center px-6 py-3 text-white">
-			<div
-				className="flex items-center cursor-pointer"
-				onClick={() => navigate("/dashboard")}>
-				<img
-					src="https://bbkhit.com/public/img/logo.png"
-					alt="logo"
-					className="h-10 w-10 rounded-full"
-				/>
-				<span className="ml-4 text-2xl font-medium">SI Cuti</span>
-			</div>
+		<nav className="bg-[#133130] flex justify-between items-center px-3 sm:px-4 py-3 text-white fixed top-0 left-0 right-0 z-40 h-16 shadow-md">
 			<div className="flex items-center">
-				<div className="relative mr-4">
-					<div
-						className="relative cursor-pointer group"
-						onClick={() => setNotifOpen(!notifOpen)}>
-						<FaBell className="text-xl text-yellow-500 group-hover:text-yellow-600" />
+				{/* Tombol Toggle Sidebar (untuk semua ukuran layar) */}
+				<button
+					onClick={toggleSidebar}
+					className={`p-2 mr-1 sm:mr-2 rounded-md hover:bg-gray-700 focus:outline-none active:bg-gray-600 cursor-pointer ${isSidebarOpen ? "text-gray-500" : "text-white"}`}
+					aria-label="Toggle sidebar"
+					title={isSidebarOpen ? "Tutup Sidebar" : "Buka Sidebar"}>
+					{/* Ikon berubah berdasarkan state sidebar terbuka/tertutup */}
+					
+						<FaBars className="h-5 w-5 sm:h-6 sm:w-6" />
+				
+				</button>
+
+				{/* Logo dan Nama Aplikasi */}
+				<Link to="/dashboard" className="flex items-center cursor-pointer">
+					<img
+						src="https://bbkhit.com/public/img/logo.png" // Ganti dengan path logo Anda
+						alt="Logo Aplikasi"
+						className="h-8 w-8 sm:h-9 sm:w-9 rounded-full"
+					/>
+					{/* Teks "SI Cuti" tampil di layar sm ke atas */}
+					<span className="ml-2 text-lg sm:text-xl font-semibold sm:inline">
+						SI Cuti
+					</span>
+				</Link>
+			</div>
+
+			{/* Item di sisi kanan Navbar */}
+			<div className="flex items-center space-x-2 sm:space-x-4">
+				{/* Notifikasi Bell */}
+				<div className="relative" ref={notifDropdownRef}>
+					<button
+						onClick={() => setNotifOpen(!notifOpen)}
+						className="relative p-2 rounded-full hover:bg-gray-700 group focus:outline-none cursor-pointer"
+						aria-label="Notifikasi">
+						<FaBell className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400 group-hover:text-yellow-300" />
 						{notifikasi.some((n) => !n.isRead) && (
-							<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 py-0 rounded-full group-hover:bg-red-600 group-hover:text-gray-400">
+							<span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 bg-red-500 text-white text-[10px] sm:text-xs w-4 h-4 sm:w-4.5 sm:h-4.5 flex items-center justify-center rounded-full group-hover:bg-red-600">
 								{notifikasi.filter((n) => !n.isRead).length}
 							</span>
 						)}
-					</div>
+					</button>
 					{notifOpen && (
-						<div
-							className={`absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 origin-top-right transition transform duration-200 ${
-								notifOpen
-									? "scale-100 opacity-100"
-									: "scale-95 opacity-0 pointer-events-none"
-							}`}
-							style={{ overflow: "hidden" }}>
+						<div className="absolute -right-15 mt-2 w-72 sm:right-0 sm:w-80 max-h-[44vh] overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 origin-top-right">
+							<div className="flex p-2 border-b border-gray-200 justify-between items-center sticky top-0 bg-white">
+								<h3 className="text-sm font-semibold text-gray-700">
+									Notifikasi
+								</h3>
+								<div className="space-x-2">
+									<button
+										onClick={handleTandaiSemuaDibaca}
+										className="text-xs text-blue-500 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+										title="Tandai semua telah dibaca"
+										disabled={!notifikasi.some((n) => !n.isRead)}>
+										<MdMarkEmailRead size={18} />
+									</button>
+									<button
+										onClick={handleHapusNotifikasiTerbaca}
+										className="text-xs text-red-500 hover:text-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+										title="Hapus semua yang telah dibaca"
+										disabled={!notifikasi.some((n) => n.isRead)}>
+										<IoMdTrash size={18} />
+									</button>
+								</div>
+							</div>
 							{notifikasi.length === 0 ? (
-								<p className="text-center text-sm text-gray-500 py-4">
-									Tidak ada notifikasi
+								<p className="text-center text-sm text-gray-500 py-10">
+									Tidak ada notifikasi baru.
 								</p>
 							) : (
-								<div className="max-h-80 overflow-y-auto">
-									<div className="text-lg flex items-center justify-end text-right px-4 p-1.5 border-b-1 border-black space-x-3 bg-gray-200">
-										<button
-											onClick={handleTandaiSemuaDibaca}
-											className="text-blue-500 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-											title="Tandai semua telah dibaca"
-											disabled={!notifikasi.some((n) => !n.isRead)}>
-											<MdMarkEmailRead />
-										</button>
-										<button
-											onClick={handleHapusNotifikasiTerbaca}
-											className="text-red-500 hover:text-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-											title="Hapus semua yang telah dibaca"
-											disabled={!notifikasi.some((n) => n.isRead)}>
-											<IoMdTrash />
-										</button>
-									</div>
+								<div className="divide-y divide-gray-100">
 									{notifikasi.map((notif) => (
 										<div
 											key={notif.id}
-											onClick={() => {
-												setNotifOpen(false);
-												handleBacaNotifikasi(notif.id, notif.idPengajuan);
-											}}
-											className={`px-4 py-2 text-sm border-b border-gray-400 cursor-pointer transition-all duration-200 hover:bg-gray-100 relative
-											${!notif.isRead ? "bg-yellow-50 font-semibold text-black" : "text-gray-600"}`}>
-											<span className="absolute top-2 right-4 text-xs text-gray-400">
-												{new Date(notif.createdAt)
-													.toLocaleTimeString("id-ID", {
-														hour: "2-digit",
-														minute: "2-digit",
-														hour12: false,
-													})
-													.replace(".", ":") +
-													" • " +
-													new Date(notif.createdAt).toLocaleDateString(
+											onClick={() =>
+												handleBacaNotifikasi(notif.id, notif.idPengajuan)
+											}
+											className={`p-3 cursor-pointer transition-colors duration-150 hover:bg-gray-100
+						  					${!notif.isRead ? "bg-sky-100" : "bg-white"}`}>
+											<div className="flex justify-between items-start">
+												<div className="flex items-center">
+													<p
+														className={`text-xs sm:text-sm font-semibold ${
+															!notif.isRead ? "text-sky-700" : "text-gray-800"
+														}`}>
+														{notif.judul}
+													</p>
+													{!notif.isRead && (
+														<span className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0 ml-1 mt-0.5"></span>
+													)}
+												</div>
+												<p className="text-xs sm:text-sm text-gray-400 text-right">
+													{new Date(notif.createdAt).toLocaleDateString(
 														"id-ID",
 														{
-															day: "2-digit",
+															day: "numeric",
 															month: "short",
-															year: "numeric",
+														}
+													)}{" "}
+													-{" "}
+													{new Date(notif.createdAt).toLocaleTimeString(
+														"id-ID",
+														{
+															hour: "2-digit",
+															minute: "2-digit",
 														}
 													)}
-											</span>
-											<p className="font-semibold">{notif.judul}</p>
-											<p className="text-xs text-gray-600 mt-0.5">
+												</p>
+											</div>
+											<p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
 												{notif.pesan}
 											</p>
 										</div>
@@ -216,38 +257,50 @@ const Navbar = () => {
 						</div>
 					)}
 				</div>
-				<div className="flex items-center">
-					<div className="flex items-center relative" ref={dropdownRef}>
-						<div
-							className="flex items-center cursor-pointer"
-							onClick={() => setDropdownOpen(!dropdownOpen)}>
-							{/* <img
-								src="https://storage.googleapis.com/a1aa/image/XBXRVUF75QQnMaQt9gHGU1As5wT3qbrv3HIR6KqqS88.jpg"
-								alt="Admin Profile"
-								className="h-10 w-10 rounded-full"
-							/> */}
-							<span className="ml-2">Halo, {detailPegawai.nama}</span>
-							{dropdownOpen ? (
-								<FaChevronUp className="ml-2" />
-							) : (
-								<FaChevronDown className="ml-2" />
-							)}
-						</div>
 
-						{dropdownOpen && (
-							<div className="absolute top-6 -right-4 mt-2 w-44 bg-white text-black rounded-md shadow-lg py-2 z-50">
-								<div className="absolute -top-1 right-4 w-3 h-3 bg-white border-t border-l border-gray-300 rotate-45"></div>
-								<button className="flex items-center gap-2 px-1.5 py-0.5 mx-auto mt-0.5  hover:bg-gray-300 transition-all duration-150 rounded-md cursor-pointer">
-									<FaUserCog /> Pengaturan Profil
-								</button>
-								<button
-									className="flex items-center gap-2 px-10 py-0.5 mx-auto mt-2 bg-red-700 text-white hover:bg-red-300 transition-all duration-150 rounded-md cursor-pointer"
-									onClick={handleLogout}>
-									<FaSignOutAlt /> Logout
-								</button>
-							</div>
+				{/* Profil Pengguna Dropdown */}
+				<div className="relative" ref={profileDropdownRef}>
+					<button
+						onClick={() => setDropdownOpen(!dropdownOpen)}
+						className="flex items-center p-1 rounded-full hover:bg-gray-700 focus:outline-none cursor-pointer"
+						aria-label="Menu Pengguna">
+						<img
+							src={
+								detailPegawai.foto ||
+								"https://storage.googleapis.com/a1aa/image/XBXRVUF75QQnMaQt9gHGU1As5wT3qbrv3HIR6KqqS88.jpg"
+							}
+							alt="Foto Profil"
+							className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
+						/>
+						<span className="ml-1.5 text-sm font-medium hidden sm:inline">
+							Halo, {detailPegawai.nama.split(" ")[0]}
+						</span>
+						{dropdownOpen ? (
+							<FaChevronUp className="ml-1 sm:ml-1.5 h-3 w-3 text-gray-300" />
+						) : (
+							<FaChevronDown className="ml-1 sm:ml-1.5 h-3 w-3 text-gray-300" />
 						)}
-					</div>
+					</button>
+					{dropdownOpen && (
+						<div className="absolute right-0 w-48 bg-white rounded-md shadow-xl py-1 mt-2 z-50 border border-gray-200 origin-top-right">
+							{/* Panah kecil di atas dropdown */}
+							{/* <div className="absolute -top-1.5 right-4 w-3 h-3 bg-white border-t border-l border-gray-200 rotate-45"></div> */}
+							<Link
+								to="/profil-pengaturan" // Ganti dengan path yang benar
+								onClick={() => setDropdownOpen(false)}
+								className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors duration-150">
+								<FaUserCog className="h-4 w-4" /> Pengaturan
+							</Link>
+							<Link
+								onClick={() => {
+									setDropdownOpen(false);
+									handleLogout();
+								}}
+								className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-200 transition-colors duration-150">
+								<FaSignOutAlt className="h-4 w-4" /> Logout
+							</Link>
+						</div>
+					)}
 				</div>
 			</div>
 		</nav>

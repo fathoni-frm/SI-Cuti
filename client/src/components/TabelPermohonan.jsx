@@ -72,68 +72,62 @@ const TabelPermohonan = ({
 	return (
 		<>
 			<div
-				className={`flex max-w-full border border-gray-200 rounded-b-lg shadow-sm overflow-auto ${
-					isDashboard
-						? ""
-						: "rounded-t-lg"
-				}`}>
-				<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
+				className={`border-gray-200 rounded-b-lg shadow-sm overflow-x-auto ${isDashboard ? "" : "rounded-t-lg border"}`}>
+				<table className="w-full text-sm">
 					<thead className="bg-gray-200">
-						<tr className="text-sm text-black tracking-wider">
-							<th className="w-[35px] px-1 py-2">NO</th>
-							<th className="w-[140px] px-1 py-2">TANGGAL PENGAJUAN</th>
-							<th className="w-[200px] px-1 py-2">NAMA PEMOHON</th>
-							<th className="w-[100px] px-1 py-2">JENIS CUTI</th>
-							<th className="w-[100px] px-1 py-2">MULAI</th>
-							<th className="w-[100px] px-1 py-2">AKHIR</th>
+						<tr className="text-xs text-black tracking-wider uppercase">
+							<th className="px-2 py-3">NO</th>
+							<th className="px-2 py-3">TANGGAL PENGAJUAN</th>
+							<th className="px-2 py-3">NAMA PEMOHON</th>
+							<th className="px-2 py-3">JENIS CUTI</th>
+							<th className="px-2 py-3">MULAI</th>
+							<th className="px-2 py-3">AKHIR</th>
 							{showQuota && (
 								<>
-									<th className="w-[60px] px-1 py-2">TOTAL KUOTA</th>
-									<th className="w-[60px] px-1 py-2">SISA KUOTA</th>
+									<th className="px-2 py-3">TOTAL KUOTA</th>
+									<th className="px-2 py-3">SISA KUOTA</th>
 								</>
 							)}
-							<th className="w-[60px] px-1 py-2">STATUS</th>
-							<th className="w-[40px] px-1 py-2">AKSI</th>
+							<th className="px-2 py-3">STATUS</th>
+							<th className="px-2 py-3">AKSI</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
 						{data.map((item, index) => (
 							<tr
 								key={item.idPengajuan || item.id}
-								className={`text-sm text-gray-700 text-center ${
-									index % 2 === 0 ? "bg-white" : "bg-gray-50"
-								} hover:bg-gray-100`}>
-								<td className="px-1 py-2 font-medium text-black break-words whitespace-normal">
+								className={`text-gray-700 text-center ${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}>
+								<td className="px-2 py-2 font-medium text-black whitespace-nowrap">
 									{index + 1}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalPengajuan)}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{item.Pegawai.nama}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{item.jenisCuti}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalMulai, { showTime: false })}
 								</td>
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									{formatGMT8(item.tanggalSelesai, { showTime: false })}
 								</td>
 								{showQuota && (
 									<>
-										<td className="px-1 py-2 break-words whitespace-normal">
+										<td className="px-2 py-2 whitespace-nowrap">
 											{item.totalKuota}
 										</td>
-										<td className="px-1 py-2 break-words whitespace-normal">
+										<td className="px-2 py-2 whitespace-nowrap">
 											{item.sisaKuota}
 										</td>
 									</>
 								)}
-								<td className="px-1 py-2 break-words whitespace-normal">
+								<td className="px-2 py-2 whitespace-nowrap">
 									<span
-										className={`text-sm font-semibold px-3 py-1 rounded-full ${
+										className={`text-xs font-semibold px-2 py-1 rounded-full ${
 											item.status === "Disetujui"
 												? "bg-green-100 text-green-800"
 												: item.status === "Ditolak"
@@ -147,7 +141,7 @@ const TabelPermohonan = ({
 										{item.status}
 									</span>
 								</td>
-								<td className="py-3 relative">
+								<td className="px-2 py-2 relative">
 									{lihat ? (
 										<button
 											onClick={(e) => {
@@ -162,7 +156,7 @@ const TabelPermohonan = ({
 										<>
 											<button
 												onClick={() => toggleMenu(index)}
-												className="text-gray-500 text-xl hover:text-gray-700 cursor-pointer mx-auto">
+												className="text-gray-500 p-1 rounded-xl hover:text-gray-700 hover:bg-gray-200 cursor-pointer">
 												<FaEllipsisV />
 											</button>
 

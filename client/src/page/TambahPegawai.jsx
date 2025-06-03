@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import { initialValues, validationSchemaAdd } from "../schemas/formPegawaiSchema";
+import {
+	initialValues,
+	validationSchemaAdd,
+} from "../schemas/formPegawaiSchema";
 import axios from "../api/axios";
 import { Formik } from "formik";
 import { toast } from "react-toastify";
@@ -129,32 +132,34 @@ const TambahPegawai = () => {
 
 		return () => clearInterval(interval);
 	}, [refreshToken]);
-	  
+
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full bg-gray-100">
-				<h1 className="text-2xl font-bold mb-4">
+				<h1 className="text-lg lg:text-xl font-bold mb-4">
 					<span className="text-gray-500">Manajemen Pegawai</span> / Tambah
 					Pegawai
 				</h1>
 
 				<BackgroundItem>
-					<Formik
-						initialValues={initialValues}
-						validationSchema={validationSchemaAdd}
-						onSubmit={handleSubmit}>
-						{(formik) => (
-							<FormDataPegawai formik={formik}>
-								<button
-									type="submit"
-									className="flex justify-self-end items-center bg-green-600 text-white px-4 py-2 gap-2 rounded-lg hover:bg-green-700 shadow cursor-pointer"
-									disabled={formik.isSubmitting}>
-									<FaUserPlus className="text-lg" />
-									{formik.isSubmitting ? "Menyimpan..." : "Tambah Data"}
-								</button>
-							</FormDataPegawai>
-						)}
-					</Formik>
+					<div className="p-4 sm:p-6">
+						<Formik
+							initialValues={initialValues}
+							validationSchema={validationSchemaAdd}
+							onSubmit={handleSubmit}>
+							{(formik) => (
+								<FormDataPegawai formik={formik}>
+									<button
+										type="submit"
+										className="flex justify-self-end items-center bg-green-600 text-white px-4 py-2 gap-2 rounded-lg hover:bg-green-700 shadow cursor-pointer"
+										disabled={formik.isSubmitting}>
+										<FaUserPlus className="text-lg" />
+										{formik.isSubmitting ? "Menyimpan..." : "Tambah Data"}
+									</button>
+								</FormDataPegawai>
+							)}
+						</Formik>
+					</div>
 				</BackgroundItem>
 			</div>
 		</MainLayout>

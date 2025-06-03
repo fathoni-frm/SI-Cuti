@@ -35,20 +35,24 @@ const RiwayatPengajuanCuti = () => {
 
 	return (
 		<MainLayout role={user.role}>
-			<div className="p-6 w-full">
-				<div className="flex justify-between">
-					<h1 className="text-2xl font-bold mb-4">Riwayat Pengajuan Cuti</h1>
+			<div className="p-4 sm:p-6 w-full">
+				<div className="flex justify-between mb-6">
+					<h1 className="text-center sm:text-left text-xl lg:text-2xl font-bold text-gray-800">
+						Riwayat Pengajuan Cuti
+					</h1>
 				</div>
 				<BackgroundItem>
-					<h2 className="text-2xl font-bold mb-4 text-center">
-						Riwayat Pengajuan Cuti Anda
-					</h2>
-					<TabelRiwayat
-						data={currentItems}
-						currentPage={currentPage}
-						totalPages={totalPages}
-						onPageChange={setCurrentPage}
-					/>
+					<div className="p-4 sm:p-6">
+						<h2 className="text-xl sm:text-2xl font-bold mb-5 text-center">
+							Riwayat Pengajuan Cuti Anda
+						</h2>
+						<TabelRiwayat
+							data={currentItems}
+							currentPage={currentPage}
+							totalPages={totalPages}
+							onPageChange={setCurrentPage}
+						/>
+					</div>
 				</BackgroundItem>
 			</div>
 		</MainLayout>

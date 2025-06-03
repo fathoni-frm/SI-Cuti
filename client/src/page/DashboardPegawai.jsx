@@ -18,23 +18,27 @@ const DashboardPegawai = () => {
 	const dataPengajuanAnda = [
 		{
 			label: "Disetujui",
-			count: dataRiwayatCuti.filter((item) => item.status === "Disetujui").length,
+			count: dataRiwayatCuti.filter((item) => item.status === "Disetujui")
+				.length,
 			unit: "Pengajuan",
-			icon: <FaCheckCircle className="text-5xl text-white" />,
+			icon: <FaCheckCircle />,
 			bgColor: "bg-green-600",
 		},
 		{
 			label: "Sedang Diproses",
-			count: dataRiwayatCuti.filter((item) => item.status === "Diproses").length,
+			count: dataRiwayatCuti.filter((item) => item.status === "Diproses")
+				.length,
 			unit: "Pengajuan",
-			icon: <FaSpinner className="text-5xl text-white" />,
+			icon: <FaSpinner />,
 			bgColor: "bg-blue-600",
 		},
 		{
 			label: "Tidak Disetujui / Dibatalkan",
-			count: dataRiwayatCuti.filter((item) => item.status === "Ditolak" || item.status === "Dibatalkan").length,
+			count: dataRiwayatCuti.filter(
+				(item) => item.status === "Ditolak" || item.status === "Dibatalkan"
+			).length,
 			unit: "Pengajuan",
-			icon: <FaTimesCircle className="text-5xl text-white" />,
+			icon: <FaTimesCircle />,
 			bgColor: "bg-red-600",
 		},
 	];
@@ -51,8 +55,15 @@ const DashboardPegawai = () => {
 
 		const fetchRiwayat = async () => {
 			try {
-				const res = await axios.get(`/pengajuan-cuti/riwayat/${user.idPegawai}`);
-				const hasil = res.data.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)).slice(0, 5);
+				const res = await axios.get(
+					`/pengajuan-cuti/riwayat/${user.idPegawai}`
+				);
+				const hasil = res.data
+					.sort(
+						(a, b) =>
+							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+					)
+					.slice(0, 5);
 				setDataRiwayatCuti(hasil);
 			} catch (err) {
 				console.error(err);
@@ -65,8 +76,8 @@ const DashboardPegawai = () => {
 
 	return (
 		<MainLayout role="Pegawai">
-			<div className="flex flex-grow min-h-0 h-full">
-				<div className="flex-grow bg-gray-100 p-6 w-5/6 space-y-5">
+			<div className="flex flex-col lg:flex-row flex-grow">
+				<div className="flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5">
 					<h1 className="text-2xl font-bold">Dashboard</h1>
 					{/* Rekap Pengajuan Cuti Anda */}
 					<SummaryCards
@@ -75,19 +86,17 @@ const DashboardPegawai = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem
-						title="Sisa Kuota Cuti Anda"
-						marginX={false}
-						marginY={false}>
+					<BackgroundItem title="Sisa Kuota Cuti Anda">
 						<TabelKuotaCuti data={dataKuotaCuti} />
 					</BackgroundItem>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
-					<BackgroundItem
-						title="Riwayat Pengajuan Cuti Anda"
-						marginX={false}
-						marginY={false}>
-						<TabelRiwayat data={dataRiwayatCuti} showPagination={false} isDashboard={true} />
+					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
+						<TabelRiwayat
+							data={dataRiwayatCuti}
+							showPagination={false}
+							isDashboard={true}
+						/>
 					</BackgroundItem>
 				</div>
 

@@ -51,7 +51,7 @@ const ValidasiVerifikator = () => {
 	}
 
 	return (
-		<div className="max-w-3xl mx-auto mt-10 bg-white border border-gray-300 p-8 rounded-lg shadow">
+		<div className="max-w-3xl mx-auto md:my-10 bg-white border border-gray-300 p-8 rounded-lg shadow">
 			{/* Header */}
 			<div className="text-center mb-6">
 				<img src={logo} alt="Logo Instansi" className="mx-auto mb-4 w-20" />

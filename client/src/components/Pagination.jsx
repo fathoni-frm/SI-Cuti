@@ -34,7 +34,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 					1
 				</button>
 			);
-			if (startPage > 1) {
+			if (startPage - 1 > 1) {
 				pages.push(
 					<span key="start-ellipsis" className="px-2">
 						...
@@ -60,7 +60,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 		}
 		
 		if (endPage < totalPages) {
-			if (endPage < totalPages) {
+			if (endPage + 1 < totalPages) {
 				pages.push(
 					<span key="end-ellipsis" className="px-2">
 						...
@@ -81,7 +81,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 	};
 
 	return (
-		<div className="flex justify-end items-center mt-4">
+		<div className="flex justify-center md:justify-end items-center mt-4">
 			<button
 				onClick={handlePrev}
 				disabled={currentPage === 1}

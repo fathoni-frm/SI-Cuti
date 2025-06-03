@@ -16,8 +16,8 @@ import {
 	FaFileAlt,
 	FaTasks,
 	FaTimesCircle,
+	FaDownload,
 } from "react-icons/fa";
-import { FaFilePdf } from "react-icons/fa6";
 import { MdPrint } from "react-icons/md";
 
 const DetailCuti = () => {
@@ -62,10 +62,22 @@ const DetailCuti = () => {
 	const verifikatorTertampil = [];
 	for (const v of data.VerifikasiCutis) {
 		verifikatorTertampil.push(v);
-		if (["Belum Diverifikasi", "Diproses"].includes(v.statusVerifikasi)) {
+		if (["Belum Diverifikasi", "Diproses", "Ditolak"].includes(v.statusVerifikasi)) {
 			break;
 		}
 	}
+
+	const FormFieldRow = ({ label, children }) => (
+		<div className="flex flex-col py-2 px-6 sm:flex-row sm:items-start">
+			<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
+				<div>{label}</div>
+				<div>:</div>
+			</div>
+			<div className="w-full text-base font-medium text-black md:ml-5 sm:w-3/4 lg:w-5/6">
+				{children}
+			</div>
+		</div>
+	);
 
 	const handleVerifikasi = async (status) => {
 		const { value: komentar } = await Swal.fire({
@@ -160,6 +172,7 @@ const DetailCuti = () => {
 				<h1 className="text-2xl font-bold">
 					<span className="text-gray-400">Detail Cuti</span> / {data.jenisCuti}
 				</h1>
+				{/* TOMBOL */}
 				<div className="flex justify-between items-center flex-wrap gap-3">
 					<button
 						onClick={() => navigate(-1)}
@@ -209,259 +222,331 @@ const DetailCuti = () => {
 
 				<div className="space-y-5"></div>
 				{/* Profil Pegawai */}
-				<BackgroundItem
-					title="Profil Pegawai"
-					icon={<FaUser />}
-					marginY={false}>
-					<table className="w-full my-4">
-						<tbody>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Nama / NIP
-								</td>
-								<td className="w-[20px] text-gray-400">:</td>
-								<td className="font-medium">
-									{data.Pegawai.nama} / {data.Pegawai.nip}
-								</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Golongan / Jabatan
-								</td>
-								<td className="w-[20px] text-gray-400">:</td>
-								<td className="font-medium">
-									{data.Pegawai.golongan} / {data.Pegawai.jabatanFungsional}
-								</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Unit Kerja
-								</td>
-								<td className="w-[20px] text-gray-400">:</td>
-								<td className="font-medium">{data.Pegawai.satuanKerja}</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2 font-medium text-gray-600">
-									Nomor Telepon
-								</td>
-								<td className="w-[20px] text-gray-400">:</td>
-								<td className="font-medium">{data.Pegawai.noHp}</td>
-							</tr>
-						</tbody>
-					</table>
+				<BackgroundItem title="Profil Pegawai" icon={<FaUser />}>
+					<div className="py-2">
+						<FormFieldRow label="Nama / NIP">{`${data.Pegawai.nama} / ${data.Pegawai.nip}`}</FormFieldRow>
+						<FormFieldRow label="Golongan / Jabatan">{`${data.Pegawai.golongan} / ${data.Pegawai.jabatanFungsional}`}</FormFieldRow>
+						<FormFieldRow label="Unit Kerja">
+							{data.Pegawai.satuanKerja}
+						</FormFieldRow>
+						<FormFieldRow label="Nomor Telepon">
+							{data.Pegawai.noHp}
+						</FormFieldRow>
+					</div>
 				</BackgroundItem>
 
 				{/* Keterangan Cuti */}
-				<BackgroundItem
-					title="Keterangan Cuti"
-					icon={<FaClipboardList />}
-					marginY={false}>
-					<table className="w-full my-4 font-medium text-gray-600">
-						<tbody>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2">Jenis Cuti</td>
-								<td>:</td>
-								<td className="w-2/6 ">{data.jenisCuti}</td>
-								<td className="w-1/6 py-2">Status Permohonan</td>
-								<td>:</td>
-								<td>
-									<span
-										className={`text-sm px-3 py-1 rounded-full ${
-											data.status === "Disetujui"
-												? "bg-green-100 text-green-800"
-												: data.status === "Ditolak"
-												? "bg-red-100 text-red-800"
-												: data.status === "Diproses"
-												? "bg-yellow-100 text-yellow-800"
-												: data.status === "Dibatalkan"
-												? "bg-red-100 text-red-800"
-												: "bg-gray-200 text-gray-800"
-										}`}>
-										{data.status}
-									</span>
-								</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2">Kuota Cuti</td>
-								<td>:</td>
-								<td>{data.totalKuota}</td>
-								<td className="w-1/6 py-2">Sisa Kuota Cuti</td>
-								<td>:</td>
-								<td>{data.sisaKuota}</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2">Periode Cuti</td>
-								<td>:</td>
-								<td>
-									{formatGMT8(data.tanggalMulai, { showTime: false })} s.d.{" "}
-									{formatGMT8(data.tanggalSelesai, { showTime: false })}
-								</td>
-								<td className="w-1/6 py-2">Durasi Cuti</td>
-								<td>:</td>
-								<td>{data.durasi}</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2">Alasan Cuti</td>
-								<td>:</td>
-								<td>{data.alasanCuti}</td>
-							</tr>
-							<tr className="hover:bg-gray-50">
-								<td className="w-1/6 py-2">Alamat Selama Cuti</td>
-								<td>:</td>
-								<td>{data.alamatCuti}</td>
-							</tr>
-						</tbody>
-					</table>
+				<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
+					<div className="space-y-3 p-4 sm:px-6">
+						<div className="flex flex-col md:flex-row md:items-baseline">
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
+								<div>Jenis Cuti</div>
+								<div>:</div>
+							</div>
+							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
+								{data.jenisCuti}
+							</div>
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
+								<div>Status</div>
+								<div>:</div>
+							</div>
+							<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+								<span
+									className={`text-sm px-3 py-1 rounded-full ${
+										data.status === "Disetujui"
+											? "bg-green-100 text-green-800"
+											: data.status === "Ditolak"
+											? "bg-red-100 text-red-800"
+											: data.status === "Diproses"
+											? "bg-yellow-100 text-yellow-800"
+											: data.status === "Dibatalkan"
+											? "bg-red-100 text-red-800"
+											: "bg-gray-200 text-gray-800"
+									}`}>
+									{data.status}
+								</span>
+							</div>
+						</div>
+
+						<div className="flex flex-col md:flex-row md:items-baseline">
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:justify-between md:w-48">
+								<div>Total Kuota</div>
+								<div>:</div>
+							</div>
+							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
+								<span className="text-sm px-3 py-1 text-white bg-green-500 rounded-full">
+									{data.totalKuota} hari
+								</span>
+							</div>
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
+								<div>Sisa Kuota</div>
+								<div>:</div>
+							</div>
+							<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+								<span className="text-sm px-3 py-1 text-white bg-yellow-500 rounded-full">
+									{data.sisaKuota} hari
+								</span>
+							</div>
+						</div>
+
+						<div className="flex flex-col md:flex-row md:items-baseline">
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-0.5 md:mb-0 md:justify-between md:w-48">
+								<div>Periode Cuti</div>
+								<div>:</div>
+							</div>
+							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
+								{formatGMT8(data.tanggalMulai, { showTime: false })} s.d.{" "}
+								{formatGMT8(data.tanggalSelesai, { showTime: false })}
+							</div>
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:ml-10 md:justify-between md:w-25">
+								<div>Durasi Cuti</div>
+								<div>:</div>
+							</div>
+							<div className="flex w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+								<span>{`${data.durasi} hari`}</span>
+							</div>
+						</div>
+
+						<div className="flex flex-col md:flex-row md:items-start">
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
+								<div>Alasan Cuti</div>
+								<div>:</div>
+							</div>
+							<div className="w-full font-medium text-black mt-1 md:ml-5 md:mt-0 md:flex-1">
+								{data.alasanCuti}
+							</div>
+						</div>
+
+						<div className="flex flex-col md:flex-row md:items-start">
+							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
+								<div>Alamat Cuti</div>
+								<div>:</div>
+							</div>
+							<div className="w-full font-medium text-black mt-1 md:ml-5 md:mt-0 md:flex-1">
+								{data.alamatCuti}
+							</div>
+						</div>
+					</div>
 				</BackgroundItem>
 
 				{/* Yang Menyetujui */}
-				<BackgroundItem
-					title="Yang Menyetujui"
-					icon={<FaCheckCircle />}
-					marginY={false}>
-					<div className="font-medium text-gray-600 my-4">
-						<p className="mb-2">Pejabat yang bertanggung jawab menyetujui:</p>
-						<ol className="list-decimal ml-6">
+				<BackgroundItem title="Yang Menyetujui" icon={<FaCheckCircle />}>
+					<div className="p-4 sm:px-6">
+						<p className="mb-4 font-medium text-gray-700">
+							Pejabat yang bertanggung jawab menyetujui:
+						</p>
+
+						<div className="space-y-3">
 							{data.VerifikasiCutis?.filter(
 								(v) => v.jenisVerifikator !== "Admin"
 							).map((v, i) => (
-								<li key={i} className="py-1">
-									{v.verifikator.nama} / {v.verifikator.nip} /{" "}
-									{v.jenisVerifikator}
-								</li>
+								<div
+									key={i}
+									className="p-3 bg-gray-50 border border-gray-200 rounded-lg shadow-sm/60">
+									<div className="flex items-start gap-x-3">
+										<span className="text-sm flex-shrink-0 font-semibold text-gray-500">
+											{i + 1}.
+										</span>
+										<div className="flex-1 min-w-0">
+											<p className="text-sm font-semibold text-gray-500 tracking-wider mb-0.5">
+												{v.jenisVerifikator}
+											</p>
+											<p
+												className="font-semibold text-black"
+												title={v.verifikator.nama}>
+												{v.verifikator.nama}
+											</p>
+											<p className="text-sm text-gray-500">
+												NIP: {v.verifikator.nip}
+											</p>
+										</div>
+									</div>
+								</div>
 							))}
-						</ol>
+						</div>
 					</div>
 				</BackgroundItem>
 
 				{/* Formulir Pelimpahan Tugas */}
 				{data.PenerimaTugas && (
-					<BackgroundItem
-						title="Formulir Pelimpahan Tugas"
-						icon={<FaTasks />}
-						marginY={false}>
-						<div className="font-medium text-gray-600 my-4">
-							<p className="mb-2">
+					<BackgroundItem title="Formulir Pelimpahan Tugas" icon={<FaTasks />}>
+						<div className="p-4 sm:px-6">
+							<p className="mb-4 font-medium text-black text-justify">
 								Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan
 								yang berkaitan dengan kegiatan teknis kepada :
 							</p>
-							<table className="w-full">
-								<tbody>
-									<tr>
-										<td className="w-1/5 py-1">Nama / NIP</td>
-										<td>:</td>
-										<td>
-											{data.PenerimaTugas.nama} / {data.PenerimaTugas.nip}
-										</td>
-									</tr>
-									<tr>
-										<td className="w-1/5 py-1">Pangkat / Golongan / Jabatan</td>
-										<td>:</td>
-										<td>
-											{data.PenerimaTugas.pangkat} /{" "}
-											{data.PenerimaTugas.golongan} /{" "}
-											{data.PenerimaTugas.jabatanFungsional}
-										</td>
-									</tr>
-									<tr>
-										<td className="w-1/5 py-1">Satuan Pelayanan</td>
-										<td>:</td>
-										<td>{data.PenerimaTugas.satuanKerja}</td>
-									</tr>
-								</tbody>
-							</table>
+
+							<div className="space-y-3 md:space-y-2">
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Nama / NIP</div>
+										<div>:</div>
+									</div>
+									<div className="font-medium text-black md:ml-1 md:flex-1">
+										{`${data.PenerimaTugas.nama} / ${data.PenerimaTugas.nip}`}
+									</div>
+								</div>
+
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Pangkat / Golongan / Jabatan</div>
+										<div>:</div>
+									</div>
+									<div className="font-medium text-black md:ml-1 md:flex-1">
+										{`${data.PenerimaTugas.pangkat} / ${data.PenerimaTugas.golongan} / ${data.PenerimaTugas.jabatanFungsional}`}
+									</div>
+								</div>
+
+								<div className="flex flex-col md:flex-row md:items-baseline py-2">
+									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
+										<div>Satuan Pelayanan</div>
+										<div>:</div>
+									</div>
+									<div className="font-medium text-black md:ml-1 md:flex-1">
+										{data.PenerimaTugas.satuanKerja}
+									</div>
+								</div>
+							</div>
 						</div>
 					</BackgroundItem>
 				)}
 
 				{/* Lampiran */}
 				{data.lampiran && (
-					<BackgroundItem title="Lampiran" icon={<FaFileAlt />} marginY={false}>
-						{data.lampiran ? (
+					<BackgroundItem title="Lampiran" icon={<FaFileAlt />}>
+						<div className="p-4 sm:px-6">
 							<a
 								href={`http://localhost:3000/uploads/lampiran/${data.lampiran}`}
 								target="_blank"
-								rel="noreferrer"
-								className="flex items-center font-medium text-gray-700 bg-gray-100 px-4 py-2 my-4 rounded-md gap-2 shadow-inner">
-								<FaFilePdf className="fa-solid fa-file" /> {data.lampiran}
+								rel="noopener noreferrer"
+								className="inline-flex items-center gap-2.5 px-4 py-2.5 
+										text-sm font-medium rounded-md transition-colors duration-150
+										bg-gray-50 text-gray-700 hover:bg-gray-100 
+										w-full sm:w-auto group shadow-sm 
+										border border-gray-200 
+										focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+								title="Unduh file">
+								<FaDownload className="h-4 w-4 text-gray-600 flex-shrink-0" />
+								<span className="truncate max-w-[200px] xs:max-w-[250px] sm:max-w-xs md:max-w-sm lg:max-w-md">
+									{data.lampiran}
+								</span>
 							</a>
-						) : (
-							<p className="font-medium text-gray-600">Tidak ada lampiran</p>
-						)}
+						</div>
 					</BackgroundItem>
 				)}
 
 				{/* Aktivitas Permohonan */}
-				<BackgroundItem
-					title="Aktivitas Permohonan"
-					icon={<FaClipboardList />}
-					marginY={false}>
-					<div className="relative font-medium text-gray-600 border-l-4 border-gray-700 pl-3 my-4 space-y-4">
-						<div className="relative">
-							<div className="absolute -left-5 top-[calc(50%-5px)] w-3 h-3 bg-yellow-500 border-1 border-white rounded-full shadow-sm"></div>
-							<div className="bg-gray-50 p-3 rounded-md shadow-inner">
-								<div className="flex justify-between items-center">
-									<p className="text-gray-700 font-medium">
-										Cuti diajukan oleh pegawai
-									</p>
-									<p className="text-sm text-gray-500">
-										{formatGMT8(data.tanggalPengajuan)}
-									</p>
-								</div>
-							</div>
-						</div>
-						{verifikatorTertampil?.map((v, i) => (
-							<div key={i} className="relative">
-								<div className="absolute -left-5 top-[calc(50%-5px)] w-3 h-3 bg-yellow-500 border-1 border-white rounded-full shadow-sm"></div>
-								<div className="bg-gray-50 p-3 rounded-md shadow-inner">
-									<div className="flex justify-between items-center">
-										<p className="text-gray-700 font-medium">
-											{v.jenisVerifikator}
-											<span
-												className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
-												${
-													v.statusVerifikasi === "Disetujui"
-														? "bg-green-100 text-green-800"
-														: v.statusVerifikasi === "Ditolak"
-														? "bg-red-100 text-red-800"
-														: v.statusVerifikasi === "Diproses"
-														? "bg-yellow-100 text-yellow-800"
-														: v.statusVerifikasi === "Belum Diverifikasi"
-														? "bg-blue-100 text-blue-800"
-														: v.statusVerifikasi === "Dibatalkan"
-														? "bg-red-100 text-red-800"
-														: "bg-gray-200 text-gray-800"
-												}`}>
-												{v.statusVerifikasi}
-											</span>
+				<BackgroundItem title="Aktivitas Permohonan" icon={<FaClipboardList />}>
+					<div className="p-4 sm:px-6">
+						{/* garis */}
+						<div className="relative border-l-2 border-gray-300 space-y-6 pl-6 py-2">
+							<div className="relative">
+								{/* titik */}
+								<div className="absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 bg-blue-500 border-2 border-white rounded-full ring-2 ring-blue-300"></div>
+								<div className="p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+									<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1">
+										<p className="text-sm font-semibold text-gray-800">
+											Cuti diajukan
 										</p>
-										<p className="text-sm text-gray-500">
-											{v.updatedAt !== data.tanggalPengajuan
-												? formatGMT8(v.updatedAt)
-												: ""}
+										<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
+											{formatGMT8(data.tanggalPengajuan)}
 										</p>
 									</div>
-									<p className="text-gray-600">
-										{v.verifikator.nama} / {v.verifikator.nip}
-									</p>
-									<p className="text-gray-500 italic">
-										{v.komentar
-											? `Komentar : ${v.komentar}`
-											: v.statusVerifikasi === "Belum Diverifikasi"
-											? "Keterangan : Verifikator belum melihat pengajuan cuti anda. Hubungi verifikator apabila belum diverifikasi dalam 24 jam"
-											: v.statusVerifikasi === "Diproses"
-											? "Keterangan : Verifikator telah melihat pengajuan cuti anda. Hubungi verifikator apabila belum diverifikasi dalam 24 jam"
-											: ""}
+									<p className="text-xs text-gray-600">
+										Oleh: {data.Pegawai.nama}
 									</p>
 								</div>
 							</div>
-						))}
+
+							{verifikatorTertampil?.map((v, i) => (
+								<div key={i} className="relative">
+									{/* titik */}
+									<div
+										className={`absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 border-2 border-white rounded-full shadow-sm
+                        						${
+																			v.statusVerifikasi === "Disetujui"
+																				? "bg-green-500 ring-2 ring-green-300"
+																				: v.statusVerifikasi === "Ditolak"
+																				? "bg-red-500 ring-2 ring-red-300"
+																				: v.statusVerifikasi === "Diproses"
+																				? "bg-yellow-500 ring-2 ring-yellow-300"
+																				: v.statusVerifikasi === "Dibatalkan"
+																				? "bg-gray-500 ring-2 ring-gray-300"
+																				: ""
+																		}`}></div>
+									<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
+										<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
+											<h4 className="text-sm font-semibold text-gray-800">
+												{v.jenisVerifikator}
+												<span
+													className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
+                                    					${
+																								v.statusVerifikasi ===
+																								"Disetujui"
+																									? "bg-green-100 text-green-800"
+																									: v.statusVerifikasi ===
+																									  "Ditolak"
+																									? "bg-red-100 text-red-800"
+																									: v.statusVerifikasi ===
+																									  "Diproses"
+																									? "bg-yellow-100 text-yellow-800"
+																									: v.statusVerifikasi ===
+																									  "Belum Diverifikasi"
+																									? "bg-blue-100 text-blue-800"
+																									: v.statusVerifikasi ===
+																									  "Dibatalkan"
+																									? "bg-gray-100 text-gray-800"
+																									: ""
+																							}`}>
+													{v.statusVerifikasi}
+												</span>
+											</h4>
+											<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
+												{(v.jenisVerifikator === "Admin" &&
+													v.statusVerifikasi === "Dibatalkan") ||
+												(v.statusVerifikasi !== "Belum Diverifikasi" &&
+													v.statusVerifikasi !== "Dibatalkan")
+													? formatGMT8(v.updatedAt)
+													: v.jenisVerifikator !== "Admin" &&
+													  v.statusVerifikasi === "Dibatalkan"
+													? formatGMT8(v.updatedAt, {showTime : false})
+													: ""}
+											</p>
+										</div>
+										<p className="text-xs text-gray-600 mb-1">
+											Oleh:{" "}
+											<span className="font-medium">{v.verifikator.nama}</span>{" "}
+											({v.verifikator.nip})
+										</p>
+										{(v.komentar ||
+											(v.statusVerifikasi === "Belum Diverifikasi" &&
+												v.jenisVerifikator !== "Admin") ||
+											(v.statusVerifikasi === "Diproses" &&
+												v.jenisVerifikator !== "Admin") ||
+											(v.statusVerifikasi === "Dibatalkan" &&
+												v.jenisVerifikator !== "Admin")) && (
+											<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
+												{v.komentar
+													? `Komentar: ${v.komentar}`
+													: v.statusVerifikasi === "Belum Diverifikasi"
+													? "Menunggu verifikasi dari pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam."
+													: v.statusVerifikasi === "Diproses"
+													? "Pengajuan telah ditinjau oleh pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam"
+													: v.statusVerifikasi === "Dibatalkan"
+													? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pejabat terkait apabila melakukan pengajuan kembali."
+													: ""}
+											</p>
+										)}
+									</div>
+								</div>
+							))}
+						</div>
 					</div>
 				</BackgroundItem>
 
 				{/* Tombol */}
 				{bisaVerifikasi && (
-					<div className="flex flex-col sm:flex-row justify-between gap-20">
+					<div className="flex flex-col sm:flex-row justify-between gap-5 md:gap-20">
 						<button
 							onClick={() => handleVerifikasi("Ditolak")}
 							className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md flex items-center justify-center gap-2 transition cursor-pointer">
