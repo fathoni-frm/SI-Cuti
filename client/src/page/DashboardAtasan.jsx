@@ -149,7 +149,7 @@ const DashboardAtasan = () => {
 	return (
 		<MainLayout role="Atasan">
 			<div className="flex flex-col lg:flex-row flex-grow">
-				<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5">
+				<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
 					<h1 className="text-2xl font-bold">Dashboard</h1>
 
 					{/* Rekap Permohonan Cuti Pegawai */}

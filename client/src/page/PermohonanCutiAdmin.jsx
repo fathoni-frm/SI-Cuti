@@ -202,6 +202,8 @@ const PermohonanCutiAdmin = () => {
 							currentPage={currentPage}
 							totalPages={totalPages}
 							onPageChange={setCurrentPage}
+							indexOfLastItem={indexOfLastItem}
+							itemsPerPage={itemsPerPage}
 						/>
 					</div>
 				</BackgroundItem>
