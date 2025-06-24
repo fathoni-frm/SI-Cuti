@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
 import Spinner from "./Spinner";
+import FotoProfil from "../assets/foto-profil.jpg";
 import {
 	FaBell,
 	FaChevronDown,
@@ -11,7 +12,6 @@ import {
 	FaUserCog,
 	FaSignOutAlt,
 	FaBars,
-	FaTimes,
 } from "react-icons/fa";
 import { MdMarkEmailRead } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
@@ -139,35 +139,29 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 	return (
 		<nav className="bg-[#133130] flex justify-between items-center px-3 sm:px-4 py-3 text-white fixed top-0 left-0 right-0 z-40 h-16 shadow-md">
 			<div className="flex items-center">
-				{/* Tombol Toggle Sidebar (untuk semua ukuran layar) */}
 				<button
 					onClick={toggleSidebar}
-					className={`p-2 mr-1 sm:mr-2 rounded-md hover:bg-gray-700 focus:outline-none active:bg-gray-600 cursor-pointer ${isSidebarOpen ? "text-gray-500" : "text-white"}`}
+					className={`p-2 mr-1 sm:mr-2 rounded-md hover:bg-gray-700 focus:outline-none active:bg-gray-600 cursor-pointer ${
+						isSidebarOpen ? "text-gray-500" : "text-white"
+					}`}
 					aria-label="Toggle sidebar"
 					title={isSidebarOpen ? "Tutup Sidebar" : "Buka Sidebar"}>
-					{/* Ikon berubah berdasarkan state sidebar terbuka/tertutup */}
-					
-						<FaBars className="h-5 w-5 sm:h-6 sm:w-6" />
-				
+					<FaBars className="h-5 w-5 sm:h-6 sm:w-6" />
 				</button>
 
-				{/* Logo dan Nama Aplikasi */}
 				<Link to="/dashboard" className="flex items-center cursor-pointer">
 					<img
-						src="https://bbkhit.com/public/img/logo.png" // Ganti dengan path logo Anda
+						src="https://bbkhit.com/public/img/logo.png"
 						alt="Logo Aplikasi"
 						className="h-8 w-8 sm:h-9 sm:w-9 rounded-full"
 					/>
-					{/* Teks "SI Cuti" tampil di layar sm ke atas */}
 					<span className="ml-2 text-lg sm:text-xl font-semibold sm:inline">
 						SI Cuti
 					</span>
 				</Link>
 			</div>
 
-			{/* Item di sisi kanan Navbar */}
 			<div className="flex items-center space-x-2 sm:space-x-4">
-				{/* Notifikasi Bell */}
 				<div className="relative" ref={notifDropdownRef}>
 					<button
 						onClick={() => setNotifOpen(!notifOpen)}
@@ -258,7 +252,6 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 					)}
 				</div>
 
-				{/* Profil Pengguna Dropdown */}
 				<div className="relative" ref={profileDropdownRef}>
 					<button
 						onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -266,15 +259,14 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 						aria-label="Menu Pengguna">
 						<img
 							src={
-								detailPegawai.foto ||
-								"https://storage.googleapis.com/a1aa/image/XBXRVUF75QQnMaQt9gHGU1As5wT3qbrv3HIR6KqqS88.jpg"
+								detailPegawai.foto || FotoProfil
 							}
 							alt="Foto Profil"
 							className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
 						/>
-						<span className="ml-1.5 text-sm font-medium hidden sm:inline">
+						{/* <span className="ml-1.5 text-sm font-medium hidden sm:inline">
 							Halo, {detailPegawai.nama.split(" ")[0]}
-						</span>
+						</span> */}
 						{dropdownOpen ? (
 							<FaChevronUp className="ml-1 sm:ml-1.5 h-3 w-3 text-gray-300" />
 						) : (
@@ -282,14 +274,12 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 						)}
 					</button>
 					{dropdownOpen && (
-						<div className="absolute right-0 w-48 bg-white rounded-md shadow-xl py-1 mt-2 z-50 border border-gray-200 origin-top-right">
-							{/* Panah kecil di atas dropdown */}
-							{/* <div className="absolute -top-1.5 right-4 w-3 h-3 bg-white border-t border-l border-gray-200 rotate-45"></div> */}
+						<div className="absolute right-0 w-42 bg-white rounded-md shadow-xl py-1 mt-2 z-50 border border-gray-200 origin-top-right">
 							<Link
 								to="/profil-pengaturan" // Ganti dengan path yang benar
 								onClick={() => setDropdownOpen(false)}
 								className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors duration-150">
-								<FaUserCog className="h-4 w-4" /> Pengaturan
+								<FaUserCog className="h-4 w-4" /> Pengaturan Profil
 							</Link>
 							<Link
 								onClick={() => {

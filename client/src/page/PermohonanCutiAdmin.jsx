@@ -27,22 +27,52 @@ const PermohonanCutiAdmin = () => {
 			title: "Filter Ekspor Data Cuti",
 			html: (
 				<div className="space-y-4">
-					<div>
-						<label
-							htmlFor="tahun"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Tahun Pengajuan
-						</label>
-						<input
-							id="tahun"
-							type="number"
-							className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							placeholder="Contoh: 2025"
-							min="2000"
-							max="2100"
-						/>
+					<div className="flex gap-4">
+						<div className="flex-1">
+							<label
+								htmlFor="bulan"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Bulan Pengajuan
+							</label>
+							<select
+								id="bulan"
+								className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+								<option hidden>Pilih Bulan</option>
+								<option value="1">Januari</option>
+								<option value="2">Februari</option>
+								<option value="3">Maret</option>
+								<option value="4">April</option>
+								<option value="5">Mei</option>
+								<option value="6">Juni</option>
+								<option value="7">Juli</option>
+								<option value="8">Agustus</option>
+								<option value="9">September</option>
+								<option value="10">Oktober</option>
+								<option value="11">November</option>
+								<option value="12">Desember</option>
+							</select>
+						</div>
+						<div className="flex-1">
+							<label
+								htmlFor="tahun"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Tahun Pengajuan
+							</label>
+							<select
+								id="tahun"
+								className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+								<option hidden>Pilih Tahun</option>
+								{Array.from({ length: 26 }, (_, i) => {
+									const year = 2025 + i;
+									return (
+										<option key={year} value={year}>
+											{year}
+										</option>
+									);
+								})}
+							</select>
+						</div>
 					</div>
-
 					<div>
 						<label
 							htmlFor="status"
@@ -67,17 +97,22 @@ const PermohonanCutiAdmin = () => {
 			cancelButtonText: "Batal",
 			preConfirm: () => {
 				const tahun = document.getElementById("tahun").value;
+				const bulan = document.getElementById("bulan").value;
 				const status = document.getElementById("status").value;
 
+				if (!bulan) {
+					Swal.showValidationMessage("Pilih bulan pengajuan cuti");
+					return false;
+				}
 				if (!tahun) {
-					Swal.showValidationMessage("Isi tahun pengajuan cuti");
+					Swal.showValidationMessage("Pilih tahun pengajuan cuti");
 					return false;
 				}
 
 				if (tahun) {
 					const tahunNum = parseInt(tahun);
-					if (isNaN(tahunNum) || tahunNum < 2000 || tahunNum > 2100) {
-						Swal.showValidationMessage("Tahun harus angka (2000-2100)");
+					if (isNaN(tahunNum) || tahunNum < 2025 || tahunNum > 2100) {
+						Swal.showValidationMessage("Masukkan tahun mulai 2025");
 						return false;
 					}
 				}
@@ -92,34 +127,39 @@ const PermohonanCutiAdmin = () => {
 					return false;
 				}
 
-				return { tahun, status };
+				return { bulan, tahun, status };
 			},
 		});
 
 		if (!formValues) return;
 
 		try {
-			const { tahun, status } = formValues;
+			const { bulan, tahun, status } = formValues;
 
 			const filteredData = data.filter((item) => {
 				const tanggal = item.tanggalPengajuan
 					? new Date(item.tanggalPengajuan)
 					: null;
+				const month =
+					tanggal instanceof Date && !isNaN(tanggal)
+						? (tanggal.getMonth() + 1).toString()
+						: "";
 				const year =
 					tanggal instanceof Date && !isNaN(tanggal)
 						? tanggal.getFullYear().toString()
 						: "";
 
+				const monthMatch = bulan ? month === bulan : true;
 				const yearMatch = tahun ? year === tahun : true;
 				const statusMatch = status ? item.status === status : true;
 
-				return yearMatch && statusMatch;
+				return yearMatch && monthMatch && statusMatch;
 			});
 
 			if (filteredData.length === 0) {
 				return Swal.fire(
 					"Tidak Ada Data",
-					"Sepertinya tidak ada data pada tahun tersebut.",
+					"Tidak terdapat data pada status dan periode yang anda pilih.",
 					"warning"
 				);
 			}
@@ -145,15 +185,33 @@ const PermohonanCutiAdmin = () => {
 			const workbook = XLSX.utils.book_new();
 			XLSX.utils.book_append_sheet(workbook, worksheet, "Data Cuti");
 
-			const fileName = ["Disetujui", "Ditolak", "Dibatalkan"].includes(status)
-				? `Data Cuti_${status}_Tahun ${tahun} - ${formatGMT8(
-						new Date().toISOString().slice(0, 10),
-						{ showTime: false }
-				  )}.xlsx`
-				: `Data Cuti_Tahun ${tahun} - ${formatGMT8(
-						new Date().toISOString().slice(0, 10),
-						{ showTime: false }
-				  )}.xlsx`;
+			const namaBulan = [
+				"Januari",
+				"Februari",
+				"Maret",
+				"April",
+				"Mei",
+				"Juni",
+				"Juli",
+				"Agustus",
+				"September",
+				"Oktober",
+				"November",
+				"Desember",
+			];
+			const bulanLabel = bulan ? namaBulan[parseInt(bulan, 10) - 1] : null;
+			const tanggalDownload = formatGMT8(
+				new Date().toISOString().slice(0, 10),
+				{
+					showTime: false,
+				}
+			);
+			let fileName = "Data Cuti";
+			if (["Disetujui", "Ditolak", "Dibatalkan"].includes(status)) {
+				fileName += ` ${status}`;
+			}
+			fileName += ` Periode ${bulanLabel} ${tahun}`;
+			fileName += ` - ${tanggalDownload}.xlsx`;
 			XLSX.writeFile(workbook, fileName);
 		} catch (error) {
 			console.error(error);
