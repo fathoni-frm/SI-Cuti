@@ -1,48 +1,108 @@
-const { PengajuanCuti, Pegawai, VerifikasiCuti } = require("../models");
+const { PengajuanCuti, Pegawai, VerifikasiCuti, PelimpahanTugas } = require("../models");
+const crypto = require("crypto");
+const SECRET = process.env.QR_HMAC_SECRET;
 
-const validasiPengajuan = async (req, res) => {
+const validasiQr = async (req, res) => {
     try {
-        const pengajuan = await PengajuanCuti.findOne({
-            where: { id: req.params.id, status: "Disetujui" },
-            include: { model: Pegawai, as: "Pegawai" },
-        });
+        const { doc, id, role, sig } = req.params;
+        let data;
+        let ts;
+        let pengajuan;
 
-        if (!pengajuan) {
-            return res.status(404).json({ msg: "Pengajuan tidak ditemukan atau belum disetujui" });
+        switch (doc) {
+            case "PMC":
+                switch (role) {
+                    case "pengaju":
+                        data = await PengajuanCuti.findByPk(id, { include: [{ model: Pegawai, as: 'pegawai' }] });
+                        ts = data.tanggalPengajuan;
+                        pengajuan = data;
+                        break;
+                    case "verifikator":
+                        data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
+                        ts = data.tanggalVerifikasi;
+                        pengajuan = data.PengajuanCuti;
+                        break;
+                }
+                break;
+            case "PLT":
+                switch (role) {
+                    case "pengaju":
+                        data = await PengajuanCuti.findByPk(id, { include: [{ model: Pegawai, as: 'pegawai' }] });
+                        ts = data.tanggalPengajuan;
+                        pengajuan = data;
+                        break;
+                    case "penerima":
+                        data = await PelimpahanTugas.findByPk(id, { include: [{ model: Pegawai, as: 'penerima' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
+                        ts = data.tanggalVerifikasi;
+                        pengajuan = data.PengajuanCuti;
+                        break;
+                    case "verifikator":
+                        data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
+                        ts = data.tanggalVerifikasi;
+                        pengajuan = data.PengajuanCuti;
+                        break;
+                }
+                break;
+            case "PSC":
+                data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
+                ts = data.tanggalVerifikasi;
+                pengajuan = data.PengajuanCuti;
+                break;
+            default:
+                return res.status(400).json({ msg: "QR tidak valid" });
         }
 
-        res.json(pengajuan);
-    } catch (error) {
-        console.error("Error validasi pengajuan:", error);
-        res.status(500).json({ msg: "Gagal mengambil data pengajuan" });
-    }
-};
-
-const validasiVerifikator = async (req, res) => {
-    try {
-        const verifikasi = await VerifikasiCuti.findOne({
-            where: { id: req.params.id, statusVerifikasi: "Disetujui" },
-            include: [
-                { model: Pegawai, as: "verifikator" },
-                {
-                    model: PengajuanCuti,
-                    include: [{ model: Pegawai, as: "Pegawai" }],
-                },
-            ],
-        });
-
-        if (!verifikasi) {
-            return res.status(404).json({ msg: "Verifikasi tidak ditemukan atau belum disetujui" });
+        if (!data) {
+            return res.status(404).json({ msg: "Data tidak ditemukan" });
         }
 
-        res.json(verifikasi);
+        const raw = `${doc}/${id}/${role}`;
+        const expectedSig = crypto.createHmac("sha256", SECRET).update(`${raw}/${ts}`).digest("hex").slice(0, 32);
+
+        if (sig !== expectedSig) {
+            return res.status(403).json({ msg: "QR tidak valid" });
+        }
+
+        let penandatangan = {};
+        if (role === "pengaju") {
+            const p = data.pegawai ?? pengajuan.pegawai;
+            penandatangan = {
+                nama: p.nama,
+                nip: p.nip,
+                jabatan: p.jabatanStruktural === "Lainnya" ? p.jabatanFungsional : p.jabatanStruktural,
+                tanggal: ts,
+            };
+        } else if (role === "verifikator" || role === "penerima") {
+            const p = data.verifikator || data.penerima;
+            penandatangan = {
+                nama: p?.nama,
+                nip: p?.nip,
+                jabatan: role === "verifikator" ? p.jabatanStruktural : p.jabatanFungsional,
+                tanggal: ts,
+            };
+        }
+
+        const suratInfo = {
+            perihal:
+                doc === "PMC"
+                    ? `Formulir Permintaan dan Pemberian Cuti`
+                    : doc === "PLT"
+                        ? "Surat Pelimpahan Tugas"
+                        : "Surat Persetujuan Cuti",
+            nama: pengajuan.pegawai?.nama,
+            nip: pengajuan.pegawai?.nip,
+        };
+
+        return res.status(200).json({
+            penandatangan,
+            surat: suratInfo,
+        });
     } catch (error) {
-        console.error("Error validasi verifikator:", error);
-        res.status(500).json({ msg: "Gagal mengambil data verifikasi" });
+        console.error("Gagal verifikasi QR:", error);
+        return res.status(500).json({ msg: "Terjadi kesalahan saat verifikasi QR.", error: error.message });
     }
-};
+}
 
 module.exports = {
-    validasiPengajuan,
-    validasiVerifikator,
+    validasiQr,
 }

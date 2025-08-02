@@ -167,7 +167,7 @@ const FormPengajuanCuti = () => {
 				formData.append("totalKuota", totalKuota);
 				formData.append("sisaKuota", sisaKuota);
 			}
-
+			
 			if (id) {
 				// EDIT draft
 				await axios.put(`/pengajuan-cuti/${id}`, formData, {
@@ -225,9 +225,10 @@ const FormPengajuanCuti = () => {
 			const sortedVerifikasi = [...data.VerifikasiCutis].sort(
 				(a, b) => a.urutanVerifikasi - b.urutanVerifikasi
 			);
-			const pelimpahan = data.idPenerimaTugas
-				? findPelimpahanOption(data.idPenerimaTugas)
-				: {};
+			const pelimpahan = data.PelimpahanTuga
+			? findPelimpahanOption(data.PelimpahanTuga.idPenerima)
+			: {};
+			
 			formik.setValues({
 				id: data.id,
 				idPegawai: data.idPegawai,
@@ -496,7 +497,7 @@ const FormPengajuanCuti = () => {
 								</li>
 								<li>
 									<span className="text-gray-500">
-										Kepala Sub Bagian Umum :
+										Kepala Bagian Umum :
 									</span>
 									{window.innerWidth < 640 ? <br /> : " "}
 									Agus Ali Hamzah, S.H., M.A.P

@@ -110,15 +110,14 @@ const TambahPegawai = () => {
 				navigate("/login");
 			} else if (err.response?.data?.errors) {
 				setErrors(err.response.data.errors);
-				setTimeout(() => scrollToError(err.response.data.errors), 100);
+				scrollToError(err.response.data.errors);
 			} else {
 				toast.error(
 					err.response?.data?.msg || "Terjadi kesalahan saat menyimpan data."
 				);
 			}
-		} finally {
 			setSubmitting(false);
-		}
+		} 
 	};
 
 	useEffect(() => {

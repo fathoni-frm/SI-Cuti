@@ -58,13 +58,7 @@ const DashboardPegawai = () => {
 				const res = await axios.get(
 					`/pengajuan-cuti/riwayat/${user.idPegawai}`
 				);
-				const hasil = res.data
-					.sort(
-						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
-					)
-					.slice(0, 5);
-				setDataRiwayatCuti(hasil);
+				setDataRiwayatCuti(res.data);
 			} catch (err) {
 				console.error(err);
 			}
@@ -93,7 +87,12 @@ const DashboardPegawai = () => {
 					{/* Riwayat Pengajuan Cuti Anda */}
 					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
 						<TabelRiwayat
-							data={dataRiwayatCuti}
+							data={dataRiwayatCuti
+								.sort(
+									(a, b) =>
+										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+								)
+								.slice(0, 5)}
 							showPagination={false}
 							isDashboard={true}
 						/>

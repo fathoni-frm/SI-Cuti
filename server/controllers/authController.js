@@ -144,7 +144,6 @@ const logout = async (req, res) => {
   res.json({ msg: "Logout berhasil!" });
 };
 
-
 module.exports = {
   login, register, refreshToken, logout
 };

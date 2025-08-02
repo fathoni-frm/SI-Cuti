@@ -1,0 +1,84 @@
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Profil Pegawai</title>
+		<style>
+			body { font-family: "Segoe UI", sans-serif; padding: 40px; font-size:
+			14px; color: #333; } h1 { text-align: center; font-size: 24px;
+			margin-bottom: 30px; } table { width: 100%; border-collapse: collapse;
+			margin-bottom: 30px; } td { padding: 8px 10px; vertical-align: top; }
+			.label { width: 35%; font-weight: bold; background-color: #f5f5f5; }
+			.value { width: 65%; } footer { text-align: center; font-size: 12px;
+			color: #888; }
+		</style>
+	</head>
+	<body>
+		<h1>Data Diri Pegawai</h1>
+
+		<table>
+			<tr><td class="label">Nama</td><td class="value">{{nama}}</td></tr>
+			<tr><td class="label">NIP</td><td class="value">{{nip}}</td></tr>
+			<tr><td class="label">Tempat, Tanggal Lahir</td><td
+					class="value"
+				>{{ttl}}</td></tr>
+			<tr><td class="label">Jenis Kelamin</td><td
+					class="value"
+				>{{jenisKelamin}}</td></tr>
+			<tr><td class="label">Agama</td><td class="value">{{agama}}</td></tr>
+			<tr><td class="label">Status Keluarga</td><td
+					class="value"
+				>{{statusKeluarga}}</td></tr>
+			<tr><td class="label">Pendidikan Terakhir</td><td
+					class="value"
+				>{{pendidikanTerakhir}}</td></tr>
+			{{#if namaSekolah}}
+				<tr><td class="label">Nama Sekolah</td><td
+						class="value"
+					>{{namaSekolah}}</td></tr>
+			{{/if}}
+			{{#if namaUniversitas}}
+				<tr><td class="label">Nama Universitas</td><td class="value">{{namaUniversitas}}</td></tr>
+				<tr><td class="label">Fakultas</td><td class="value">{{namaFakultas}}</td></tr>
+				<tr><td class="label">Jurusan</td><td class="value">{{namaJurusan}}</td></tr>
+				<tr><td class="label">Program Studi</td><td class="value">{{namaProgramStudi}}</td></tr>
+			{{/if}}
+			<tr><td class="label">NPWP</td><td class="value">{{npwp}}</td></tr>
+			<tr><td class="label">Nomor Karpeg</td><td
+					class="value"
+				>{{karpeg}}</td></tr>
+			<tr><td class="label">Nomor Karis/Karsu</td><td
+					class="value"
+				>{{karisKarsu}}</td></tr>
+			<tr><td class="label">Unit Kerja</td><td
+					class="value"
+				>{{unitKerja}}</td></tr>
+			<tr><td class="label">Satuan Kerja</td><td
+					class="value"
+				>{{satuanKerja}}</td></tr>
+			<tr><td class="label">Jabatan Struktural</td><td
+					class="value"
+				>{{jabatanStruktural}}</td></tr>
+			<tr><td class="label">Jabatan Fungsional</td><td
+					class="value"
+				>{{jabatanFungsional}}</td></tr>
+			<tr><td class="label">Pangkat / Golongan</td><td class="value">{{pangkat}}
+					/
+					{{golongan}}</td></tr>
+			<tr><td class="label">Alamat Kantor</td><td
+					class="value"
+				>{{alamatKantor}}</td></tr>
+			<tr><td class="label">Email Kantor</td><td
+					class="value"
+				>{{emailKantor}}</td></tr>
+			<tr><td class="label">Email Pribadi</td><td
+					class="value"
+				>{{emailPribadi}}</td></tr>
+			<tr><td class="label">Nomor HP</td><td class="value">{{noHp}}</td></tr>
+		</table>
+
+		<footer>
+			Dicetak oleh sistem pada
+			{{tanggalCetak}}
+		</footer>
+	</body>
+</html>

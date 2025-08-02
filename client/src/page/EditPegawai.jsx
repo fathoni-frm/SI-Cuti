@@ -11,7 +11,7 @@ import BackgroundItem from "../components/BackgroundItem";
 import TabelKuotaCuti from "../components/TabelKuotaCuti";
 import FormDataPegawai from "../components/FormDataPegawai";
 import { MdEditSquare } from "react-icons/md";
-import { FaUserTie, FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const EditPegawai = () => {
 	const { user, getValidToken, refreshToken } = useAuthStore();

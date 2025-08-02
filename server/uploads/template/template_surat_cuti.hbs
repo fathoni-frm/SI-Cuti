@@ -328,7 +328,7 @@
 				>
 					<p class="s1" style="text-align: center;">Hormat saya,</p>
 					<img
-						src="{{qrCodePengaju}}"
+						src="{{qrCodePMCPengaju}}"
 						width="70"
 						height="70"
 						alt="QR Kepala Balai"
@@ -515,7 +515,7 @@
 					style="width:150pt;border:1pt solid #000;text-align:center;vertical-align:middle"
 				>
 					<img
-						src="{{kepalaBalai.qrCode}}"
+						src="{{kepalaBalai.qrCodePMC}}"
 						width="70"
 						height="70"
 						alt="QR Kepala Balai"
@@ -535,10 +535,10 @@
 			</tr>
 		</table>
 
+		{{! Pelimpahan }}
 		{{#if pelimpahan}}
 			<div style="page-break-before: always;">
-				<h1 style="padding-left: 11pt;text-align: center;">SURAT PELIMPAHAN
-					TUGAS</h1>
+				<h1 style="padding-left: 11pt;text-align: center;">SURAT PELIMPAHAN TUGAS</h1>
 				<p><br /></p>
 				<p class="s1">Saya yang bertanda tangan di bawah ini :</p>
 				<p><br /></p>
@@ -662,12 +662,17 @@
 					</tr>
 					<tr>
 						<td style="text-align:left;padding: 3pt 0pt;padding-left: 25pt;">
-							{{!-- <img src="{{kepalaBalai.qrCode}}" width="70" height="70" alt="QR Kepala Balai"
-						style="margin:0 auto" /> --}}
+							<img
+								src="{{pelimpahan.qrCodePenerima}}"
+								width="70"
+								height="70"
+								alt="QR Kepala Balai"
+								style="margin:0 auto"
+							/>
 						</td>
 						<td style="text-align:left;padding: 3pt 0pt;padding-left: 105pt;">
 							<img
-								src="{{qrCodePengaju}}"
+								src="{{pelimpahan.qrCodePengaju}}"
 								width="70"
 								height="70"
 								alt="QR Kepala Balai"
@@ -726,7 +731,7 @@
 							colspan="2"
 						>
 							<img
-								src="{{kepalaBalai.qrCode}}"
+								src="{{pelimpahan.qrCodeVerifikator}}"
 								width="70"
 								height="70"
 								alt="QR Kepala Balai"
@@ -748,6 +753,150 @@
 				</table>
 			</div>
 		{{/if}}
+
+		{{! Surat Persetujuan Cuti }}
+		<div style="page-break-before: always;">
+			<div
+				style="position: relative; text-align: center; line-height: 1.25;"
+			>
+				<img
+					src="{{logoKopSurat}}"
+					alt="Logo"
+					style="position: absolute; top: 10pt; left: 0; width: 70pt; height: auto;"
+				/>
+				<div>
+					<h1>BADAN KARANTINA INDONESIA</h1>
+					<h1>BALAI BESAR KARANTINA HEWAN, IKAN DAN TUMBUHAN</h1>
+					<h1>KALIMANTAN TIMUR</h1>
+					<p>Jl. Pelita No. 3 Sepinggan Balikpapan 76115</p>
+					<p style="margin-bottom:5pt;">Telepon : (0542) 8523292 Faksimile :
+						(0542) 413650</p>
+					<p>Email : karantinakaltim@karantinaindonesia.go.id</p>
+				</div>
+				<hr style="border:1pt solid #000; margin:4pt 0;" />
+			</div>
+			<br />
+
+			<h1 style="text-align:center;">SURAT PERSETUJUAN CUTI</h1>
+			<h1 style="text-align:center;">No&nbsp;: {{nomorSurat}}</h1>
+			<br /><br />
+
+			<ol class="s1" style="margin-left:5pt;">
+				<li>
+					<p class="s1" style="margin-bottom:5pt;">Diberikan
+						<strong>{{jenisCuti}}</strong>
+						kepada Pegawai Negeri Sipil :</p>
+				</li>
+
+				<table
+					style="border-collapse:collapse;margin-bottom:5pt;"
+					cellspacing="0;"
+				>
+					<tr style="height:17pt">
+						<td style="width:110pt;">
+							<p class="s1">Nama</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:110pt;">
+							<p class="s1">NIP</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.nip}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:110pt;">
+							<p class="s1">Pangkat / Golongan</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.pangkat}} / {{pegawai.golongan}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:110pt;">
+							<p class="s1">Jabatan</p>
+						</td>
+						<td style="width:410pt;">
+							<p class="s1">: {{pegawai.jabatanFungsional}}</p>
+						</td>
+					</tr>
+				</table>
+
+				<p class="s1" style="margin-bottom:5pt;">
+					Selama
+					<strong>{{durasi}}</strong>
+					hari terhitung mulai tanggal
+					<strong>{{tanggalMulai}}</strong>
+					sampai dengan
+					<strong>{{tanggalSelesai}}</strong>
+					dengan ketentuan sebagai berikut :
+				</p>
+
+				<ol class="s1" type="a" style="margin-left:15pt;">
+					<li>
+						<p class="s1">Sebelum melaksanakan cuti wajib menyerahkan pekerjaan
+							kepada atasan langsung.
+						</p>
+					</li>
+					<li>
+						<p class="s1">Setelah menjalankan cuti wajib melaporkan diri kepada
+							atasan langsung dan bekerja kembali sebagaimana biasa.
+						</p>
+					</li>
+				</ol><br />
+
+				<li>
+					<p class="s1">Demikian surat persetujuan cuti ini dibuat untuk dapat
+						dipergunakan sebagaimana mestinya.</p>
+				</li>
+			</ol>
+			<br /><br />
+
+			<div style="display:flex; flex-direction:column; align-items:flex-end;">
+				<table
+					style="border-collapse:collapse;margin-left:6.5pt"
+					cellspacing="0;"
+				>
+					<tr style="height:17pt">
+						<td style="width:170pt;">
+							<p class="s1" style="text-align: center;">Tanggal
+								{{kepalaBalai.tanggal}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:170pt;">
+							<p class="s1" style="text-align: center;">Kepala Balai Besar</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:170pt;">
+							<img
+								src="{{kepalaBalai.qrCodePSC}}"
+								width="70"
+								height="70"
+								alt="QR Kepala Balai"
+								style="display:block; margin:0 auto"
+							/>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:170pt;">
+							<p class="s1" style="text-align: center;">{{kepalaBalai.nama}}</p>
+						</td>
+					</tr>
+					<tr style="height:17pt">
+						<td style="width:170pt;">
+							<p class="s1" style="text-align: center;">NIP.
+								{{kepalaBalai.nip}}</p>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
 	</body>
 
 </html>

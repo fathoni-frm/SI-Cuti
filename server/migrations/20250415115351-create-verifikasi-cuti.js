@@ -18,7 +18,7 @@ module.exports = {
         allowNull: false
       },
       jenisVerifikator: {
-        type: Sequelize.ENUM('Kepala Satuan Pelayanan', 'Ketua Tim', 'Kepala Sub Bagian Umum', 'Kepala Balai Besar', 'Admin'),
+        type: Sequelize.ENUM('Kepala Satuan Pelayanan', 'Ketua Tim', 'Kepala Bagian Umum', 'Kepala Balai Besar', 'Admin'),
         allowNull: false
       },
       urutanVerifikasi: {

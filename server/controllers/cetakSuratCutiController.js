@@ -2,10 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const Handlebars = require('handlebars');
+const crypto = require("crypto");
 const QRCode = require('qrcode');
 const { createCanvas, loadImage } = require('canvas');
-const { PengajuanCuti, Pegawai, VerifikasiCuti, KuotaCuti } = require('../models');
-const logoPath = path.join(__dirname, '../uploads/assets/logoQRCode.png');
+const { PengajuanCuti, Pegawai, VerifikasiCuti, PelimpahanTugas, KuotaCuti } = require('../models');
+const logoQRCode = path.join(__dirname, '../uploads/assets/logoQRCode.png');
+const logoKop = path.resolve(__dirname, '../uploads/assets/logoKopSurat.png');
+const SECRET = process.env.QR_HMAC_SECRET;
 
 Handlebars.registerHelper("eq", function (a, b) {
     return a === b;
@@ -27,7 +30,7 @@ const formatTanggal = {
     year: 'numeric',
 };
 
-const generateQRCodeWithLogo = async (text, logoPath) => {
+const qrWithLogo = async (text) => {
     try {
         const size = 300;
         const canvas = createCanvas(size, size);
@@ -39,7 +42,7 @@ const generateQRCodeWithLogo = async (text, logoPath) => {
             width: 300
         });
 
-        const logo = await loadImage(logoPath);
+        const logo = await loadImage(logoQRCode);
         const logoSize = size * 0.4;
         const x = (size - logoSize) / 2;
         const y = (size - logoSize) / 2;
@@ -53,13 +56,25 @@ const generateQRCodeWithLogo = async (text, logoPath) => {
     }
 };
 
+const makeSignedQr = async ({ doc, id, role, ts }) => {
+    try {
+        const raw = `${doc}/${id}/${role}`;
+        const sig = crypto.createHmac("sha256", SECRET).update(`${raw}/${ts}`).digest("hex").slice(0, 32); // 128‑bit
+
+        const url = `${process.env.FRONTEND_URL}/v/${raw}/${sig}`;
+        return qrWithLogo(url);
+    } catch (err) {
+        console.error("Gagal membuat QR Code terenkripsi:", err);
+        throw err;
+    }
+};
 
 const generateSuratCuti = async (idPengajuan) => {
     try {
         const pengajuan = await PengajuanCuti.findByPk(idPengajuan, {
             include: [
-                { model: Pegawai, as: 'Pegawai', include: [{ model: KuotaCuti }] },
-                { model: Pegawai, as: 'PenerimaTugas', required: false },
+                { model: Pegawai, as: 'pegawai', include: [{ model: KuotaCuti }] },
+                { model: PelimpahanTugas, required: false, include: [{ model: Pegawai, as: 'penerima' }] },
                 {
                     model: VerifikasiCuti,
                     include: [{ model: Pegawai, as: 'verifikator' }]
@@ -70,7 +85,7 @@ const generateSuratCuti = async (idPengajuan) => {
 
         if (!pengajuan) throw new Error('Pengajuan tidak ditemukan');
 
-        const rawKuota = pengajuan.Pegawai.KuotaCutis;
+        const rawKuota = pengajuan.pegawai.KuotaCutis;
         const kuota = {};
         rawKuota.forEach((item) => {
             const plain = item.get({ plain: true });
@@ -79,17 +94,25 @@ const generateSuratCuti = async (idPengajuan) => {
 
         const tahunKeterangan = new Date(pengajuan.tanggalPengajuan).getFullYear();
 
-        const pegawaiQRUrl = `${frontendBaseURL}/validasi/qr-code-pengajuan/${pengajuan.id}`;
-        const qrCodePengaju = await generateQRCodeWithLogo(pegawaiQRUrl, logoPath);
+        const qrCodePMCPengaju = await makeSignedQr({
+            doc: "PMC",
+            id: pengajuan.id,
+            role: "pengaju",
+            ts: pengajuan.tanggalPengajuan,
+        });
 
         const filteredVerifikator = await Promise.all(
             pengajuan.VerifikasiCutis
                 .filter(v =>
-                    ["Kepala Satuan Pelayanan", "Ketua Tim", "Kepala Sub Bagian Umum"].includes(v.jenisVerifikator)
+                    ["Kepala Satuan Pelayanan", "Ketua Tim", "Kepala Bagian Umum"].includes(v.jenisVerifikator)
                 )
                 .map(async v => {
-                    const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${v.id}`;
-                    const qrCode = await generateQRCodeWithLogo(qrUrl, logoPath);
+                    const qrCode = await makeSignedQr({
+                        doc: "PMC",
+                        id: v.id,
+                        role: "verifikator",
+                        ts: v.tanggalVerifikasi,
+                    });
                     return {
                         jenis: v.jenisVerifikator,
                         nama: v.verifikator?.nama,
@@ -106,20 +129,65 @@ const generateSuratCuti = async (idPengajuan) => {
         );
         let kepalaBalai = null;
         if (verifikatorKepalaBalai) {
-            const qrUrl = `${frontendBaseURL}/validasi/qr-code-verifikator/${verifikatorKepalaBalai.id}`;
-            const qrCode = await generateQRCodeWithLogo(qrUrl, logoPath);
+            const qrCodePMC = await makeSignedQr({
+                doc: "PMC",
+                id: verifikatorKepalaBalai.id,
+                role: "verifikator",
+                ts: verifikatorKepalaBalai.tanggalVerifikasi,
+            });
+            const qrCodePSC = await makeSignedQr({
+                doc: "PSC",
+                id: verifikatorKepalaBalai.id,
+                role: "verifikator",
+                ts: verifikatorKepalaBalai.tanggalVerifikasi,
+            });
             kepalaBalai = {
                 jenis: verifikatorKepalaBalai.jenisVerifikator,
                 nama: verifikatorKepalaBalai.verifikator?.nama,
                 nip: verifikatorKepalaBalai.verifikator?.nip,
                 status: verifikatorKepalaBalai.statusVerifikasi,
                 komentar: verifikatorKepalaBalai.komentar,
-                qrCode,
+                tanggal: new Date(verifikatorKepalaBalai.updatedAt).toLocaleDateString("id-ID", formatTanggal),
+                qrCodePMC,
+                qrCodePSC,
             };
         }
 
+        let pelimpahan = null;
+        if (pengajuan.PelimpahanTuga?.penerima) {
+            const penerima = pengajuan.PelimpahanTuga.penerima.get({ plain: true });
+            const qrCodePengaju = await makeSignedQr({
+                doc: "PLT",
+                id: pengajuan.id,
+                role: "pengaju",
+                ts: pengajuan.tanggalPengajuan,
+            })
+            const qrCodePenerima = await makeSignedQr({
+                doc: "PLT",
+                id: pengajuan.PelimpahanTuga.id,
+                role: "penerima",
+                ts: pengajuan.PelimpahanTuga.tanggalVerifikasi,
+            });
+            const qrCodeVerifikator = await makeSignedQr({
+                doc: "PLT",
+                id: verifikatorKepalaBalai.id,
+                role: "verifikator",
+                ts: verifikatorKepalaBalai.tanggalVerifikasi,
+            })
+
+            pelimpahan = {
+                ...penerima,
+                qrCodePengaju,
+                qrCodePenerima,
+                qrCodeVerifikator,
+            };
+        }
+
+        const logoKopBase64 = fs.readFileSync(logoKop, "base64");        // <— penting: "base64"
+        const logoKopSurat = `data:image/png;base64,${logoKopBase64}`;
+
         const data = {
-            pegawai: pengajuan.Pegawai.get({ plain: true }),
+            pegawai: pengajuan.pegawai.get({ plain: true }),
             jenisCuti: pengajuan.jenisCuti,
             tahunN: tahunKeterangan,
             tahunN1: tahunKeterangan - 1,
@@ -131,12 +199,11 @@ const generateSuratCuti = async (idPengajuan) => {
             kuota,
             tanggalPengajuan: new Date(pengajuan.tanggalPengajuan).toLocaleDateString("id-ID", formatTanggal),
             alamatCuti: pengajuan.alamatCuti,
-            qrCodePengaju,
+            qrCodePMCPengaju,
             filteredVerifikator,
             kepalaBalai,
-            pelimpahan: pengajuan.PenerimaTugas
-                ? pengajuan.PenerimaTugas.get({ plain: true })
-                : null,
+            pelimpahan,
+            logoKopSurat,
         };
 
         // Baca dan render template HTML dari handlebars

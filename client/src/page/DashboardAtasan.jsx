@@ -79,31 +79,25 @@ const DashboardAtasan = () => {
 	useEffect(() => {
 		const fetchVerifikasi = async () => {
 			try {
-				const res = await axios.get("/permohonan-cuti");
+				const res = await axios.get("/permohonan-cuti/atasan");
 
 				const disetujui = res.data.disetujui.length;
 				const ditolak = res.data.ditolak.length;
 
 				const permohonanCuti = res.data.permohonanCuti;
-				const hasil = permohonanCuti
-					.map((item) => ({
-						idVerifikasi: item.id,
-						idPengajuan: item.idPengajuan,
-						tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
-						jenisCuti: item.PengajuanCuti.jenisCuti,
-						tanggalMulai: item.PengajuanCuti.tanggalMulai,
-						tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
-						totalKuota: item.PengajuanCuti.totalKuota,
-						sisaKuota: item.PengajuanCuti.sisaKuota,
-						status: item.PengajuanCuti.status,
-						statusVerifikasi: item.statusVerifikasi,
-						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
-					}))
-					.sort(
-						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
-					)
-					.slice(0, 5);
+				const hasil = permohonanCuti.map((item) => ({
+					idVerifikasi: item.id,
+					idPengajuan: item.idPengajuan,
+					tanggalPengajuan: item.PengajuanCuti.tanggalPengajuan,
+					jenisCuti: item.PengajuanCuti.jenisCuti,
+					tanggalMulai: item.PengajuanCuti.tanggalMulai,
+					tanggalSelesai: item.PengajuanCuti.tanggalSelesai,
+					totalKuota: item.PengajuanCuti.totalKuota,
+					sisaKuota: item.PengajuanCuti.sisaKuota,
+					status: item.PengajuanCuti.status,
+					statusVerifikasi: item.statusVerifikasi,
+					pegawai: { nama: item.PengajuanCuti.pegawai.nama },
+				}));
 
 				setDisetujui(disetujui);
 				setDitolak(ditolak);
@@ -127,13 +121,7 @@ const DashboardAtasan = () => {
 				const res = await axios.get(
 					`/pengajuan-cuti/riwayat/${user.idPegawai}`
 				);
-				const hasil = res.data
-					.sort(
-						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
-					)
-					.slice(0, 5);
-				setDataRiwayatCuti(hasil);
+				setDataRiwayatCuti(res.data);
 			} catch (err) {
 				console.error(err);
 			}
@@ -185,7 +173,12 @@ const DashboardAtasan = () => {
 					{/* Riwayat Pengajuan Cuti Anda */}
 					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
 						<TabelRiwayat
-							data={dataRiwayatCuti}
+							data={dataRiwayatCuti
+								.sort(
+									(a, b) =>
+										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+								)
+								.slice(0, 5)}
 							showPagination={false}
 							isDashboard={true}
 						/>

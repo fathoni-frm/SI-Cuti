@@ -31,14 +31,19 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 
 	const handleBacaNotifikasi = async (idNotifikasi, idPengajuan) => {
 		try {
-			await axios.patch(`/notifikasi/${idNotifikasi}/baca`, {
+			const res = await axios.patch(`/notifikasi/${idNotifikasi}/baca`, {
 				idPegawai: user.idPegawai,
 				idPengajuan,
 			});
 			setNotifikasi((prev) =>
 				prev.map((n) => (n.id === idNotifikasi ? { ...n, isRead: true } : n))
 			);
-			navigate(`/detail-cuti/${idPengajuan}`);
+
+			if (res.data.tipe === "pelimpahan" && res.data.idPelimpahan) {
+				navigate(`/detail-pelimpahan/${res.data.idPelimpahan}`);
+			} else {
+				navigate(`/detail-cuti/${idPengajuan}`);
+			}
 		} catch (err) {
 			console.error("Gagal menandai notifikasi sebagai dibaca:", err);
 		}
@@ -258,9 +263,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 						className="flex items-center p-1 rounded-full hover:bg-gray-700 focus:outline-none cursor-pointer"
 						aria-label="Menu Pengguna">
 						<img
-							src={
-								detailPegawai.foto || FotoProfil
-							}
+							src={detailPegawai.foto || FotoProfil}
 							alt="Foto Profil"
 							className="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
 						/>
@@ -276,7 +279,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 					{dropdownOpen && (
 						<div className="absolute right-0 w-42 bg-white rounded-md shadow-xl py-1 mt-2 z-50 border border-gray-200 origin-top-right">
 							<Link
-								to="/profil-pengaturan" // Ganti dengan path yang benar
+								to="/pengaturan-profil" // Ganti dengan path yang benar
 								onClick={() => setDropdownOpen(false)}
 								className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors duration-150">
 								<FaUserCog className="h-4 w-4" /> Pengaturan Profil

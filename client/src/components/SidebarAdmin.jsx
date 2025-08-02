@@ -22,7 +22,7 @@ const SidebarAdmin = ({ isSidebarOpen, toggleSidebar }) => {
 
 	const mobileTabletClasses = `
 	  fixed top-16 left-0 z-30 h-[calc(100vh-4rem)] 
-	  w-55 /* Lebar sidebar overlay mobile */
+	  w-59 /* Lebar sidebar overlay mobile */
 	  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`;
 
 	const desktopBaseClasses = `
@@ -84,7 +84,7 @@ const SidebarAdmin = ({ isSidebarOpen, toggleSidebar }) => {
 						"/manajemen-cuti"
 					)}`}>
 					<FaCalendarPlus className="text-xl flex-shrink-0" />
-					<span className={linkTextClass}>Manajemen Cuti</span>
+					<span className={linkTextClass}>Manajemen Kuota Cuti</span>
 				</Link>
 
 				<hr

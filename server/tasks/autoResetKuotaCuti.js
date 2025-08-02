@@ -12,8 +12,8 @@ const resetKuotaCutiTahunan = async () => {
         const pegawai = await Pegawai.findAll();
 
         for (const user of pegawai) {
-            const kuotas = await KuotaCuti.findAll({ where: { idPegawai: user.id } });
-            // console.log('Memproses pegawai:', user.id);
+            const kuotas = await KuotaCuti.findAll({ where: { idPegawai: user.idPegawai } });
+            // console.log('Memproses pegawai:', user.idPegawai);
 
             const jenisKuotaMap = {
                 'Cuti Tahunan': 12,

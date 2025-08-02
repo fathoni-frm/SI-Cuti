@@ -1,4 +1,4 @@
-const { PengajuanCuti, VerifikasiCuti, Pegawai, Notifikasi } = require("../models");
+const { PengajuanCuti, VerifikasiCuti, Pegawai, PelimpahanTugas, Notifikasi } = require("../models");
 const { Op } = require("sequelize");
 
 const getPengajuanCutiById = async (req, res) => {
@@ -17,12 +17,16 @@ const getPengajuanCutiById = async (req, res) => {
                 },
                 {
                     model: Pegawai,
-                    as: 'Pegawai'
+                    as: 'pegawai'
                 },
                 {
-                    model: Pegawai,
-                    as: 'PenerimaTugas',
-                    foreignKey: 'idPenerimaTugas'
+                    model: PelimpahanTugas,
+                    include: [
+                        {
+                            model: Pegawai,
+                            as: 'penerima'
+                        }
+                    ]
                 }
             ],
         });
@@ -43,7 +47,6 @@ const getRiwayatCutiByPegawai = async (req, res) => {
                 },
                 idPegawai: idPegawai,
             },
-            include: [/* relasi jika perlu */],
             order: [['updatedAt', 'DESC']],
         });
 
@@ -77,7 +80,7 @@ const getDraftById = async (req, res) => {
                 id,
                 status: 'Draft'
             },
-            include: [VerifikasiCuti]
+            include: [VerifikasiCuti, PelimpahanTugas]
         });
 
         if (!draft) {
@@ -133,16 +136,35 @@ const createPengajuanCuti = async (req, res) => {
             alasanCuti,
             alamatCuti,
             lampiran: lampiran,
-            idPenerimaTugas,
             status: statusPengajuan
         });
 
         const pengajuanId = pengajuan.id;
 
-        // 2. Ambil daftar atasan dari frontend (opsional)
+        // Membuat data pelimpahan tugas
+        if (idPenerimaTugas) {
+            await PelimpahanTugas.create({
+                idPengajuan: pengajuanId,
+                idPenerima: idPenerimaTugas,
+                status: isDraft === 'true' ? 'Draft' : 'Belum Diverifikasi'
+            });
+
+            // kirim notifikasi ke penerima tugas
+            if (isDraft !== 'true') {
+                const pegawai = await Pegawai.findByPk(idPegawai);
+                await Notifikasi.create({
+                    idPenerima: idPenerimaTugas,
+                    idPengajuan: pengajuanId,
+                    judul: 'Pelimpahan Tugas Baru',
+                    pesan: `Terdapat permohonan pelimpahan tugas dari ${pegawai.nama}.`
+                });
+            }
+        }
+
+        // Ambil daftar atasan dari frontend (opsional)
         const daftarAtasan = JSON.parse(req.body.daftarAtasan || "[]");
 
-        // 3. Tambahkan dari frontend dulu (jika ada)
+        // Tambahkan dari frontend dulu (jika ada)
         for (let i = 0; i < daftarAtasan.length; i++) {
             const verifikator = daftarAtasan[i];
             await VerifikasiCuti.create({
@@ -154,21 +176,21 @@ const createPengajuanCuti = async (req, res) => {
             });
         }
 
-        // 4. Cari Kepala Sub Bagian Umum
-        const kasubag = await Pegawai.findOne({
-            where: { jabatanStruktural: "Kepala Sub Bagian Umum" },
+        // Cari Kepala Bagian Umum
+        const kabag = await Pegawai.findOne({
+            where: { jabatanStruktural: "Kepala Bagian Umum" },
         });
-        if (kasubag) {
+        if (kabag) {
             await VerifikasiCuti.create({
                 idPengajuan: pengajuanId,
-                idPimpinan: kasubag.id,
+                idPimpinan: kabag.id,
                 urutanVerifikasi: daftarAtasan.length + 1,
                 statusVerifikasi,
-                jenisVerifikator: "Kepala Sub Bagian Umum",
+                jenisVerifikator: "Kepala Bagian Umum",
             });
         }
 
-        // 5. Cari Kepala Balai Besar
+        // Cari Kepala Balai Besar
         const kabalai = await Pegawai.findOne({
             where: { jabatanStruktural: "Kepala Balai Besar" },
         });
@@ -182,12 +204,13 @@ const createPengajuanCuti = async (req, res) => {
             });
         }
 
-        if (isDraft !== 'true') {
+        // Kirim notifikasi ke verifikator pertama (apabila tidak ada pelimpahan tugas dan bukan draft)
+        if (!idPenerimaTugas && isDraft !== 'true') {
             const verifikatorPertama = await VerifikasiCuti.findOne({
                 where: { idPengajuan: pengajuanId, urutanVerifikasi: 1 },
             });
-            const pegawai = await Pegawai.findByPk(pengajuan.idPegawai);
             if (verifikatorPertama) {
+                const pegawai = await Pegawai.findByPk(pengajuan.idPegawai);
                 await Notifikasi.create({
                     idPenerima: verifikatorPertama.idPimpinan,
                     idPengajuan: pengajuanId,
@@ -211,7 +234,6 @@ const updatePengajuanCuti = async (req, res) => {
             tanggalMulai,
             tanggalSelesai,
             durasi,
-            idPenerimaTugas: rawIdPenerimaTugas,
             isDraft
         } = req.body;
 
@@ -223,7 +245,7 @@ const updatePengajuanCuti = async (req, res) => {
         if (alamatCuti === "null" || alamatCuti === "") {
             alamatCuti = null;
         }
-        let idPenerimaTugas = rawIdPenerimaTugas;
+        let idPenerimaTugas = req.body.idPenerimaTugas;
         if (idPenerimaTugas === "null" || idPenerimaTugas === "") {
             idPenerimaTugas = null;
         }
@@ -234,12 +256,12 @@ const updatePengajuanCuti = async (req, res) => {
         const sisaKuota = isDraft === 'true' ? null : req.body.sisaKuota;
         const lampiran = req.file ? req.file.filename : req.body.lampiran || null;
 
+        // Update data pengajuan
         const pengajuan = await PengajuanCuti.findByPk(id);
         if (!pengajuan) return res.status(404).json({ msg: "Pengajuan cuti tidak ditemukan" });
         if (pengajuan.status !== "Draft") {
             return res.status(400).json({ msg: "Pengajuan cuti tidak dapat diubah karena sudah diajukan" });
         }
-        // Update data pengajuan
         await pengajuan.update({
             tanggalPengajuan,
             totalKuota,
@@ -250,16 +272,48 @@ const updatePengajuanCuti = async (req, res) => {
             alasanCuti,
             alamatCuti,
             lampiran: lampiran,
-            idPenerimaTugas,
             status: statusPengajuan,
         });
-        //hapus dulu daftar verifikasi di database
+
+        // Memperbarui data pelimpahan tugas
+        const existingPelimpahan = await PelimpahanTugas.findOne({ where: { idPengajuan: id } });
+
+        if (idPenerimaTugas) {
+          // masih/bakal ada pelimpahan tugas
+          if (existingPelimpahan) {
+            await existingPelimpahan.update({
+              idPenerima: idPenerimaTugas,
+              status: isDraft === 'true' ? 'Draft' : 'Belum Diverifikasi'
+            });
+          } else {
+            await PelimpahanTugas.create({
+              idPengajuan : id,
+              idPenerima: idPenerimaTugas,
+              status: isDraft === 'true' ? 'Draft' : 'Belum Diverifikasi'
+            });
+          }
+          // kirim notifikasi ke penerima tugas
+          if (isDraft !== 'true') {
+            const pegawai = await Pegawai.findByPk(pengajuan.idPegawai);
+            await Notifikasi.create({
+                idPenerima: idPenerimaTugas,
+                idPengajuan: id,
+                judul: 'Pelimpahan Tugas Baru',
+                pesan: `Terdapat permohonan pelimpahan tugas dari ${pegawai.nama}.`
+            });
+        }
+        } else if (existingPelimpahan) {
+          // user menghapus penerima tugas
+          await existingPelimpahan.destroy();
+        }
+        
+        // hapus dulu daftar verifikasi di database
         await VerifikasiCuti.destroy({ where: { idPengajuan: id } });
 
-        // 2. Ambil daftar atasan dari frontend (opsional)
+        // Ambil daftar atasan dari frontend (opsional)
         const daftarAtasan = JSON.parse(req.body.daftarAtasan || "[]");
 
-        // 3. Tambahkan dari frontend dulu (jika ada)
+        // Tambahkan dari frontend dulu (jika ada)
         for (let i = 0; i < daftarAtasan.length; i++) {
             const verifikator = daftarAtasan[i];
             await VerifikasiCuti.create({
@@ -271,21 +325,21 @@ const updatePengajuanCuti = async (req, res) => {
             });
         }
 
-        // 4. Cari Kepala Sub Bagian Umum
-        const kasubag = await Pegawai.findOne({
-            where: { jabatanStruktural: "Kepala Sub Bagian Umum" },
+        // Cari Kepala Bagian Umum
+        const kabag = await Pegawai.findOne({
+            where: { jabatanStruktural: "Kepala Bagian Umum" },
         });
-        if (kasubag) {
+        if (kabag) {
             await VerifikasiCuti.create({
                 idPengajuan: id,
-                idPimpinan: kasubag.id,
+                idPimpinan: kabag.id,
                 urutanVerifikasi: daftarAtasan.length + 1,
                 statusVerifikasi,
-                jenisVerifikator: "Kepala Sub Bagian Umum",
+                jenisVerifikator: "Kepala Bagian Umum",
             });
         }
 
-        // 5. Cari Kepala Balai Besar
+        // Cari Kepala Balai Besar
         const kabalai = await Pegawai.findOne({
             where: { jabatanStruktural: "Kepala Balai Besar" },
         });
@@ -299,7 +353,7 @@ const updatePengajuanCuti = async (req, res) => {
             });
         }
 
-        if (isDraft !== 'true') {
+        if (!idPenerimaTugas && isDraft !== 'true') {
             const verifikatorPertama = await VerifikasiCuti.findOne({
                 where: { idPengajuan: pengajuan.id, urutanVerifikasi: 1 },
             });
@@ -316,7 +370,8 @@ const updatePengajuanCuti = async (req, res) => {
 
         res.status(200).json({ msg: "Pengajuan cuti berhasil diperbarui / diajukan", data: pengajuan });
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        console.error('Gagal update pengajuan:', err);
+        res.status(500).json({ msg: 'Pengajuan cuti gagal diperbarui / diajukan', error: err.message });
     }
 };
 
@@ -327,7 +382,7 @@ const deletePengajuanCuti = async (req, res) => {
         const pengajuan = await PengajuanCuti.findByPk(id);
         if (!pengajuan) return res.status(404).json({ msg: "Pengajuan cuti tidak ditemukan" });
 
-        // Tidak bisa dihapus jika status bukan Menunggu
+        // Tidak bisa dihapus jika status bukan Draft
         if (pengajuan.status !== "Draft") {
             return res.status(400).json({ msg: "Pengajuan cuti tidak dapat dihapus karena sudah diverifikasi" });
         }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaHistory, FaFileAlt, FaClipboardCheck } from "react-icons/fa";
+import { FaHome, FaHistory, FaFileAlt, FaClipboardCheck, FaPeopleArrows } from "react-icons/fa";
 import { AiFillFileAdd } from "react-icons/ai";
 
 const SidebarAtasan = ({ isSidebarOpen, toggleSidebar }) => {
@@ -105,6 +105,15 @@ const SidebarAtasan = ({ isSidebarOpen, toggleSidebar }) => {
 					)}`}>
 					<FaClipboardCheck className="text-xl flex-shrink-0" />
 					<span className={linkTextClass}>Permohonan Cuti</span>
+				</Link>
+				<Link
+					to="/permohonan-pelimpahan-tugas"
+					onClick={handleMobileLinkClick}
+					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+						"/permohonan-pelimpahan-tugas"
+					)}`}>
+					<FaPeopleArrows className="text-xl flex-shrink-0" />
+					<span className={linkTextClass}>Permohonan <br /> Pelimpahan Tugas</span>
 				</Link>
 			</div>
 		</aside>

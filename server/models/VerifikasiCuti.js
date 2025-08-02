@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     jenisVerifikator: {
-      type: DataTypes.ENUM('Kepala Satuan Pelayanan', 'Ketua Tim', 'Kepala Sub Bagian Umum', 'Kepala Balai Besar', 'Admin'),
+      type: DataTypes.ENUM('Kepala Satuan Pelayanan', 'Ketua Tim', 'Kepala Bagian Umum', 'Kepala Balai Besar', 'Admin'),
       allowNull: false
     },
     urutanVerifikasi: {

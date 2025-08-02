@@ -8,6 +8,7 @@ const dataPegawaiRoutes = require("./routes/dataPegawaiRoutes");
 const kuotaCutiRoutes = require("./routes/kuotaCutiRoutes");
 const pengajuanCutiRoutes = require("./routes/pengajuanCutiRoutes");
 const verifikasiCutiRoutes = require("./routes/verifikasiCutiRoutes");
+const pelimpahanTugasRoutes = require("./routes/pelimpahanTugasRoutes");
 const validasiRoutes = require("./routes/validasiRoutes");
 const notifikasiRoutes = require("./routes/notifikasiRoutes");
 
@@ -15,7 +16,7 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use("/api/validasi", cors({ origin: "http://localhost:5173" }), validasiRoutes);
+app.use("/api/v", cors({ origin: "http://localhost:5173" }), validasiRoutes);
 
 app.use(cors({
   origin: "http://localhost:5173", // GANTI SESUAI URL FRONTEND
@@ -35,6 +36,7 @@ app.use("/api", dataPegawaiRoutes);
 app.use("/api/kuota-cuti", kuotaCutiRoutes);
 app.use("/api/pengajuan-cuti", pengajuanCutiRoutes);
 app.use("/api", verifikasiCutiRoutes);
+app.use("/api", pelimpahanTugasRoutes);
 app.use("/api/notifikasi", notifikasiRoutes);
 
 app.listen(PORT, async () => {

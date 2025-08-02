@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       Pegawai.hasOne(models.User, { foreignKey: "idPegawai", onDelete: "CASCADE", hooks: true });
       Pegawai.hasMany(models.KuotaCuti, { foreignKey: "idPegawai", onDelete: "CASCADE", hooks: true });
       Pegawai.hasMany(models.PengajuanCuti, { foreignKey: "idPegawai" });
-      Pegawai.hasMany(models.PengajuanCuti, { foreignKey: "idPenerimaTugas" });
+      Pegawai.hasMany(models.PelimpahanTugas, { foreignKey: "idPenerima" });
     }
   }
   Pegawai.init({
@@ -90,7 +90,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     jabatanStruktural: {
-      type: DataTypes.ENUM('Kepala Balai Besar', 'Kepala Sub Bagian Umum', 'Staf'),
+      type: DataTypes.ENUM('Kepala Balai Besar', 'Kepala Bagian Umum', 'Ketua Tim', 'Kepala Satuan Pelayanan', 'Lainnya'),
       allowNull: true
     },
     jabatanFungsional: {

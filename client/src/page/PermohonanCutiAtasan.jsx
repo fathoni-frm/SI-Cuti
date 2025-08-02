@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
 import MainLayout from "../Layouts/MainLayout";
@@ -33,22 +33,15 @@ const PermohonanCutiAtasan = () => {
 		};
 	};
 
-	const { paginatedData: belumDiprosesData, endIndex: belumDiprosesEnd } =
-		paginate(permohonanCuti, currentPageBelum);
-	const { paginatedData: disetujuiData, endIndex: disetujuiEnd } = paginate(
-		disetujui,
-		currentPageDisetujui
-	);
-	const { paginatedData: ditolakData, endIndex: ditolakEnd } = paginate(
-		ditolak,
-		currentPageDitolak
-	);
+	const { paginatedData: belumDiprosesData, endIndex: belumDiprosesEnd } = paginate(permohonanCuti, currentPageBelum);
+	const { paginatedData: disetujuiData, endIndex: disetujuiEnd } = paginate(disetujui, currentPageDisetujui);
+	const { paginatedData: ditolakData, endIndex: ditolakEnd } = paginate(ditolak, currentPageDitolak);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get("/permohonan-cuti");
-
+				const res = await axios.get("/permohonan-cuti/atasan");
+				
 				const normalisasi = (array) =>
 					array.map((item) => ({
 						idVerifikasi: item.id,
@@ -61,7 +54,8 @@ const PermohonanCutiAtasan = () => {
 						sisaKuota: item.PengajuanCuti.sisaKuota,
 						status: item.PengajuanCuti.status,
 						statusVerifikasi: item.statusVerifikasi,
-						Pegawai: { nama: item.PengajuanCuti.Pegawai.nama },
+						pegawai: { nama: item.PengajuanCuti.pegawai.nama },
+						suratCuti: item.PengajuanCuti.suratCuti,
 					}));
 
 				const hasilPermohonanCuti = normalisasi(res.data.permohonanCuti);

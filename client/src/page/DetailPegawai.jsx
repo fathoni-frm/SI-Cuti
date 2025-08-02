@@ -10,7 +10,7 @@ import BackgroundItem from "../components/BackgroundItem";
 import FormDataPegawai from "../components/FormDataPegawai";
 import TabelKuotaCuti from "../components/TabelKuotaCuti";
 import Spinner from "../components/Spinner";
-import { FaTrash, FaEdit, FaUserTie, FaCalendarAlt } from "react-icons/fa";
+import { FaTrash, FaEdit, FaCalendarAlt } from "react-icons/fa";
 
 const DetailPegawai = () => {
 	const { user } = useAuthStore();
@@ -97,6 +97,7 @@ const DetailPegawai = () => {
 	};
 
 	if (loading) return <Spinner />;
+	
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-4 sm:p-6 w-full">

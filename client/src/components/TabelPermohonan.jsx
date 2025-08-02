@@ -35,7 +35,7 @@ const TabelPermohonan = ({
 
 				navigate(`/detail-cuti/${idPengajuan}`);
 			} catch (error) {
-				console.error("Gagal update status verifikasi frontend:", error);
+				console.error("Gagal update status verifikasi:", error);
 			}
 		}
 
@@ -84,7 +84,7 @@ const TabelPermohonan = ({
 							<th className="px-2 py-3">Nama Pemohon</th>
 							<th className="px-2 py-3">Jenis Cuti</th>
 							<th className="px-2 py-3">Mulai</th>
-							<th className="px-2 py-3">Akhir</th>
+							<th className="px-2 py-3">Selesai</th>
 							{showQuota && (
 								<>
 									<th className="px-2 py-3">Total Kuota</th>
@@ -120,7 +120,7 @@ const TabelPermohonan = ({
 									{formatGMT8(item.tanggalPengajuan)}
 								</td>
 								<td className="px-2 py-2 whitespace-nowrap">
-									{item.Pegawai.nama}
+									{item.pegawai.nama}
 								</td>
 								<td className="px-2 py-2 whitespace-nowrap">
 									{item.jenisCuti}

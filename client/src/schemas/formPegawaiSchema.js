@@ -1,4 +1,6 @@
 import * as Yup from "yup";
+import axios from "../api/axios";
+
 export const initialValues = {
     nip: "",
     nama: "",
@@ -162,7 +164,7 @@ export const validationSchemaAdd = Yup.object({
         .required("Golongan wajib diisi"),
     jabatanStruktural: Yup.string()
         .oneOf(
-            ["Kepala Balai Besar", "Kepala Sub Bagian Umum", "Staf"],
+            ["Kepala Balai Besar", "Kepala Bagian Umum", "Ketua Tim", "Kepala Satuan Pelayanan", "Lainnya"],
             "Jabatan struktural tidak valid"
         )
         .required("Jabatan struktural wajib diisi"),
@@ -350,7 +352,7 @@ export const validationSchemaEdit = Yup.object({
         .required("Golongan wajib diisi"),
     jabatanStruktural: Yup.string()
         .oneOf(
-            ["Kepala Balai Besar", "Kepala Sub Bagian Umum", "Staf"],
+            ["Kepala Balai Besar", "Kepala Bagian Umum", "Ketua Tim", "Kepala Satuan Pelayanan", "Lainnya"],
             "Jabatan struktural tidak valid"
         )
         .required("Jabatan struktural wajib diisi"),
@@ -406,6 +408,46 @@ export const validationSchemaEdit = Yup.object({
         .required("Role wajib dipilih"),
 });
 
+export const validationSchemaEditDataDiri = Yup.object({
+    karpeg: Yup.string().required("Nomor Kartu Pegawai wajib diisi"),
+    karisKarsu: Yup.string().required("Nomor Karis-Karsu wajib diisi"),
+    npwp: Yup.string().required("Nomor NPWP wajib diisi"),
+    tempatLahir: Yup.string().required("Tempat lahir wajib diisi"),
+    tanggalLahir: Yup.date().required("Tanggal lahir wajib diisi"),
+    jenisKelamin: Yup.string()
+        .oneOf(["Laki-laki", "Perempuan"], "Jenis kelamin tidak valid")
+        .required("Jenis kelamin wajib diisi"),
+    agama: Yup.string()
+        .oneOf(
+            ["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu"],
+            "Agama tidak valid"
+        )
+        .required("Agama wajib diisi"),
+    statusKeluarga: Yup.string()
+        .oneOf(["Menikah", "Belum Menikah", "Duda / Janda"], "Status keluarga tidak valid")
+        .required("Status keluarga wajib diisi"),
+    noHp: Yup.string()
+        .matches(/^08\d{8,11}$/, "Nomor telepon tidak valid")
+        .required("Nomor telepon wajib diisi"),
+    emailPribadi: Yup.string()
+        .required("Email pribadi wajib diisi")
+        .email("Email pribadi tidak valid"),
+})
+
+export const validateNipUsername = async (nip, username) => {
+    try {
+        const res = await axios.post("/pegawai/validate", { nip, username });
+        // Jika berhasil, berarti tidak duplikat
+        return true;
+    } catch (error) {
+        // Jika error 400 atau 422 dan mengandung detail kesalahan
+        if (error.response?.data?.errors) {
+            throw error.response.data.errors;
+        }
+        throw new Error("Terjadi kesalahan saat validasi NIP/username");
+    }
+};
+
 export const pangkatToGolongan = {
     "Juru Muda": "I/a",
     "Juru Muda Tingkat I": "I/b",
@@ -429,3 +471,15 @@ export const pangkatToGolongan = {
 export const golonganToPangkat = Object.fromEntries(
     Object.entries(pangkatToGolongan).map(([pangkat, golongan]) => [golongan, pangkat])
 );
+
+export const jabatanToRole = {
+    "Kepala Balai Besar": "Atasan",
+    "Kepala Bagian Umum": "Atasan",
+    "Ketua Tim": "Atasan",
+    "Kepala Satuan Pelayanan": "Atasan",
+};
+
+export const roleToJabatan = {
+    "Pegawai": "Lainnya",
+    "Admin": "Lainnya",
+};

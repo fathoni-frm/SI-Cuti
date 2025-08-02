@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaHistory, FaFileAlt } from "react-icons/fa";
+import { FaHome, FaHistory, FaFileAlt, FaPeopleArrows } from "react-icons/fa";
 import { AiFillFileAdd } from "react-icons/ai";
 
 const SidebarPegawai = ({ isSidebarOpen, toggleSidebar }) => {
@@ -92,6 +92,24 @@ const SidebarPegawai = ({ isSidebarOpen, toggleSidebar }) => {
 					)}`}>
 					<FaFileAlt className="text-xl flex-shrink-0" />
 					<span className={linkTextClass}>Draft Pengajuan</span>
+				</Link>
+
+				<hr
+					className={`border-1 border-gray-600 w-5/6 mx-auto my-2 transition-opacity duration-150 ${
+						isSidebarOpen ? "opacity-100" : "opacity-0"
+					}`}
+				/>
+
+				<Link
+					to="/permohonan-pelimpahan-tugas"
+					onClick={handleMobileLinkClick}
+					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+						"/permohonan-pelimpahan-tugas"
+					)}`}>
+					<FaPeopleArrows className="text-xl flex-shrink-0" />
+					<span className={linkTextClass}>
+						Permohonan <br /> Pelimpahan Tugas
+					</span>
 				</Link>
 			</div>
 		</aside>

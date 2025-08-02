@@ -22,8 +22,8 @@ const createKuotaCuti = async (req, res) => {
         const { idPegawai } = req.body;
 
         const jenisCutiList = [
-            { jenisCuti: 'Cuti Tahunan N-2', totalKuota: 6 },
-            { jenisCuti: 'Cuti Tahunan N-1', totalKuota: 6 },
+            { jenisCuti: 'Cuti Tahunan N-2', totalKuota: 0 },
+            { jenisCuti: 'Cuti Tahunan N-1', totalKuota: 0 },
             { jenisCuti: 'Cuti Tahunan', totalKuota: 12 },
             { jenisCuti: 'Cuti Besar', totalKuota: 90 },
             { jenisCuti: 'Cuti Sakit', totalKuota: 30 },
@@ -47,7 +47,6 @@ const createKuotaCuti = async (req, res) => {
         res.status(500).json({ msg: error.message });
     }
 };
-
 
 const updateKuotaCuti = async (req, res) => {
     try {

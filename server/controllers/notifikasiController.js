@@ -1,4 +1,4 @@
-const { Notifikasi, PengajuanCuti, VerifikasiCuti } = require("../models");
+const { Notifikasi, PengajuanCuti, VerifikasiCuti, PelimpahanTugas } = require("../models");
 
 const getNotifikasiByUser = async (req, res) => {
   try {
@@ -25,14 +25,22 @@ const tandaiSudahDibaca = async (req, res) => {
     if (notifikasi.idPenerima !== idPegawai) {
       return res.status(403).json({ msg: "Akses ditolak" });
     }
+
     await notifikasi.update({ isRead: true });
 
-    const verifikasi = await VerifikasiCuti.findOne({ where: { idPengajuan, idPimpinan: idPegawai } });
-    if (verifikasi && verifikasi.statusVerifikasi === "Belum Diverifikasi") {
-      await verifikasi.update({ statusVerifikasi: "Diproses" });
+    if (notifikasi.judul === "Pelimpahan Tugas Baru" || notifikasi.judul === "Pelimpahan Tugas Dibatalkan") {
+      const pelimpahan = await PelimpahanTugas.findOne({ where: { idPengajuan, idPenerima: idPegawai } });
+      if (pelimpahan && pelimpahan.status === "Belum Diverifikasi") {
+        await pelimpahan.update({ status: "Diproses" });
+      }
+      return res.json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "pelimpahan", idPelimpahan: pelimpahan.id });
+    } else {
+      const verifikasi = await VerifikasiCuti.findOne({ where: { idPengajuan, idPimpinan: idPegawai } });
+      if (verifikasi && verifikasi.statusVerifikasi === "Belum Diverifikasi") {
+        await verifikasi.update({ statusVerifikasi: "Diproses" });
+      }
+      return res.json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "cuti" });
     }
-
-    res.json({ msg: "Notifikasi ditandai sudah dibaca" });
   } catch (error) {
     res.status(500).json({ msg: "Gagal update notifikasi", error: error.message });
   }

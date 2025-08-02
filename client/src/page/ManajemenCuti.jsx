@@ -188,7 +188,7 @@ const ManajemenCuti = () => {
 										{selectedPegawai.golongan}
 									</div>
 									<div>
-										<span className="font-semibold">Satuan Kerja : </span>
+										<span className="font-semibold">Satuan Pelayanan : </span>
 										{selectedPegawai.satuanKerja}
 									</div>
 									<div>

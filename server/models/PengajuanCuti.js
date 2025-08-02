@@ -5,11 +5,9 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class PengajuanCuti extends Model {
     static associate(models) {
-      PengajuanCuti.belongsTo(models.Pegawai, { foreignKey: "idPegawai", as: "Pegawai" });
-      PengajuanCuti.belongsTo(models.Pegawai, { foreignKey: "idPenerimaTugas", as: "PenerimaTugas" });
-      PengajuanCuti.hasMany(models.VerifikasiCuti, {
-        foreignKey: "idPengajuan", onDelete: "CASCADE", hooks: true,
-      });
+      PengajuanCuti.belongsTo(models.Pegawai, { foreignKey: "idPegawai", as: "pegawai" });
+      PengajuanCuti.hasMany(models.VerifikasiCuti, { foreignKey: "idPengajuan", onDelete: "CASCADE", hooks: true });
+      PengajuanCuti.hasOne(models.PelimpahanTugas, { foreignKey: "idPengajuan", onDelete: "CASCADE", hooks: true })
     }
   }
   PengajuanCuti.init({
@@ -62,17 +60,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    idPenerimaTugas: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
     status: {
       type: DataTypes.ENUM('Draft', 'Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'),
       allowNull: false
     },
     suratCuti: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
   }, {
     sequelize,

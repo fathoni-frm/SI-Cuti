@@ -53,10 +53,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      idPenerimaTugas: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-      },
       status: {
         type: Sequelize.ENUM('Draft', 'Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'),
         allowNull: false

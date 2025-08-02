@@ -9,18 +9,13 @@ import { FaTimesCircle, FaSpinner, FaCheckCircle } from "react-icons/fa";
 
 const DashboardAdmin = () => {
 	const [semuaData, setSemuaData] = useState([]);
-	const dataDiproses = semuaData
-		.filter((item) => item.status === "Diproses")
-		.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan))
-		.slice(0, 5);
-	const dataSelesai = semuaData
-		.filter((item) => item.status === "Disetujui" || item.status === "Ditolak")
-		.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan))
-		.slice(0, 5);
-	const dataDibatalkan = semuaData
-		.filter((item) => item.status === "Dibatalkan")
-		.sort((a, b) => new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan))
-		.slice(0, 5);
+	const dataDiproses = semuaData.filter((item) => item.status === "Diproses");
+	const dataSelesai = semuaData.filter(
+		(item) => item.status === "Disetujui" || item.status === "Ditolak"
+	);
+	const dataDibatalkan = semuaData.filter(
+		(item) => item.status === "Dibatalkan"
+	);
 
 	const dataPermohonanPegawai = [
 		{
@@ -49,7 +44,7 @@ const DashboardAdmin = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get("/permohonan-cuti");
+				const res = await axios.get("/permohonan-cuti/admin");
 				setSemuaData(res.data);
 			} catch (err) {
 				console.error("Gagal ambil data permohonan:", err);
@@ -74,7 +69,12 @@ const DashboardAdmin = () => {
 						<TabelPermohonan
 							showPagination={false}
 							isDashboard={true}
-							data={dataDiproses}
+							data={dataDiproses
+								.sort(
+									(a, b) =>
+										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+								)
+								.slice(0, 5)}
 						/>
 					</BackgroundItem>
 
@@ -82,7 +82,12 @@ const DashboardAdmin = () => {
 						<TabelPermohonan
 							showPagination={false}
 							isDashboard={true}
-							data={dataSelesai}
+							data={dataSelesai
+								.sort(
+									(a, b) =>
+										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+								)
+								.slice(0, 5)}
 						/>
 					</BackgroundItem>
 
@@ -90,7 +95,12 @@ const DashboardAdmin = () => {
 						<TabelPermohonan
 							showPagination={false}
 							isDashboard={true}
-							data={dataDibatalkan}
+							data={dataDibatalkan
+								.sort(
+									(a, b) =>
+										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+								)
+								.slice(0, 5)}
 						/>
 					</BackgroundItem>
 				</div>

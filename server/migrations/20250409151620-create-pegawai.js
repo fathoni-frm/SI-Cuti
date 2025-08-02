@@ -87,7 +87,7 @@ module.exports = {
         allowNull: false
       },
       jabatanStruktural: {
-        type: Sequelize.ENUM('Kepala Balai Besar', 'Kepala Sub Bagian Umum', 'Staf'),
+        type: Sequelize.ENUM('Kepala Balai Besar', 'Kepala Bagian Umum', 'Ketua Tim', 'Kepala Satuan Pelayanan', 'Lainnya'),
         allowNull: true
       },
       jabatanFungsional: {

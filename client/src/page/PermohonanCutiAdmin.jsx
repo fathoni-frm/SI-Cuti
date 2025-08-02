@@ -167,8 +167,8 @@ const PermohonanCutiAdmin = () => {
 			const dataCuti = filteredData.map((item, index) => ({
 				No: index + 1,
 				"Tanggal Pengajuan": formatGMT8(item.tanggalPengajuan),
-				"Nama Pegawai": item.Pegawai.nama,
-				"NIP Pegawai": item.Pegawai.nip,
+				"Nama Pegawai": item.pegawai.nama,
+				"NIP Pegawai": item.pegawai.nip,
 				"Jenis Cuti": item.jenisCuti,
 				"Tanggal Mulai": formatGMT8(item.tanggalMulai, { showTime: false }),
 				"Tanggal Selesai": formatGMT8(item.tanggalSelesai, { showTime: false }),
@@ -222,7 +222,7 @@ const PermohonanCutiAdmin = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get("/permohonan-cuti");
+				const res = await axios.get("/permohonan-cuti/admin");
 				const hasil = res.data.filter((item) => item.status !== "Draft");
 				setData(hasil);
 			} catch (err) {

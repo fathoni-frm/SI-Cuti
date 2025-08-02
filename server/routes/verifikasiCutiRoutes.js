@@ -5,7 +5,8 @@ const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
 
 router.use(verifyToken);
 
-router.get('/permohonan-cuti', authorizeRoles('Admin', 'Atasan'), verifikasiCutiController.getDataPermohonanCuti);
+router.get('/permohonan-cuti/admin', authorizeRoles('Admin'), verifikasiCutiController.getDataPermohonanCutiAdmin);
+router.get('/permohonan-cuti/atasan', authorizeRoles('Atasan'), verifikasiCutiController.getDataPermohonanCutiAtasan);
 router.patch('/status-to-diproses/:id', authorizeRoles('Admin', 'Atasan'), verifikasiCutiController.updateStatusToDiproses);
 router.patch('/verifikasi-cuti/:id', authorizeRoles('Admin', 'Atasan'), verifikasiCutiController.verifikasiCuti);
 router.patch('/batalkan-cuti/:id', authorizeRoles('Admin', 'Atasan'), verifikasiCutiController.batalCutiOlehAdmin);

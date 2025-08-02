@@ -3,6 +3,8 @@ import { useFormikContext, Form, Field, ErrorMessage } from "formik";
 import {
 	pangkatToGolongan,
 	golonganToPangkat,
+	jabatanToRole,
+	roleToJabatan,
 } from "../schemas/formPegawaiSchema";
 import { FaUser, FaSchoolFlag } from "react-icons/fa6";
 import { HiBuildingOffice2 } from "react-icons/hi2";
@@ -32,7 +34,7 @@ const TextInput = ({
 	type = "text",
 	isReadOnly,
 	password = false,
-	placeholder, // tambahkan props ini
+	placeholder,
 }) => (
 	<div>
 		<Label htmlFor={name}>{label}</Label>
@@ -109,7 +111,7 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 		"SMP / Sederajat",
 		"SMA / Sederajat",
 	].includes(pendidikan);
-	
+
 	useEffect(() => {
 		const gol = pangkatToGolongan[values.pangkat];
 		if (gol && values.golongan !== gol) {
@@ -123,6 +125,24 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 			setFieldValue("pangkat", pang);
 		}
 	}, [values.golongan]);
+
+	useEffect(() => {
+		const role = jabatanToRole[values.jabatanStruktural];
+		if (role === null && values.role !== "") {
+			setFieldValue("role", "");
+		} else if (role && values.role !== role) {
+			setFieldValue("role", role);
+		}
+	}, [values.jabatanStruktural]);
+
+	useEffect(() => {
+		const jab = roleToJabatan[values.role];
+		if (jab === null && values.jabatanStruktural !== "") {
+			setFieldValue("jabatanStruktural", "");
+		} else if (jab && values.jabatanStruktural !== jab) {
+			setFieldValue("jabatanStruktural", jab);
+		}
+	}, [values.role]);
 
 	return (
 		<Form>
@@ -210,7 +230,7 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 						/>
 						<TextInput
 							name="namaFakultas"
-							label="Nama Fakultas (Opsional)"
+							label="Nama Fakultas"
 							isReadOnly={isReadOnly}
 							placeholder="Masukkan Nama Fakultas"
 						/>
@@ -271,7 +291,13 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 				<SelectInput
 					name="jabatanStruktural"
 					label="Jabatan Struktural"
-					options={["Kepala Balai Besar", "Kepala Sub Bagian Umum", "Staf"]}
+					options={[
+						"Kepala Balai Besar",
+						"Kepala Bagian Umum",
+						"Ketua Tim",
+						"Kepala Satuan Pelayanan",
+						"Lainnya",
+					]}
 					isReadOnly={isReadOnly}
 				/>
 				<SelectInput

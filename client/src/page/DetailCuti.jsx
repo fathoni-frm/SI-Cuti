@@ -4,7 +4,6 @@ import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
 import { formatGMT8 } from "../schemas/timeFormatter";
 import Swal from "sweetalert2";
-import { toast } from "react-toastify";
 import MainLayout from "../Layouts/MainLayout";
 import BackgroundItem from "../components/BackgroundItem";
 import Spinner from "../components/Spinner";
@@ -24,6 +23,7 @@ const DetailCuti = () => {
 	const { id } = useParams();
 	const { user } = useAuthStore();
 	const [data, setData] = useState(null);
+	const [pelimpahan, setPelimpahan] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -34,6 +34,7 @@ const DetailCuti = () => {
 				});
 				const data = res.data;
 				setData(data);
+				setPelimpahan(data.PelimpahanTuga);
 			} catch (err) {
 				console.error("Gagal ambil detail cuti:", err);
 			}
@@ -57,12 +58,17 @@ const DetailCuti = () => {
 				item.statusVerifikasi === "Diproses")
 	);
 	const bisaVerifikasi =
-		user.role === "Atasan" && giliran && giliran.idPimpinan === user.idPegawai;
+		user.role === "Atasan" &&
+		giliran &&
+		giliran.idPimpinan === user.idPegawai &&
+		(!data.PelimpahanTuga || data.PelimpahanTuga.status === "Disetujui");
 
 	const verifikatorTertampil = [];
 	for (const v of data.VerifikasiCutis) {
 		verifikatorTertampil.push(v);
-		if (["Belum Diverifikasi", "Diproses", "Ditolak"].includes(v.statusVerifikasi)) {
+		if (
+			["Belum Diverifikasi", "Diproses", "Ditolak"].includes(v.statusVerifikasi)
+		) {
 			break;
 		}
 	}
@@ -224,13 +230,13 @@ const DetailCuti = () => {
 				{/* Profil Pegawai */}
 				<BackgroundItem title="Profil Pegawai" icon={<FaUser />}>
 					<div className="py-2">
-						<FormFieldRow label="Nama / NIP">{`${data.Pegawai.nama} / ${data.Pegawai.nip}`}</FormFieldRow>
-						<FormFieldRow label="Golongan / Jabatan">{`${data.Pegawai.golongan} / ${data.Pegawai.jabatanFungsional}`}</FormFieldRow>
+						<FormFieldRow label="Nama / NIP">{`${data.pegawai.nama} / ${data.pegawai.nip}`}</FormFieldRow>
+						<FormFieldRow label="Golongan / Jabatan">{`${data.pegawai.golongan} / ${data.pegawai.jabatanFungsional}`}</FormFieldRow>
 						<FormFieldRow label="Unit Kerja">
-							{data.Pegawai.satuanKerja}
+							{data.pegawai.satuanKerja}
 						</FormFieldRow>
 						<FormFieldRow label="Nomor Telepon">
-							{data.Pegawai.noHp}
+							{data.pegawai.noHp}
 						</FormFieldRow>
 					</div>
 				</BackgroundItem>
@@ -368,7 +374,7 @@ const DetailCuti = () => {
 				</BackgroundItem>
 
 				{/* Formulir Pelimpahan Tugas */}
-				{data.PenerimaTugas && (
+				{data.PelimpahanTuga && (
 					<BackgroundItem title="Formulir Pelimpahan Tugas" icon={<FaTasks />}>
 						<div className="p-4 sm:px-6">
 							<p className="mb-4 font-medium text-black text-justify">
@@ -383,7 +389,7 @@ const DetailCuti = () => {
 										<div>:</div>
 									</div>
 									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{`${data.PenerimaTugas.nama} / ${data.PenerimaTugas.nip}`}
+										{`${data.PelimpahanTuga.penerima.nama} / ${data.PelimpahanTuga.penerima.nip}`}
 									</div>
 								</div>
 
@@ -393,7 +399,7 @@ const DetailCuti = () => {
 										<div>:</div>
 									</div>
 									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{`${data.PenerimaTugas.pangkat} / ${data.PenerimaTugas.golongan} / ${data.PenerimaTugas.jabatanFungsional}`}
+										{`${data.PelimpahanTuga.penerima.pangkat} / ${data.PelimpahanTuga.penerima.golongan} / ${data.PelimpahanTuga.penerima.jabatanFungsional}`}
 									</div>
 								</div>
 
@@ -403,7 +409,7 @@ const DetailCuti = () => {
 										<div>:</div>
 									</div>
 									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{data.PenerimaTugas.satuanKerja}
+										{data.PelimpahanTuga.penerima.satuanKerja}
 									</div>
 								</div>
 							</div>
@@ -442,7 +448,7 @@ const DetailCuti = () => {
 						<div className="relative border-l-2 border-gray-300 space-y-6 pl-6 py-2">
 							<div className="relative">
 								{/* titik */}
-								<div className="absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 bg-blue-500 border-2 border-white rounded-full ring-2 ring-blue-300"></div>
+								<div className="absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 bg-green-500 border-2 border-white rounded-full ring-2 ring-green-300"></div>
 								<div className="p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
 									<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1">
 										<p className="text-sm font-semibold text-gray-800">
@@ -453,39 +459,127 @@ const DetailCuti = () => {
 										</p>
 									</div>
 									<p className="text-xs text-gray-600">
-										Oleh: {data.Pegawai.nama}
+										Oleh: {data.pegawai.nama}
 									</p>
 								</div>
 							</div>
 
-							{verifikatorTertampil?.map((v, i) => (
-								<div key={i} className="relative">
-									{/* titik */}
+							{pelimpahan && (
+								<div className="relative">
 									<div
 										className={`absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 border-2 border-white rounded-full shadow-sm
                         						${
+																			pelimpahan.status === "Disetujui"
+																				? "bg-green-500 ring-2 ring-green-300"
+																				: pelimpahan.status === "Ditolak"
+																				? "bg-red-500 ring-2 ring-red-300"
+																				: pelimpahan.status === "Diproses"
+																				? "bg-yellow-500 ring-2 ring-yellow-300"
+																				: pelimpahan.status === "Dibatalkan"
+																				? "bg-gray-500 ring-2 ring-gray-300"
+																				: "bg-blue-500 ring-2 ring-blue-300"
+																		}`}></div>
+									<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
+										<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
+											<h4 className="text-sm font-semibold text-gray-800">
+												Pelimpahan Tugas
+												<span
+													className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
+                                    					${
+																								pelimpahan.status ===
+																								"Disetujui"
+																									? "bg-green-100 text-green-800"
+																									: pelimpahan.status ===
+																									  "Ditolak"
+																									? "bg-red-100 text-red-800"
+																									: pelimpahan.status ===
+																									  "Diproses"
+																									? "bg-yellow-100 text-yellow-800"
+																									: pelimpahan.status ===
+																									  "Belum Diverifikasi"
+																									? "bg-blue-100 text-blue-800"
+																									: pelimpahan.status ===
+																									  "Dibatalkan"
+																									? "bg-gray-100 text-gray-800"
+																									: ""
+																							}`}>
+													{pelimpahan.status}
+												</span>
+											</h4>
+											<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
+												{pelimpahan.status !== "Belum Diverifikasi"
+													? formatGMT8(pelimpahan.updatedAt)
+													: pelimpahan.statusVerifikasi === "Dibatalkan"
+													? formatGMT8(pelimpahan.updatedAt, {
+															showTime: false,
+													  })
+													: ""}
+											</p>
+										</div>
+										<p className="text-xs text-gray-600 mb-1">
+											Oleh:{" "}
+											<span className="font-medium">
+												{pelimpahan.penerima.nama}
+											</span>{" "}
+											({pelimpahan.penerima.nip})
+										</p>
+										<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
+											{pelimpahan.komentar
+												? `Komentar: ${pelimpahan.komentar}`
+												: pelimpahan.status === "Belum Diverifikasi"
+												? "Menunggu persetujuan dari pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam."
+												: pelimpahan.status === "Diproses"
+												? "Pengajuan telah ditinjau oleh pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam"
+												: pelimpahan.status === "Disetujui"
+												? "Pelimpahan tugas telah disetujui oleh pegawai terkait."
+												: pelimpahan.status === "Ditolak"
+												? "Pelimpahan tugas ditolak."
+												: pelimpahan.status === "Dibatalkan"
+												? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pegawai terkait apabila melakukan pengajuan kembali."
+												: ""}
+										</p>
+									</div>
+								</div>
+							)}
+
+							{(!pelimpahan ||
+								pelimpahan.status === "Disetujui" ||
+								pelimpahan.status === "Dibatalkan") &&
+								verifikatorTertampil?.map((v, i) => (
+									<div key={i} className="relative">
+										{/* titik */}
+										<div
+											className={`absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 border-2 border-white rounded-full shadow-sm
+                        						${
 																			v.statusVerifikasi === "Disetujui"
 																				? "bg-green-500 ring-2 ring-green-300"
-																				: v.statusVerifikasi === "Ditolak"
+																				: v.statusVerifikasi === "Ditolak" ||
+																				  (v.statusVerifikasi ===
+																						"Dibatalkan" &&
+																						v.jenisVerifikator === "Admin")
 																				? "bg-red-500 ring-2 ring-red-300"
 																				: v.statusVerifikasi === "Diproses"
 																				? "bg-yellow-500 ring-2 ring-yellow-300"
 																				: v.statusVerifikasi === "Dibatalkan"
 																				? "bg-gray-500 ring-2 ring-gray-300"
-																				: ""
+																				: "bg-blue-500 ring-2 ring-blue-300"
 																		}`}></div>
-									<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
-										<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
-											<h4 className="text-sm font-semibold text-gray-800">
-												{v.jenisVerifikator}
-												<span
-													className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
+										<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
+											<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
+												<h4 className="text-sm font-semibold text-gray-800">
+													{v.jenisVerifikator}
+													<span
+														className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
                                     					${
 																								v.statusVerifikasi ===
 																								"Disetujui"
 																									? "bg-green-100 text-green-800"
 																									: v.statusVerifikasi ===
-																									  "Ditolak"
+																											"Ditolak" ||
+																									  (v.statusVerifikasi ===
+																											"Dibatalkan" &&
+																											v.jenisVerifikator ===
+																												"Admin")
 																									? "bg-red-100 text-red-800"
 																									: v.statusVerifikasi ===
 																									  "Diproses"
@@ -498,48 +592,50 @@ const DetailCuti = () => {
 																									? "bg-gray-100 text-gray-800"
 																									: ""
 																							}`}>
-													{v.statusVerifikasi}
-												</span>
-											</h4>
-											<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
-												{(v.jenisVerifikator === "Admin" &&
-													v.statusVerifikasi === "Dibatalkan") ||
-												(v.statusVerifikasi !== "Belum Diverifikasi" &&
-													v.statusVerifikasi !== "Dibatalkan")
-													? formatGMT8(v.updatedAt)
-													: v.jenisVerifikator !== "Admin" &&
-													  v.statusVerifikasi === "Dibatalkan"
-													? formatGMT8(v.updatedAt, {showTime : false})
-													: ""}
+														{v.statusVerifikasi}
+													</span>
+												</h4>
+												<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
+													{(v.jenisVerifikator === "Admin" &&
+														v.statusVerifikasi === "Dibatalkan") ||
+													(v.statusVerifikasi !== "Belum Diverifikasi" &&
+														v.statusVerifikasi !== "Dibatalkan")
+														? formatGMT8(v.updatedAt)
+														: v.jenisVerifikator !== "Admin" &&
+														  v.statusVerifikasi === "Dibatalkan"
+														? formatGMT8(v.updatedAt, { showTime: false })
+														: ""}
+												</p>
+											</div>
+											<p className="text-xs text-gray-600 mb-1">
+												Oleh:{" "}
+												<span className="font-medium">
+													{v.verifikator.nama}
+												</span>{" "}
+												({v.verifikator.nip})
 											</p>
+											{(v.komentar ||
+												(v.statusVerifikasi === "Belum Diverifikasi" &&
+													v.jenisVerifikator !== "Admin") ||
+												(v.statusVerifikasi === "Diproses" &&
+													v.jenisVerifikator !== "Admin") ||
+												(v.statusVerifikasi === "Dibatalkan" &&
+													v.jenisVerifikator !== "Admin")) && (
+												<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
+													{v.komentar
+														? `Komentar: ${v.komentar}`
+														: v.statusVerifikasi === "Belum Diverifikasi"
+														? "Menunggu verifikasi dari pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam."
+														: v.statusVerifikasi === "Diproses"
+														? "Pengajuan telah ditinjau oleh pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam"
+														: v.statusVerifikasi === "Dibatalkan"
+														? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pejabat terkait apabila melakukan pengajuan kembali."
+														: ""}
+												</p>
+											)}
 										</div>
-										<p className="text-xs text-gray-600 mb-1">
-											Oleh:{" "}
-											<span className="font-medium">{v.verifikator.nama}</span>{" "}
-											({v.verifikator.nip})
-										</p>
-										{(v.komentar ||
-											(v.statusVerifikasi === "Belum Diverifikasi" &&
-												v.jenisVerifikator !== "Admin") ||
-											(v.statusVerifikasi === "Diproses" &&
-												v.jenisVerifikator !== "Admin") ||
-											(v.statusVerifikasi === "Dibatalkan" &&
-												v.jenisVerifikator !== "Admin")) && (
-											<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
-												{v.komentar
-													? `Komentar: ${v.komentar}`
-													: v.statusVerifikasi === "Belum Diverifikasi"
-													? "Menunggu verifikasi dari pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam."
-													: v.statusVerifikasi === "Diproses"
-													? "Pengajuan telah ditinjau oleh pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam"
-													: v.statusVerifikasi === "Dibatalkan"
-													? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pejabat terkait apabila melakukan pengajuan kembali."
-													: ""}
-											</p>
-										)}
 									</div>
-								</div>
-							))}
+								))}
 						</div>
 					</div>
 				</BackgroundItem>

@@ -1,79 +1,104 @@
 const { Op } = require('sequelize');
-const { VerifikasiCuti, PengajuanCuti, Pegawai, KuotaCuti, Notifikasi } = require('../models');
+const { VerifikasiCuti, PengajuanCuti, PelimpahanTugas, Pegawai, KuotaCuti, Notifikasi } = require('../models');
 const { generateSuratCuti } = require('./cetakSuratCutiController');
 
-const getDataPermohonanCuti = async (req, res) => {
+const getDataPermohonanCutiAdmin = async (req, res) => {
     try {
-        const { role, idPegawai } = req.user;
-
-        if (role === 'Admin') {
-            const data = await PengajuanCuti.findAll({
-                include: [
-                    { model: Pegawai, as: 'Pegawai' },
-                    { model: Pegawai, as: 'PenerimaTugas' }
-                ],
-                order: [['tanggalPengajuan', 'DESC']]
-            });
-            return res.json(data);
-        }
-
-        if (role === 'Atasan') {
-            // Semua pengajuan pengajuan yang diverifikasi atasan tersebut
-            const semuaVerifikasi = await VerifikasiCuti.findAll({
-                where: { idPimpinan: idPegawai },
-                include: [{
-                    model: PengajuanCuti,
-                    where: { status: { [Op.in]: ['Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'] } },
-                    include: [{ model: Pegawai, as: 'Pegawai' }]
-                }],
-            });
-
-            const permohonanCuti = [];
-            const disetujui = [];
-            const ditolak = [];
-
-            for (const v of semuaVerifikasi) {
-                // Ambil semua verifikator untuk pengajuan ini
-                const semuaVerifikator = await VerifikasiCuti.findAll({
-                    where: { idPengajuan: v.idPengajuan },
-                    order: [['urutanVerifikasi', 'ASC']],
-                });
-
-                // Temukan posisi (urutan) verifikator ini
-                const urutanSaya = semuaVerifikator.findIndex(
-                    (vx) => vx.idPimpinan === idPegawai
-                );
-
-                // Cek semua verifikator sebelum saya, harus sudah "Disetujui"
-                const semuaSebelumSayaDisetujui = semuaVerifikator
-                    .slice(0, urutanSaya)
-                    .every((vx) => vx.statusVerifikasi === 'Disetujui');
-
-                const statusSaya = semuaVerifikator[urutanSaya]?.statusVerifikasi;
-
-                // Jika semua sebelumnya "Disetujui", dan saya belum memverifikasi, maka tampilkan
-                if (
-                    semuaSebelumSayaDisetujui &&
-                    (statusSaya === 'Belum Diverifikasi' || statusSaya === 'Diproses')
-                ) {
-                    permohonanCuti.push(v);
-                } else if (statusSaya === 'Disetujui') {
-                    disetujui.push(v);
-                } else if (statusSaya === 'Ditolak') {
-                    ditolak.push(v);
-                }
-            }
-            return res.json({
-                permohonanCuti,
-                disetujui,
-                ditolak,
-            });
-        }
-        return res.status(403).json({ msg: 'Akses ditolak' });
+        const data = await PengajuanCuti.findAll({
+            include: [
+                { model: Pegawai, as: 'pegawai' }
+            ],
+            order: [['tanggalPengajuan', 'DESC']]
+        });
+        return res.json(data);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
 };
+
+const getDataPermohonanCutiAtasan = async (req, res) => {
+    try {
+        const { idPegawai } = req.user;
+
+        const verifSaya = await VerifikasiCuti.findAll({
+            where: { idPimpinan: idPegawai },
+            include: [
+                {
+                    model: PengajuanCuti,
+                    where: {
+                        status: { [Op.in]: ['Diproses', 'Disetujui', 'Ditolak', 'Dibatalkan'] },
+                    },
+                    include: [
+                        { model: Pegawai, as: 'pegawai', attributes: ['id', 'nama', 'nip'] },
+                        {
+                            model: PelimpahanTugas,
+                            required: false,
+                            attributes: ['status'],
+                        },
+                        {
+                            model: VerifikasiCuti,
+                            attributes: [
+                                'id', 'idPimpinan', 'statusVerifikasi',
+                                'urutanVerifikasi',
+                            ],
+                            order: [['urutanVerifikasi', 'ASC']],
+                        },
+                    ],
+                },
+            ],
+            attributes: ['id', 'idPengajuan', 'statusVerifikasi', 'urutanVerifikasi', 'updatedAt'],
+            order: [[{ model: PengajuanCuti }, 'tanggalPengajuan', 'DESC']],
+        });
+
+        const permohonanCuti = [];
+        const disetujui = [];
+        const ditolak = [];
+
+        for (const row of verifSaya) {
+            const peng = row.PengajuanCuti;
+
+            /*  Pastikan pelimpahan tugas (jika ada) SUDAH disetujui */
+            const pelimpahanOk =
+                !peng.PelimpahanTuga ||
+                peng.PelimpahanTuga.status === 'Disetujui';
+
+            if (!pelimpahanOk) continue;
+
+            /*  Dapatkan array semua verifikator (sudah di‑include) */
+            const verArr = peng.VerifikasiCutis.sort(
+                (a, b) => a.urutanVerifikasi - b.urutanVerifikasi
+            );
+            const urutanSaya = verArr.findIndex(v => v.idPimpinan === idPegawai);
+            if (urutanSaya === -1) continue;                   // seharusnya tidak terjadi
+
+            const semuaSebelum = verArr
+                .slice(0, urutanSaya)
+                .every(v => v.statusVerifikasi === 'Disetujui');
+
+            const statusSaya = verArr[urutanSaya].statusVerifikasi;
+
+            if (
+                semuaSebelum &&
+                (statusSaya === 'Belum Diverifikasi' || statusSaya === 'Diproses')
+            ) {
+                permohonanCuti.push(row);
+            } else if (statusSaya === 'Disetujui') {
+                disetujui.push(row);
+            } else if (statusSaya === 'Ditolak') {
+                ditolak.push(row);
+            }
+        }
+
+        return res.status(200).json({
+            permohonanCuti,
+            disetujui,
+            ditolak,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ msg: err.message });
+    }
+}
 
 const updateStatusToDiproses = async (req, res) => {
     try {
@@ -124,7 +149,9 @@ const verifikasiCuti = async (req, res) => {
             );
 
             // membuat notifikasi untuk pegawai
-            const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan);
+            const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan, {
+                include: [{ model: Pegawai, as: "pegawai" }, { model: PelimpahanTugas, required: false }],
+            });
             const verifikator = await Pegawai.findByPk(idPegawai);
             await Notifikasi.create({
                 idPenerima: pengajuan.idPegawai,
@@ -132,6 +159,15 @@ const verifikasiCuti = async (req, res) => {
                 judul: "Permohonan Cuti Ditolak",
                 pesan: `Permohonan ${pengajuan.jenisCuti} Anda telah ditolak oleh ${verifikator.nama}.`,
             });
+
+            if (pengajuan.PelimpahanTuga) {
+                await Notifikasi.create({
+                    idPenerima: pengajuan.PelimpahanTuga.idPenerima,
+                    idPengajuan: pengajuan.id,
+                    judul: "Pelimpahan Tugas Dibatalkan",
+                    pesan: `Pelimpahan tugas dari ${pengajuan.pegawai?.nama} telah dibatalkan karena permohonan cuti ditolak.`,
+                });
+            }
         }
 
         if (statusVerifikasi === "Disetujui") {
@@ -143,7 +179,7 @@ const verifikasiCuti = async (req, res) => {
                 },
             });
             const pengajuan = await PengajuanCuti.findByPk(verifikasi.idPengajuan, {
-                include: { model: Pegawai, as: "Pegawai" },
+                include: { model: Pegawai, as: "pegawai" },
             });
             // Membuat notifikasi untuk verifikator selanjutnya
             if (verifikatorSelanjutnya) {
@@ -151,7 +187,7 @@ const verifikasiCuti = async (req, res) => {
                     idPenerima: verifikatorSelanjutnya.idPimpinan,
                     idPengajuan: verifikasi.idPengajuan,
                     judul: "Permohonan Cuti Baru",
-                    pesan: `Anda perlu memverifikasi permohonan ${pengajuan.jenisCuti} dari ${pengajuan.Pegawai.nama}.`,
+                    pesan: `Anda perlu memverifikasi permohonan ${pengajuan.jenisCuti} dari ${pengajuan.pegawai.nama}.`,
                 });
             }
 
@@ -236,7 +272,9 @@ const batalCutiOlehAdmin = async (req, res) => {
         const { id } = req.params;
         const { komentar, tanggalVerifikasi } = req.body;
 
-        const pengajuan = await PengajuanCuti.findByPk(id);
+        const pengajuan = await PengajuanCuti.findByPk(id, {
+            include: [{ model: Pegawai, as: "pegawai" }, { model: PelimpahanTugas, required: false }],
+        });
         if (!pengajuan) return res.status(404).json({ msg: "Pengajuan tidak ditemukan" });
 
         if (pengajuan.status !== 'Disetujui') {
@@ -258,7 +296,7 @@ const batalCutiOlehAdmin = async (req, res) => {
 
         await VerifikasiCuti.create({
             idPengajuan: pengajuan.id,
-            idPimpinan: req.user.idPegawai, // asumsi admin login
+            idPimpinan: req.user.idPegawai,
             jenisVerifikator: "Admin",
             urutanVerifikasi: urutanAdmin,
             statusVerifikasi: "Dibatalkan",
@@ -313,6 +351,15 @@ const batalCutiOlehAdmin = async (req, res) => {
             pesan: `Pengajuan cuti Anda telah dibatalkan oleh admin. Dan kuota cuti anda telah dikembalikan.`,
         });
 
+        if (pengajuan.PelimpahanTuga) {
+            await Notifikasi.create({
+                idPenerima: pengajuan.PelimpahanTuga.idPenerima,
+                idPengajuan: pengajuan.id,
+                judul: "Pelimpahan Tugas Dibatalkan",
+                pesan: `Pelimpahan tugas dari ${pengajuan.pegawai?.nama} telah dibatalkan karena permohonan cuti dibatalkan.`,
+            });
+        }
+
         res.json({ msg: "Cuti berhasil dibatalkan oleh admin" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -320,7 +367,8 @@ const batalCutiOlehAdmin = async (req, res) => {
 };
 
 module.exports = {
-    getDataPermohonanCuti,
+    getDataPermohonanCutiAdmin,
+    getDataPermohonanCutiAtasan,
     updateStatusToDiproses,
     verifikasiCuti,
     batalCutiOlehAdmin

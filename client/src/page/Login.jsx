@@ -83,7 +83,7 @@ const Login = () => {
 								</label>
 								<div className="relative">
 									<input
-										className="text-sm shadow appearance-none border rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" // Tambahkan pr-10 untuk ruang ikon
+										className="text-sm shadow appearance-none border rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
 										id="password"
 										type={showPassword ? "text" : "password"}
 										value={password}
@@ -104,7 +104,7 @@ const Login = () => {
 
 							<div className="w-full items-center justify-center">
 								<button
-									className="bg-[#133138] w-full sm:w-[250px] mx-auto block hover:bg-blue-700 text-white text-sm font-semibold py-2.5 sm:py-2 px-12 rounded-3xl focus:outline-none focus:shadow-outline shadow-lg" // Responsif untuk tombol login
+									className="bg-[#133138] w-full sm:w-[250px] mx-auto block hover:bg-blue-700 text-white text-sm font-semibold py-2.5 sm:py-2 px-12 rounded-3xl focus:outline-none focus:shadow-outline shadow-lg cursor-pointer" 
 									type="submit">
 									Login
 								</button>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import useAuthStore from "../store/authStore";
@@ -13,12 +14,14 @@ import {
 	FaFileAlt,
 	FaEdit,
 	FaTrash,
+	FaFileImport,
 } from "react-icons/fa";
 
 const ManajemenPegawai = () => {
 	const { user } = useAuthStore();
 	const navigate = useNavigate();
 	const [pegawaiList, setPegawaiList] = useState([]);
+	const MySwal = withReactContent(Swal);
 
 	const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
 	const dropdownRef = useRef(null);
@@ -31,20 +34,18 @@ const ManajemenPegawai = () => {
 	const totalPages = Math.ceil(pegawaiList.length / itemsPerPage);
 
 	//Mengambil data seluruh pegawai
-	useEffect(() => {
-		const fetchPegawai = async () => {
-			try {
-				const res = await axios.get("/pegawai");
-				setPegawaiList(res.data);
-			} catch (err) {
-				console.error("Gagal mengambil data pegawai", err);
-			}
-		};
-		fetchPegawai();
-	}, []);
+	const fetchPegawai = async () => {
+		try {
+			const res = await axios.get("/pegawai");
+			setPegawaiList(res.data);
+		} catch (err) {
+			console.error("Gagal mengambil data pegawai", err);
+		}
+	};
 
-	//Handle Dropdown
 	useEffect(() => {
+		fetchPegawai();
+
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
 				setOpenDropdownIndex(null);
@@ -56,6 +57,99 @@ const ManajemenPegawai = () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, []);
+
+	const handleImportPegawai = async () => {
+		try {
+			const { value: file } = await MySwal.fire({
+				title: "Import Data Pegawai",
+				html: `
+				<div class="text-sm text-left space-y-3">
+					<p class="inline leading-5">Silakan pilih file Excel yang berisi data pegawai. Sesuaikan format data pegawai dengan template berikut :</p>
+					<a href="http://localhost:3000/uploads/template/template-import.xlsx"
+					   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-0.5 px-1 rounded text-xs transition"
+					   download>
+						📄 Template Import Pegawai
+					</a>
+					<input type="file" id="file-input" accept=".xlsx" class="w-full px-2 py-1 border border-gray-300 rounded text-sm mt-2 cursor-pointer" />
+				</div>
+			`,
+				showCancelButton: true,
+				confirmButtonText: "Upload",
+				confirmButtonColor: "#00c951",
+				cancelButtonText: "Batal",
+				focusConfirm: false,
+				preConfirm: () => {
+					const input = Swal.getPopup().querySelector("#file-input");
+					const file = input.files[0];
+
+					if (!file) {
+						Swal.showValidationMessage("Silakan pilih file terlebih dahulu");
+						return false;
+					}
+
+					const allowedTypes = [
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					];
+					if (!allowedTypes.includes(file.type)) {
+						Swal.showValidationMessage("Format file harus .xlsx");
+						return false;
+					}
+
+					const maxSize = 10 * 1024 * 1024; // 10MB
+					if (file.size > maxSize) {
+						Swal.showValidationMessage("Ukuran file maksimal 10 MB");
+						return false;
+					}
+
+					return file;
+				},
+			});
+
+			if (!file) return;
+
+			const formData = new FormData();
+			formData.append("file", file);
+
+			MySwal.fire({
+				title: "Mengunggah...",
+				text: "Mohon tunggu sebentar",
+				allowOutsideClick: false,
+				didOpen: () => {
+					Swal.showLoading();
+				},
+			});
+
+			const { data } = await axios.post("/pegawai/import", formData, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+
+			Swal.fire({
+				icon: "success",
+				title: "Import Berhasil",
+				html: `
+					<p>Data berhasil diimpor: <strong>${data.berhasil}</strong></p>
+					<p>Data gagal diimpor: <strong>${data.gagal}</strong></p>
+					${
+						data.gagal > 0
+							? "<details><summary>Lihat Detail Gagal</summary><pre style='text-align:left;font-size:12px'>" +
+							data.detail.join("\n") +
+							"</pre></details>"
+							: ""
+					}
+				`,
+			});
+
+			// Refresh data setelah import
+			await fetchPegawai();
+		} catch (err) {
+			console.error(err);
+			MySwal.fire({
+				icon: "error",
+				title: "Gagal",
+				text: err?.response?.data?.msg || "Terjadi kesalahan saat import data.",
+			});
+		}
+	};
 
 	const handleDelete = (id) => {
 		Swal.fire({
@@ -92,11 +186,18 @@ const ManajemenPegawai = () => {
 					<h1 className="text-center sm:text-left text-xl lg:text-2xl font-bold text-gray-800">
 						Manajemen Pegawai
 					</h1>
-					<button
-						onClick={() => navigate("/manajemen-pegawai/tambah")}
-						className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start gap-2 cursor-pointer transition-colors duration-150 w-full sm:w-auto text-sm sm:text-base">
-						<FaPlus /> Tambah Pegawai
-					</button>
+					<div className="flex justify-around gap-2">
+						<button
+							onClick={handleImportPegawai}
+							className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start gap-2 cursor-pointer transition-colors duration-150 w-full sm:w-auto text-sm sm:text-base">
+							<FaFileImport /> Import Pegawai
+						</button>
+						<button
+							onClick={() => navigate("/manajemen-pegawai/tambah")}
+							className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start gap-2 cursor-pointer transition-colors duration-150 w-full sm:w-auto text-sm sm:text-base">
+							<FaPlus /> Tambah Pegawai
+						</button>
+					</div>
 				</div>
 
 				{/* Detail Section */}
