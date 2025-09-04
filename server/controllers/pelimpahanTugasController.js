@@ -1,4 +1,3 @@
-const { Op } = require('sequelize');
 const { VerifikasiCuti, PelimpahanTugas, PengajuanCuti, Pegawai, Notifikasi } = require('../models');
 
 const getPermohonanPelimpahanById = async (req, res) => {

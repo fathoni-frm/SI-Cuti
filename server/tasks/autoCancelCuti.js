@@ -4,9 +4,13 @@ const { Op } = require('sequelize');
 
 // Cron job: jalan setiap hari jam 00:00
 cron.schedule('0 0 * * *', async () => {
+    await cancelPengajuanCuti();
+});
+
+const cancelPengajuanCuti = async () => {
     try {
         const batasTanggal = new Date();
-        // batasTanggal.setDate(batasTanggal.getDate() - 3); // 3 hari sebelum hari ini
+        batasTanggal.setDate(batasTanggal.getDate() - 3); // 3 hari sebelum hari ini
 
         const pengajuanTerlambat = await PengajuanCuti.findAll({
             where: {
@@ -71,4 +75,8 @@ cron.schedule('0 0 * * *', async () => {
     } catch (error) {
         console.error('Terjadi kesalahan:', error);
     }
-});
+}
+
+module.exports = {
+    cancelPengajuanCuti
+};

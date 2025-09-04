@@ -14,13 +14,13 @@ const validasiQr = async (req, res) => {
                 switch (role) {
                     case "pengaju":
                         data = await PengajuanCuti.findByPk(id, { include: [{ model: Pegawai, as: 'pegawai' }] });
-                        ts = data.tanggalPengajuan;
+                        ts = data?.tanggalPengajuan;
                         pengajuan = data;
                         break;
                     case "verifikator":
                         data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
-                        ts = data.tanggalVerifikasi;
-                        pengajuan = data.PengajuanCuti;
+                        ts = data?.tanggalVerifikasi;
+                        pengajuan = data?.PengajuanCuti;
                         break;
                 }
                 break;
@@ -28,25 +28,25 @@ const validasiQr = async (req, res) => {
                 switch (role) {
                     case "pengaju":
                         data = await PengajuanCuti.findByPk(id, { include: [{ model: Pegawai, as: 'pegawai' }] });
-                        ts = data.tanggalPengajuan;
+                        ts = data?.tanggalPengajuan;
                         pengajuan = data;
                         break;
                     case "penerima":
                         data = await PelimpahanTugas.findByPk(id, { include: [{ model: Pegawai, as: 'penerima' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
-                        ts = data.tanggalVerifikasi;
-                        pengajuan = data.PengajuanCuti;
+                        ts = data?.tanggalVerifikasi;
+                        pengajuan = data?.PengajuanCuti;
                         break;
                     case "verifikator":
                         data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
-                        ts = data.tanggalVerifikasi;
-                        pengajuan = data.PengajuanCuti;
+                        ts = data?.tanggalVerifikasi;
+                        pengajuan = data?.PengajuanCuti;
                         break;
                 }
                 break;
             case "PSC":
                 data = await VerifikasiCuti.findByPk(id, { include: [{ model: Pegawai, as: 'verifikator' }, { model: PengajuanCuti, include: [{ model: Pegawai, as: 'pegawai' }] }] });
-                ts = data.tanggalVerifikasi;
-                pengajuan = data.PengajuanCuti;
+                ts = data?.tanggalVerifikasi;
+                pengajuan = data?.PengajuanCuti;
                 break;
             default:
                 return res.status(400).json({ msg: "QR tidak valid" });

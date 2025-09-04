@@ -10,26 +10,13 @@ const ValidasiQrCode = () => {
 	const [data, setData] = useState(null);
 	const [status, setStatus] = useState("loading");
 
-	const formatTanggal = (tanggal, waktu = true) => {
-		const date = new Date(tanggal);
-		return date.toLocaleDateString("id-ID", {
-			day: "2-digit",
-			month: "long",
-			year: "numeric",
-			...(waktu && {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-		});
-	};
-
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const res = await axiosPublic.get(`/v/${doc}/${id}/${role}/${sig}`);
 				setData(res.data);
 				setStatus("success");
-			} catch (err) {
+			} catch {
 				setStatus("error");
 			}
 		};

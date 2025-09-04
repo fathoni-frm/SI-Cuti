@@ -3,7 +3,7 @@ const { Pegawai, KuotaCuti } = require('../models');
 
 // Cron job: jalan setiap jam 00:00 tanggal 1 januari ('0 0 1 1 *')
 cron.schedule('0 0 1 1 *', async () => {
-  console.log("!!!Menjalankan reset kuota cuti tahunan!!!");
+//   console.log("!!!Menjalankan reset kuota cuti tahunan!!!");
   await resetKuotaCutiTahunan();
 });
 
@@ -63,4 +63,8 @@ const resetKuotaCutiTahunan = async () => {
     } catch (error) {
         console.error("Gagal reset kuota cuti:", error.message);
     }
+};
+
+module.exports = {
+    resetKuotaCutiTahunan
 };

@@ -154,7 +154,7 @@ const updatePegawai = async (req, res) => {
             if (!akunPegawai) {
                 // Jika akun belum ada, buat baru
                 const hashedPassword = await bcrypt.hash(user.password, 10);
-                await Akun.create({
+                await User.create({
                     username: user.username,
                     password: hashedPassword,
                     role: user.role,
@@ -381,7 +381,6 @@ const cetakProfilPegawai = async (req, res) => {
 		res.status(500).json({ msg: "Terjadi kesalahan pada server." });
 	}
 };
-
 
 module.exports = {
     getAllPegawai,
