@@ -10,7 +10,7 @@ const getDataPermohonanCutiAdmin = async (req, res) => {
             ],
             order: [['tanggalPengajuan', 'DESC']]
         });
-        return res.json(data);
+        return res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
@@ -261,7 +261,7 @@ const verifikasiCuti = async (req, res) => {
             }
         }
 
-        return res.json({ msg: "Status verifikasi berhasil diperbarui" });
+        return res.status(200).json({ msg: "Status verifikasi berhasil diperbarui" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
@@ -360,7 +360,7 @@ const batalCutiOlehAdmin = async (req, res) => {
             });
         }
 
-        res.json({ msg: "Cuti berhasil dibatalkan oleh admin" });
+        res.status(200).json({ msg: "Cuti berhasil dibatalkan oleh admin" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }

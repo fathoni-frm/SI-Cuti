@@ -206,7 +206,8 @@ describe("pelimpahanTugasController.verifikasiPelimpahan", () => {
     expect(mockPelimpahan.status).toBe("Disetujui");
     expect(mockPelimpahan.komentar).toBe("Oke");
     expect(mockPelimpahan.save).toHaveBeenCalled();
-    expect(Notifikasi.create).toHaveBeenCalledTimes(2); 
+    expect(Notifikasi.create).toHaveBeenCalledTimes(2);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       msg: "Konfirmasi berhasil",
       data: mockPelimpahan,
@@ -243,7 +244,8 @@ describe("pelimpahanTugasController.verifikasiPelimpahan", () => {
       { status: "Ditolak" },
       { where: { id: 100 } }
     );
-    expect(Notifikasi.create).toHaveBeenCalledTimes(1); 
+    expect(Notifikasi.create).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       msg: "Konfirmasi berhasil",
       data: mockPelimpahan,

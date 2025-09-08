@@ -7,7 +7,7 @@ const getNotifikasiByUser = async (req, res) => {
       include: [{ model: PengajuanCuti }],
       order: [["createdAt", "DESC"]],
     });
-    res.json(notifikasi);
+    res.status(200).json(notifikasi);
   } catch (error) {
     res.status(500).json({ msg: "Gagal mengambil notifikasi", error: error.message });
   }
@@ -33,13 +33,13 @@ const tandaiSudahDibaca = async (req, res) => {
       if (pelimpahan && pelimpahan.status === "Belum Diverifikasi") {
         await pelimpahan.update({ status: "Diproses" });
       }
-      return res.json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "pelimpahan", idPelimpahan: pelimpahan.id });
+      return res.status(200).json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "pelimpahan", idPelimpahan: pelimpahan.id });
     } else {
       const verifikasi = await VerifikasiCuti.findOne({ where: { idPengajuan, idPimpinan: idPegawai } });
       if (verifikasi && verifikasi.statusVerifikasi === "Belum Diverifikasi") {
         await verifikasi.update({ statusVerifikasi: "Diproses" });
       }
-      return res.json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "cuti" });
+      return res.status(200).json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "cuti" });
     }
   } catch (error) {
     res.status(500).json({ msg: "Gagal update notifikasi", error: error.message });
@@ -56,7 +56,7 @@ const hapusNotifikasi = async (req, res) => {
     }
 
     await notifikasi.destroy();
-    res.json({ msg: 'Notifikasi berhasil dihapus' });
+    res.status(200).json({ msg: 'Notifikasi berhasil dihapus' });
   } catch (err) {
     console.error("Gagal menghapus notifikasi:", err);
     res.status(500).json({ msg: 'Gagal menghapus notifikasi', error: err.message });

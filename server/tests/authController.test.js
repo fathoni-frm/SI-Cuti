@@ -47,6 +47,7 @@ describe("authController.login", () => {
     expect(bcrypt.compare).toHaveBeenCalledWith("validPassword", "hashedPassword");
     expect(User.update).toHaveBeenCalledWith({ refreshToken: "refreshToken123" }, { where: { id: 1 } });
     expect(res.cookie).toHaveBeenCalledWith("refreshToken", "refreshToken123", expect.any(Object));
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       msg: "Login berhasil",
       accessToken: "accessToken123",
@@ -194,6 +195,7 @@ describe("authController.refreshToken", () => {
       process.env.REFRESH_TOKEN_SECRET
     );
     expect(jwt.sign).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       accessToken: "new_access_token",
       user: {
@@ -263,6 +265,7 @@ describe("authController.logout", () => {
     expect(User.findOne).toHaveBeenCalledWith({ where: { refreshToken: "valid_token" } });
     expect(User.update).toHaveBeenCalledWith({ refreshToken: null }, { where: { id: 1 } });
     expect(res.clearCookie).toHaveBeenCalledWith("refreshToken", { httpOnly: true, sameSite: "strict" });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Logout berhasil!" });
   });
 

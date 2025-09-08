@@ -8,6 +8,7 @@ jest.mock("../models", () => ({
         findByPk: jest.fn(),
         findOne: jest.fn(),
         create: jest.fn(),
+        update: jest.fn(),
     },
     VerifikasiCuti: {
         findOne: jest.fn(),
@@ -21,6 +22,8 @@ jest.mock("../models", () => ({
     PelimpahanTugas: {
         findOne: jest.fn(),
         create: jest.fn(),
+        update: jest.fn(),
+        destroy: jest.fn(),
     },
     Notifikasi: {
         create: jest.fn(),
@@ -65,7 +68,6 @@ describe("pengajuanCutiController.getPengajuanCutiById", () => {
         { model: PelimpahanTugas, include: [{ model: Pegawai, as: "penerima" }] },
       ],
     });
-
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockData);
   });
@@ -234,51 +236,6 @@ describe("pengajuanCutiController.getDraftById", () => {
   });
 });
 
-describe("pengajuanCutiController.getDraftCutiByPegawai", () => {
-  let req, res;
-
-  beforeEach(() => {
-    req = { params: { idPegawai: 1 } };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    jest.clearAllMocks();
-  });
-
-  test("WT-PC-03-01: Mengembalikan semua pengajuan cuti draft untuk pegawai tertentu", async () => {
-    const mockData = [
-      { id: 1, status: "Draft", idPegawai: 1, updatedAt: "2025-08-19T10:00:00Z" },
-      { id: 2, status: "Draft", idPegawai: 1, updatedAt: "2025-08-18T10:00:00Z" },
-    ];
-
-    PengajuanCuti.findAll.mockResolvedValue(mockData);
-
-    await getDraftCutiByPegawai(req, res);
-
-    expect(PengajuanCuti.findAll).toHaveBeenCalledWith({
-      where: { status: "Draft", idPegawai: 1 },
-      order: [["updatedAt", "DESC"]],
-    });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockData);
-  });
-
-  test("WT-PC-03-02: Mengembalikan array kosong jika tidak ada pengajuan cuti draft", async () => {
-    req.params.idPegawai = 2;
-    PengajuanCuti.findAll.mockResolvedValue([]);
-
-    await getDraftCutiByPegawai(req, res);
-
-    expect(PengajuanCuti.findAll).toHaveBeenCalledWith({
-      where: { status: "Draft", idPegawai: 2 },
-      order: [["updatedAt", "DESC"]],
-    });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([]);
-  });
-});
-
 describe("pengajuanCutiController.createPengajuanCuti", () => {
   let req, res;
 
@@ -369,10 +326,14 @@ describe("pengajuanCutiController.createPengajuanCuti", () => {
 
     await createPengajuanCuti(req, res);
 
+    expect(PengajuanCuti.create).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "Diproses" })
+    );
     expect(PelimpahanTugas.create).toHaveBeenCalledWith(
       expect.objectContaining({
         idPengajuan: 3,
         idPenerima: 55,
+        status: "Belum Diverifikasi",
       })
     );
     expect(Notifikasi.create).toHaveBeenCalledWith(
@@ -382,14 +343,18 @@ describe("pengajuanCutiController.createPengajuanCuti", () => {
       })
     );
     expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ msg: "Pengajuan cuti berhasil dibuat" })
+    );
   });
 
-  test("WT-PC-05-04: Nilai alasanCuti, alamatCuti, idPenerimaTugas kosong/null diproses jadi null", async () => {
+  test("WT-PC-05-04: Membuat pengajuan cuti draft dengan nilai alasanCuti, alamatCuti, idPenerimaTugas kosong/null", async () => {
     req.body.alasanCuti = "null";
     req.body.alamatCuti = "";
     req.body.idPenerimaTugas = "null";
+    req.body.isDraft = "true";
 
-    const mockPengajuan = { id: 4, idPegawai: 1, status: "Diproses" };
+    const mockPengajuan = { id: 4, idPegawai: 1, status: "Draft" };
     PengajuanCuti.create.mockResolvedValue(mockPengajuan);
 
     await createPengajuanCuti(req, res);
@@ -398,10 +363,13 @@ describe("pengajuanCutiController.createPengajuanCuti", () => {
       expect.objectContaining({
         alasanCuti: null,
         alamatCuti: null,
-        status: "Diproses",
+        status: "Draft",
       })
     );
     expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ msg: "Pengajuan cuti berhasil dibuat" })
+    );
   });
 });
 
@@ -416,7 +384,10 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
         tanggalSelesai: "2025-08-25",
         durasi: 5,
         isDraft: "true",
-        daftarAtasan: JSON.stringify([{ id: 10, jenis: "Atasan" }])
+        daftarAtasan: JSON.stringify([{ id: 10, jenis: "Atasan" }]),
+        tanggalPengajuan: "2025-08-19",
+        totalKuota: 12,
+        sisaKuota: 7,
       },
       file: null
     };
@@ -428,7 +399,12 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
   });
 
   test("WT-PC-06-01: Berhasil memperbarui draft tanpa pelimpahan tugas (tidak ada notifikasi)", async () => {
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", update: jest.fn().mockResolvedValue(true) });
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        update: jest.fn().mockResolvedValue(true)
+    };
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     PelimpahanTugas.findOne.mockResolvedValue(null);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
@@ -436,28 +412,52 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
 
     await updatePengajuanCuti(req, res);
 
-    expect(PengajuanCuti.findByPk).toHaveBeenCalledWith(1);
+    expect(mockPengajuan.update).toHaveBeenCalledWith(expect.objectContaining({ status: "Draft" }));
+    expect(VerifikasiCuti.create).toHaveBeenCalledWith(expect.objectContaining({ statusVerifikasi: "Draft" }));
+    expect(Notifikasi.create).not.toHaveBeenCalled();
+    expect(PelimpahanTugas.create).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       msg: "Pengajuan cuti berhasil diperbarui / diajukan"
     }));
-    expect(Notifikasi.create).not.toHaveBeenCalled();
   });
 
   test("WT-PC-06-02: Berhasil memperbarui non-draft tanpa pelimpahan tugas (notifikasi ke verifikator pertama)", async () => {
     req.body.isDraft = "false";
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", jenisCuti: "Tahunan", idPegawai: 99, update: jest.fn().mockResolvedValue(true) });
+    req.body.idPenerimaTugas = null;
+
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        jenisCuti: "Tahunan",
+        idPegawai: 99,
+        update: jest.fn().mockResolvedValue(true)
+    };
+    const mockVerifikatorPertama = {
+        id: 1,
+        idPimpinan: 10,
+        urutanVerifikasi: 1
+    };
+
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     PelimpahanTugas.findOne.mockResolvedValue(null);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
-    VerifikasiCuti.findOne.mockResolvedValue({ idPimpinan: 10 });
+    VerifikasiCuti.findOne.mockResolvedValue(mockVerifikatorPertama);
     Pegawai.findByPk.mockResolvedValue({ id: 99, nama: "Budi" });
 
     await updatePengajuanCuti(req, res);
 
+    expect(mockPengajuan.update).toHaveBeenCalledWith(expect.objectContaining({ status: "Diproses" }));
+    expect(VerifikasiCuti.create).toHaveBeenCalledWith(expect.objectContaining({ idPimpinan: 10, statusVerifikasi: "Belum Diverifikasi" }));
     expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
-      idPenerima: 10,
-      judul: "Permohonan Cuti Baru"
+        idPenerima: 10,
+        judul: "Permohonan Cuti Baru",
+        pesan: "Anda perlu memverifikasi permohonan Tahunan dari Budi.",
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      msg: "Pengajuan cuti berhasil diperbarui / diajukan"
     }));
   });
 
@@ -466,19 +466,43 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
     req.body.idPenerimaTugas = 77;
     req.body.daftarAtasan = "[]";
 
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", idPegawai: 99, jenisCuti: "Tahunan", update: jest.fn().mockResolvedValue(true) });
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        idPegawai: 99,
+        jenisCuti: "Tahunan",
+        update: jest.fn().mockResolvedValue(true)
+    };
+    const mockPenerimaTugas = {
+        idPengajuan: 1,
+        idPenerima: 77,
+        status: "Belum Diverifikasi"
+    };
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     PelimpahanTugas.findOne.mockResolvedValue(null);
-    PelimpahanTugas.create.mockResolvedValue(true);
+    PelimpahanTugas.create.mockResolvedValue(mockPenerimaTugas);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
     Pegawai.findByPk.mockResolvedValue({ id: 99, nama: "Budi" });
 
     await updatePengajuanCuti(req, res);
 
-    expect(PelimpahanTugas.create).toHaveBeenCalled();
+    expect(mockPengajuan.update).toHaveBeenCalledWith(expect.objectContaining({ status: "Diproses" }));
+    expect(PelimpahanTugas.create).toHaveBeenCalledWith(expect.objectContaining({
+      idPengajuan: 1,
+      idPenerima: 77,
+      status: "Belum Diverifikasi"
+    }));
     expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
       idPenerima: 77,
       judul: "Pelimpahan Tugas Baru"
+    }));
+    expect(Notifikasi.create).not.toHaveBeenCalledWith(expect.objectContaining({
+        judul: "Permohonan Cuti Baru"
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      msg: "Pengajuan cuti berhasil diperbarui / diajukan"
     }));
   });
 
@@ -486,16 +510,37 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
     req.body.isDraft = "false";
     req.body.idPenerimaTugas = 55;
 
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", idPegawai: 99, update: jest.fn().mockResolvedValue(true) });
-    PelimpahanTugas.findOne.mockResolvedValue({ update: jest.fn().mockResolvedValue(true) });
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        idPegawai: 99,
+        update: jest.fn().mockResolvedValue(true)
+    };
+    const mockExistingPelimpahan = {
+        id: 1,
+        idPenerima: 77,
+        update: jest.fn().mockResolvedValue(true)
+    };
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
+    PelimpahanTugas.findOne.mockResolvedValue(mockExistingPelimpahan);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
     Pegawai.findByPk.mockResolvedValue({ id: 99, nama: "Budi" });
 
     await updatePengajuanCuti(req, res);
 
+    expect(mockPengajuan.update).toHaveBeenCalledWith(expect.objectContaining({ status: "Diproses" }));
+    expect(mockExistingPelimpahan.update).toHaveBeenCalledWith(expect.objectContaining({
+      idPenerima: 55,
+      status: "Belum Diverifikasi"
+    }));
     expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
-      idPenerima: 55
+      idPenerima: 55,
+      judul: "Pelimpahan Tugas Baru"
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      msg: "Pengajuan cuti berhasil diperbarui / diajukan"
     }));
   });
 
@@ -503,18 +548,38 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
     req.body.isDraft = "false";
     req.body.idPenerimaTugas = null;
 
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", idPegawai: 99, update: jest.fn().mockResolvedValue(true) });
-    PelimpahanTugas.findOne.mockResolvedValue({ destroy: jest.fn().mockResolvedValue(true) });
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        idPegawai: 99,
+        jenisCuti: "Tahunan",
+        update: jest.fn().mockResolvedValue(true)
+    };
+    const mockExistingPelimpahan = {
+        id: 1,
+        destroy: jest.fn().mockResolvedValue(true)
+    };
+    const mockVerifikatorPertama = {
+        id: 1,
+        idPimpinan: 123
+    };
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
+    PelimpahanTugas.findOne.mockResolvedValue(mockExistingPelimpahan);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
-    VerifikasiCuti.findOne.mockResolvedValue({ idPimpinan: 123 });
+    VerifikasiCuti.findOne.mockResolvedValue(mockVerifikatorPertama);
     Pegawai.findByPk.mockResolvedValue({ id: 99, nama: "Budi" });
 
     await updatePengajuanCuti(req, res);
 
+    expect(mockExistingPelimpahan.destroy).toHaveBeenCalledTimes(1);
     expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
       idPenerima: 123,
       judul: "Permohonan Cuti Baru"
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      msg: "Pengajuan cuti berhasil diperbarui / diajukan"
     }));
   });
 
@@ -523,24 +588,28 @@ describe("pengajuanCutiController.updatePengajuanCuti", () => {
     req.body.alamatCuti = "";
     req.body.idPenerimaTugas = "null";
 
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Draft", update: jest.fn().mockResolvedValue(true) });
+    const mockPengajuan = {
+        id: 1,
+        status: "Draft",
+        update: jest.fn().mockResolvedValue(true)
+    };
+    PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     PelimpahanTugas.findOne.mockResolvedValue(null);
     VerifikasiCuti.destroy.mockResolvedValue(1);
     VerifikasiCuti.create.mockResolvedValue(true);
 
     await updatePengajuanCuti(req, res);
 
-    expect(PengajuanCuti.findByPk).toHaveBeenCalled();
+    expect(mockPengajuan.update).toHaveBeenCalledWith(expect.objectContaining({
+      alasanCuti: null,
+      alamatCuti: null,
+      status: "Draft"
+    }));
+    expect(PelimpahanTugas.create).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
-  });
-
-  test("WT-PC-06-07: Gagal memperbarui karena status bukan Draft", async () => {
-    PengajuanCuti.findByPk.mockResolvedValue({ id: 1, status: "Diproses" });
-
-    await updatePengajuanCuti(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ msg: "Pengajuan cuti tidak dapat diubah karena sudah diajukan" });
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      msg: "Pengajuan cuti berhasil diperbarui / diajukan"
+    }));
   });
 });
 

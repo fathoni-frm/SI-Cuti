@@ -68,6 +68,7 @@ describe("verifikasiCutiController.getDataPermohonanCutiAdmin", () => {
       include: [{ model: Pegawai, as: "pegawai" }],
       order: [["tanggalPengajuan", "DESC"]]
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockData);
   });
 });
@@ -108,7 +109,6 @@ describe("verifikasiCutiController.getDataPermohonanCutiAtasan", () => {
         where: { idPimpinan: req.user.idPegawai }
       })
     );
-
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -159,7 +159,6 @@ describe("verifikasiCutiController.updateStatusToDiproses", () => {
     expect(VerifikasiCuti.findByPk).toHaveBeenCalledWith(1);
     expect(mockVerifikasi.statusVerifikasi).toBe("Diproses");
     expect(mockVerifikasi.save).toHaveBeenCalled();
-
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       message: "Status verifikasi diperbarui",
@@ -195,9 +194,9 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
 
   test("WT-VC-04-01: Berhasil menolak permohonan cuti", async () => {
     const mockVerifikasi = { id: 1, idPimpinan: 10, idPengajuan: 99, save: jest.fn() };
+    const mockPengajuan = { id: 99, idPegawai: 77, jenisCuti: "Cuti Tahunan", Pegawai: { nama: "Budi" } };
     VerifikasiCuti.findByPk.mockResolvedValue(mockVerifikasi);
     PengajuanCuti.update.mockResolvedValue([1]);
-    const mockPengajuan = { id: 99, idPegawai: 77, jenisCuti: "Cuti Tahunan", Pegawai: { nama: "Budi" } };
     PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     Pegawai.findByPk.mockResolvedValue({ nama: "Atasan 1" });
 
@@ -206,6 +205,7 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
     expect(VerifikasiCuti.findByPk).toHaveBeenCalledWith(1);
     expect(PengajuanCuti.update).toHaveBeenCalledWith({ status: "Ditolak" }, { where: { id: 99 } });
     expect(Notifikasi.create).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Status verifikasi berhasil diperbarui" });
   });
 
@@ -215,7 +215,6 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
 
     const mockVerifikasi = { id: 1, idPimpinan: 10, idPengajuan: 99, urutanVerifikasi: 1, save: jest.fn() };
     VerifikasiCuti.findByPk.mockResolvedValue(mockVerifikasi);
-
     VerifikasiCuti.findOne.mockResolvedValue({ idPimpinan: 20 }); // verifikator selanjutnya
     PengajuanCuti.findByPk.mockResolvedValue({ id: 99, jenisCuti: "Cuti Tahunan", pegawai: { nama: "Andi" } });
     VerifikasiCuti.findAll.mockResolvedValue([{ statusVerifikasi: "Disetujui" }, { statusVerifikasi: "Belum Diverifikasi" }]);
@@ -226,6 +225,7 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
       idPenerima: 20,
       judul: "Permohonan Cuti Baru"
     }));
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Status verifikasi berhasil diperbarui" });
   });
 
@@ -234,11 +234,10 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
     req.body.komentar = "Oke";
 
     const mockVerifikasi = { id: 1, idPimpinan: 10, idPengajuan: 99, urutanVerifikasi: 1, save: jest.fn() };
+    const mockPengajuan = { id: 99, idPegawai: 77, jenisCuti: "Cuti Tahunan", durasi: 2, update: jest.fn() };
     VerifikasiCuti.findByPk.mockResolvedValue(mockVerifikasi);
-
     VerifikasiCuti.findOne.mockResolvedValue(null); // tidak ada verifikator selanjutnya
     VerifikasiCuti.findAll.mockResolvedValue([{ statusVerifikasi: "Disetujui" }]);
-    const mockPengajuan = { id: 99, idPegawai: 77, jenisCuti: "Cuti Tahunan", durasi: 2, update: jest.fn() };
     PengajuanCuti.findByPk.mockResolvedValue(mockPengajuan);
     KuotaCuti.findOne.mockResolvedValue({ sisaKuota: 5, save: jest.fn() });
     generateSuratCuti.mockResolvedValue("surat.pdf");
@@ -251,6 +250,7 @@ describe("verifikasiCutiController.verifikasiCuti", () => {
       judul: "Permohonan Cuti Disetujui"
     }));
     expect(generateSuratCuti).toHaveBeenCalledWith(99);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Status verifikasi berhasil diperbarui" });
   });
 
@@ -290,7 +290,7 @@ describe("verifikasiCutiController.batalCutiOlehAdmin", () => {
     jest.clearAllMocks();
   });
 
-  test("WT-VC-05-01: Membatalkan cuti tahunan (3 hari) yang sudah disetujui oleh admin", async () => {
+  test("WT-VC-05-01: Membatalkan cuti yang memiliki pelimpahan tugas", async () => {
     req.params.id = 1;
     req.body = { komentar: "Pembatalan karena kebutuhan operasional", tanggalVerifikasi: "2025-08-12" };
 
@@ -301,21 +301,39 @@ describe("verifikasiCutiController.batalCutiOlehAdmin", () => {
       jenisCuti: "Cuti Tahunan",
       durasi: 3,
       save: jest.fn(),
-      pegawai: { nama: "Budi" }
+      pegawai: { nama: "Budi" },
+      PelimpahanTuga: { idPenerima: 20 }
     };
+    const kuotaMock = {
+        sisaKuota: 9,
+        totalKuota: 12,
+        save: jest.fn()
+    };
+
     PengajuanCuti.findByPk.mockResolvedValue(pengajuanMock);
     VerifikasiCuti.findAll.mockResolvedValue([]);
     VerifikasiCuti.create.mockResolvedValue({});
-    KuotaCuti.findOne.mockResolvedValue({ totalKuota: 12, sisaKuota: 9, save: jest.fn() });
+    KuotaCuti.findOne.mockResolvedValue(kuotaMock);
     Notifikasi.create.mockResolvedValue({});
 
     await batalCutiOlehAdmin(req, res);
 
+    expect(pengajuanMock.status).toBe("Dibatalkan");
+    expect(kuotaMock.sisaKuota).toBe(12);
+    expect(Notifikasi.create).toHaveBeenCalledTimes(2);
+    expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
+        idPenerima: 10,
+        judul: "Cuti Dibatalkan oleh Admin"
+    }));
+    expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
+        idPenerima: 20,
+        judul: "Pelimpahan Tugas Dibatalkan"
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Cuti berhasil dibatalkan oleh admin" });
-    expect(pengajuanMock.save).toHaveBeenCalled();
   });
 
-  test("WT-VC-05-02: Membatalkan cuti tahunan (5 hari) yang sudah disetujui oleh admin", async () => {
+  test("WT-VC-05-02: Membatalkan cuti tahunan yang tidak memiliki pelimpahan tugas", async () => {
     req.params.id = 1;
     req.body = { komentar: "Pembatalan karena kebutuhan operasional", tanggalVerifikasi: "2025-08-12" };
 
@@ -325,16 +343,31 @@ describe("verifikasiCutiController.batalCutiOlehAdmin", () => {
       status: "Disetujui",
       jenisCuti: "Cuti Tahunan",
       durasi: 5,
-      save: jest.fn()
+      save: jest.fn(),
+      pegawai: { nama: "Ani" },
+      PelimpahanTuga: null
+    };
+    const kuotaMock = {
+        sisaKuota: 7,
+        totalKuota: 12,
+        save: jest.fn()
     };
     PengajuanCuti.findByPk.mockResolvedValue(pengajuanMock);
     VerifikasiCuti.findAll.mockResolvedValue([]);
     VerifikasiCuti.create.mockResolvedValue({});
-    KuotaCuti.findOne.mockResolvedValue({ totalKuota: 12, sisaKuota: 7, save: jest.fn() });
+    KuotaCuti.findOne.mockResolvedValue(kuotaMock);
     Notifikasi.create.mockResolvedValue({});
 
     await batalCutiOlehAdmin(req, res);
 
+    expect(pengajuanMock.status).toBe("Dibatalkan");
+    expect(kuotaMock.sisaKuota).toBe(12);
+    expect(Notifikasi.create).toHaveBeenCalledTimes(1);
+    expect(Notifikasi.create).toHaveBeenCalledWith(expect.objectContaining({
+        idPenerima: 11,
+        judul: "Cuti Dibatalkan oleh Admin"
+    }));
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Cuti berhasil dibatalkan oleh admin" });
   });
 
@@ -348,16 +381,27 @@ describe("verifikasiCutiController.batalCutiOlehAdmin", () => {
       status: "Disetujui",
       jenisCuti: "Cuti Sakit",
       durasi: 2,
-      save: jest.fn()
+      save: jest.fn(),
+      pegawai: { nama: "Joko" },
+      PelimpahanTuga: null
+    };
+    const kuotaMock = {
+        sisaKuota: 4,
+        totalKuota: 6,
+        save: jest.fn()
     };
     PengajuanCuti.findByPk.mockResolvedValue(pengajuanMock);
     VerifikasiCuti.findAll.mockResolvedValue([]);
     VerifikasiCuti.create.mockResolvedValue({});
-    KuotaCuti.findOne.mockResolvedValue({ totalKuota: 6, sisaKuota: 4, save: jest.fn() });
+    KuotaCuti.findOne.mockResolvedValue(kuotaMock);
     Notifikasi.create.mockResolvedValue({});
 
     await batalCutiOlehAdmin(req, res);
 
+    expect(pengajuanMock.status).toBe("Dibatalkan");
+    expect(kuotaMock.sisaKuota).toBe(6);
+    expect(Notifikasi.create).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ msg: "Cuti berhasil dibatalkan oleh admin" });
   });
 

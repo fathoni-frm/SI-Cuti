@@ -41,7 +41,7 @@ const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
     });
 
-    res.json({
+    res.status(200).json({
       msg: "Login berhasil",
       accessToken,
       user: payload,
@@ -117,7 +117,7 @@ const refreshToken = async (req, res) => {
 
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
 
-    return res.json({
+    return res.status(200).json({
       accessToken,
       user: payload,
     });
@@ -141,7 +141,7 @@ const logout = async (req, res) => {
   await User.update({ refreshToken: null }, { where: { id: user.id } });
 
   res.clearCookie("refreshToken", { httpOnly: true, sameSite: 'strict' });
-  res.json({ msg: "Logout berhasil!" });
+  res.status(200).json({ msg: "Logout berhasil!" });
 };
 
 module.exports = {

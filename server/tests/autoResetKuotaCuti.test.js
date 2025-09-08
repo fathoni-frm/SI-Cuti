@@ -11,7 +11,7 @@ jest.mock("node-cron", () => ({
 }));
 
 describe("autoResetKuotaCuti.resetKuotaCutiTahunan", () => {
-  let req, res;
+  let req, res, consoleSpy;
 
   beforeEach(() => {
     req = {};
@@ -19,7 +19,12 @@ describe("autoResetKuotaCuti.resetKuotaCutiTahunan", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.clearAllMocks();
+  });
+  
+  afterEach(() => {
+    consoleSpy.mockRestore();
   });
 
   test("WT-AR-01-01: Memastikan kuota cuti tahunan dan jenis lain direset sesuai aturan", async () => {
@@ -40,17 +45,15 @@ describe("autoResetKuotaCuti.resetKuotaCutiTahunan", () => {
 
     await resetKuotaCutiTahunan(req, res);
 
-    // cek update untuk rollover tahunan
     expect(mockKuotas[2].update).toHaveBeenCalledWith({ totalKuota: 4, sisaKuota: 4 }); // N-2
     expect(mockKuotas[1].update).toHaveBeenCalledWith({ totalKuota: 6, sisaKuota: 6 }); // N-1
     expect(mockKuotas[0].update).toHaveBeenCalledWith({ totalKuota: 12, sisaKuota: 12 }); // Tahunan
-
-    // cek reset jenis lain
     expect(mockKuotas[3].update).toHaveBeenCalledWith({ totalKuota: 90, sisaKuota: 90 });
     expect(mockKuotas[4].update).toHaveBeenCalledWith({ totalKuota: 30, sisaKuota: 30 });
     expect(mockKuotas[5].update).toHaveBeenCalledWith({ totalKuota: 30, sisaKuota: 30 });
     expect(mockKuotas[6].update).toHaveBeenCalledWith({ totalKuota: 260, sisaKuota: 260 });
     expect(mockKuotas[7].update).toHaveBeenCalledWith({ totalKuota: 90, sisaKuota: 90 });
+    expect(consoleSpy).toHaveBeenCalledWith("Reset semua kuota cuti berhasil dilakukan");
   });
 
   test("WT-AR-01-02: Memastikan sistem mereset jenis cuti lain meski data tahunan tidak lengkap", async () => {
@@ -72,12 +75,11 @@ describe("autoResetKuotaCuti.resetKuotaCutiTahunan", () => {
 
     // Tidak ada update untuk tahunan, N-1, N-2
     expect(mockKuotas[0].update).not.toHaveBeenCalledWith({ totalKuota: 12, sisaKuota: 12 });
-
-    // Cek reset jenis lain tetap jalan
     expect(mockKuotas[1].update).toHaveBeenCalledWith({ totalKuota: 90, sisaKuota: 90 });
     expect(mockKuotas[2].update).toHaveBeenCalledWith({ totalKuota: 30, sisaKuota: 30 });
     expect(mockKuotas[3].update).toHaveBeenCalledWith({ totalKuota: 30, sisaKuota: 30 });
     expect(mockKuotas[4].update).toHaveBeenCalledWith({ totalKuota: 260, sisaKuota: 260 });
     expect(mockKuotas[5].update).toHaveBeenCalledWith({ totalKuota: 90, sisaKuota: 90 });
+    expect(consoleSpy).toHaveBeenCalledWith("Reset semua kuota cuti berhasil dilakukan");
   });
 });

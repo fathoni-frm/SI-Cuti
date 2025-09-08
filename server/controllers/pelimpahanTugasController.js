@@ -137,7 +137,7 @@ const verifikasiPelimpahan = async (req, res) => {
             );
         }
 
-        return res.json({ msg: 'Konfirmasi berhasil', data: pelimpahan });
+        return res.status(200).json({ msg: 'Konfirmasi berhasil', data: pelimpahan });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ msg: 'Gagal memproses konfirmasi', error: err.message });

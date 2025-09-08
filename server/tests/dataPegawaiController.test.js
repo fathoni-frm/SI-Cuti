@@ -288,7 +288,7 @@ describe("dataPegawaiController.createPegawai", () => {
   });
 });
 
-describe("dataPegawai.updatePegawai", () => {
+describe("dataPegawaiController.updatePegawai", () => {
   let req, res, mockPegawai;
 
   beforeEach(() => {
@@ -321,6 +321,7 @@ describe("dataPegawai.updatePegawai", () => {
     await updatePegawai(req, res);
 
     expect(mockPegawai.update).toHaveBeenCalledWith(expect.objectContaining({ nama: "Budi" }));
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "Data pegawai dan akun berhasil diperbarui" });
   });
 
@@ -339,6 +340,7 @@ describe("dataPegawai.updatePegawai", () => {
       role: "pegawai",
       idPegawai: 1
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "Data pegawai dan akun berhasil diperbarui" });
   });
 
@@ -355,6 +357,7 @@ describe("dataPegawai.updatePegawai", () => {
       username: "budi123",
       role: "pegawai"
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "Data pegawai dan akun berhasil diperbarui" });
   });
 
@@ -373,6 +376,7 @@ describe("dataPegawai.updatePegawai", () => {
       role: "admin",
       password: "hashedPassword123"
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ message: "Data pegawai dan akun berhasil diperbarui" });
   });
 
@@ -386,7 +390,7 @@ describe("dataPegawai.updatePegawai", () => {
   });
 });
 
-describe("dataPegawai.deletePegawai", () => {
+describe("dataPegawaiController.deletePegawai", () => {
   let req, res;
 
   beforeEach(() => {
@@ -441,7 +445,7 @@ describe("dataPegawai.deletePegawai", () => {
   });
 });
 
-describe("dataPegawai.validatePegawai", () => {
+describe("dataPegawaiController.validatePegawai", () => {
     let req, res;
 
     beforeEach(() => {
@@ -460,7 +464,7 @@ describe("dataPegawai.validatePegawai", () => {
         User.findOne.mockResolvedValue(null);
 
         await validatePegawai(req, res);
-
+        expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({ valid: true });
     });
 

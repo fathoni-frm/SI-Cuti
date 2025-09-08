@@ -141,7 +141,7 @@ describe("kuotaCutiController.updateKuotaCuti", () => {
   });
 
   test("WT-KC-03-02: Mengembalikan error jika input bukan array", async () => {
-    req.body = { id: 1, totalKuota: 10, sisaKuota: 10 }; // bukan array
+    req.body = { id: 1, totalKuota: 10, sisaKuota: 10 }; 
 
     await updateKuotaCuti(req, res);
 

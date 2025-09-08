@@ -48,6 +48,7 @@ describe("notifikasiController.getNotifikasiByUser", () => {
       include: [{ model: PengajuanCuti }],
       order: [["createdAt", "DESC"]],
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockNotifikasi);
   });
 
@@ -62,6 +63,7 @@ describe("notifikasiController.getNotifikasiByUser", () => {
       include: [{ model: PengajuanCuti }],
       order: [["createdAt", "DESC"]],
     });
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith([]);
   });
 });
@@ -100,6 +102,7 @@ describe("notifikasiController.tandaiSudahDibaca", () => {
 
     await tandaiSudahDibaca(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(Notifikasi.findByPk).toHaveBeenCalledWith(1);
     expect(mockNotifikasi.update).toHaveBeenCalledWith({ isRead: true });
     expect(PelimpahanTugas.findOne).toHaveBeenCalledWith({
@@ -135,6 +138,7 @@ describe("notifikasiController.tandaiSudahDibaca", () => {
 
     await tandaiSudahDibaca(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(Notifikasi.findByPk).toHaveBeenCalledWith(2);
     expect(mockNotifikasi.update).toHaveBeenCalledWith({ isRead: true });
     expect(VerifikasiCuti.findOne).toHaveBeenCalledWith({
@@ -192,6 +196,7 @@ describe("notifikasiController.hapusNotifikasi", () => {
 
     await hapusNotifikasi(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(Notifikasi.findByPk).toHaveBeenCalledWith(1);
     expect(mockNotifikasi.destroy).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({ msg: 'Notifikasi berhasil dihapus' });

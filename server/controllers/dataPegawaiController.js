@@ -176,7 +176,7 @@ const updatePegawai = async (req, res) => {
             }
         }
 
-        res.json({ message: "Data pegawai dan akun berhasil diperbarui" });
+        res.status(200).json({ message: "Data pegawai dan akun berhasil diperbarui" });
     } catch (err) {
         console.error("Gagal update pegawai:", err);
         res.status(500).json({ message: "Terjadi kesalahan saat update" });
@@ -221,7 +221,7 @@ const validatePegawai = async (req, res) => {
             return res.status(400).json({ errors });
         }
 
-        res.json({ valid: true });
+        res.status(200).json({ valid: true });
     } catch (error) {
         res.status(500).json({
             msg: "Gagal validasi data",
