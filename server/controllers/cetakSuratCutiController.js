@@ -215,7 +215,7 @@ const generateSuratCuti = async (idPengajuan) => {
         // Gunakan puppeteer untuk generate PDF
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.setContent(html, { waitUntil: 'networkidle0', timeout: 120000 });
 
         const namaFile = `SuratCuti_${idPengajuan}_${Date.now()}.pdf`;
         const filePath = path.join(__dirname, '../uploads/surat-cuti', namaFile);

@@ -128,7 +128,10 @@ const DetailPelimapahan = () => {
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-4 sm:p-6 w-full space-y-5">
-				<h1 className="text-2xl font-bold">Detail Pelimpahan</h1>
+				<h1 className="mb-6 text-xl font-bold sm:text-2xl text-gray-800">
+					<span className="text-gray-500">Permohonan Pelimpahan Tugas / </span>
+					Detail Pelimpahan
+				</h1>
 
 				{/* TOMBOL */}
 				<div className="flex justify-between items-center flex-wrap gap-3">
@@ -220,10 +223,10 @@ const DetailPelimapahan = () => {
 							<DetailRow label="Nama / NIP">
 								{`${data.PengajuanCuti.pegawai.nama} / ${data.PengajuanCuti.pegawai.nip}`}
 							</DetailRow>
-							<DetailRow label="Jabatan">
-								{data.PengajuanCuti.pegawai.jabatanFungsional}
+							<DetailRow label="Pangkat / Gol / Jabatan">
+								{`${data.PengajuanCuti.pegawai.pangkat} / ${data.PengajuanCuti.pegawai.golongan} / ${data.PengajuanCuti.pegawai.jabatanFungsional}`}
 							</DetailRow>
-							<DetailRow label="Unit Kerja">
+							<DetailRow label="Satuan Kerja">
 								{data.PengajuanCuti.pegawai.satuanKerja}
 							</DetailRow>
 							<DetailRow label="Periode Cuti">
@@ -249,7 +252,7 @@ const DetailPelimapahan = () => {
 							<DetailRow label="Pangkat / Gol / Jabatan">
 								{`${data.penerima.pangkat} / ${data.penerima.golongan} / ${data.penerima.jabatanFungsional}`}
 							</DetailRow>
-							<DetailRow label="Satuan Pelayanan">
+							<DetailRow label="Satuan Kerja">
 								{data.penerima.satuanKerja}
 							</DetailRow>
 						</dl>
