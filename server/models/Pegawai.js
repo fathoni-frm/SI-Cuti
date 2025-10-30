@@ -116,7 +116,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Pegawai',
-    tableName: 'pegawais',
+    tableName: 'Pegawais',
     timestamps: true,
     paranoid: true,
   });
