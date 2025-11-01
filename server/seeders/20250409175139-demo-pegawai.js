@@ -53,7 +53,7 @@ module.exports = {
         satuanKerja: "UPT Induk BBKHIT Kalimantan Timur",
         pangkat: "Penata Muda",
         golongan: "III/c",
-        jabatanStruktural: "Staf",
+        jabatanStruktural: "Lainnya",
         jabatanFungsional: "Pengadministrasi Perkantoran",
         alamatKantor: "Jl. Jenderal Sudirman No.1",
         noHP: "",
