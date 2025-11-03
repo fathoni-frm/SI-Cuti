@@ -11,7 +11,7 @@ export const initialValues = {
   tanggalSelesai: "",
   alasanCuti: "",
   alamatCuti: "",
-  lampiran: "" || null,
+  lampiran: "",
   status: "",
   ketuaTim: null,
   kaSapel: null,
@@ -32,6 +32,7 @@ export const validationSchema = Yup.object({
   alamatCuti: Yup.string().required("Wajib diisi"),
   ketuaTim: Yup.object().nullable(),
   kaSapel: Yup.object().nullable(),
+  idPenerimaTugas: Yup.mixed().required("Pelimpahan tugas wajib diisi"),
   lampiran: Yup.mixed().nullable()
     .test(
       "file-format-valid",

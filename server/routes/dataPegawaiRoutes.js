@@ -13,7 +13,8 @@ router.post('/pegawai/import', upload.single("file"), authorizeRoles('Admin'), d
 
 router.get('/pegawai/:id', dataPegawaiController.getPegawaiById);
 router.get('/form/pegawai', dataPegawaiController.getDaftarPegawai);
-router.get('/form/atasan', dataPegawaiController.getDaftarAtasan);
+router.get('/form/ketua-tim', dataPegawaiController.getDaftarKetuaTim);
+router.get('/form/kepala-sapel', dataPegawaiController.getDaftarKepalaSapel);
 router.put('/pegawai/:id', dataPegawaiController.updatePegawai);
 router.post('/pegawai/validate', dataPegawaiController.validatePegawai);
 router.get('/pegawai/cetak/:id', dataPegawaiController.cetakProfilPegawai);

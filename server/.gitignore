@@ -3,3 +3,5 @@ node_modules
 .env
 uploads/surat-cuti/*
 !uploads/surat-cuti/.gitkeep
+uploads/lampiran/*
+!uploads/lampiran/.gitkeep

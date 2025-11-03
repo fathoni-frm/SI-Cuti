@@ -45,10 +45,10 @@ const DetailCuti = () => {
 
 	if (!data) return <Spinner />;
 
-	const akhirCuti = new Date(data.tanggalSelesai);
-	const batasPembatalan = new Date(akhirCuti);
-	batasPembatalan.setDate(akhirCuti.getDate() + 3);
-	const isCutiSudahLewat = new Date() > batasPembatalan;
+	const awalCuti = new Date(data.tanggalMulai);
+	const batasPembatalan = new Date(awalCuti);
+	batasPembatalan.setDate(awalCuti.getDate() + 1);
+	const isPembatalanCutiSudahLewat = new Date() > batasPembatalan;
 
 	const verifikasiList = data.VerifikasiCutis;
 	const giliran = verifikasiList.find(
@@ -129,7 +129,7 @@ const DetailCuti = () => {
 				Swal.fire(
 					"Gagal",
 					"Terjadi kesalahan saat memproses verifikasi.",
-					"error"
+					error
 				);
 			}
 		}
@@ -162,7 +162,7 @@ const DetailCuti = () => {
 			Swal.fire("Berhasil", "Pengajuan cuti telah dibatalkan.", "success");
 			navigate("/permohonan-cuti");
 		} catch (error) {
-			Swal.fire("Gagal", "Terjadi kesalahan saat membatalkan cuti.", "error");
+			Swal.fire("Gagal", "Terjadi kesalahan saat membatalkan cuti.", error);
 		}
 	};
 
@@ -191,14 +191,14 @@ const DetailCuti = () => {
 						{user.role === "Admin" && data.status === "Disetujui" && (
 							<button
 								onClick={handleBatalkanCuti}
-								disabled={isCutiSudahLewat}
+								disabled={isPembatalanCutiSudahLewat}
 								className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
-									isCutiSudahLewat
+									isPembatalanCutiSudahLewat
 										? "bg-gray-300 cursor-not-allowed"
 										: "bg-red-600 hover:bg-red-700 cursor-pointer"
 								}`}
 								title={
-									isCutiSudahLewat
+									isPembatalanCutiSudahLewat
 										? "Tidak dapat membatalkan cuti karena cuti sudah lewat lebih dari 3 hari."
 										: "Batalkan pengajuan cuti ini."
 								}>

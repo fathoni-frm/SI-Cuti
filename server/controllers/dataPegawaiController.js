@@ -28,39 +28,65 @@ const getAllPegawai = async (req, res) => {
     }
 };
 
-const getDaftarAtasan = async (req, res) => {
+const getDaftarKetuaTim = async (req, res) => {
     try {
-        const daftarAtasan = await Pegawai.findAll({
+        const daftarKetuaTim = await Pegawai.findAll({
             where: {
-                jabatanStruktural: {
-                    [Op.in]: ["Ketua Tim", "Kepala Satuan Pelayanan"]
-                }
+                jabatanStruktural: "Ketua Tim"
             },
-            // include: [
-            //     {
-            //         model: User,
-            //         where: { role: "atasan" },
-            //         attributes: [],
-            //         required: true
-            //     }
-            // ],
+            include: [
+                {
+                    model: User,
+                    where: { role: "atasan" },
+                    attributes: [],
+                    required: true
+                }
+            ],
             attributes: ["id", "nama", "nip", "jabatanStruktural", "jabatanFungsional"],
             order: [["nama", "ASC"]]
         });
 
-        res.status(200).json(daftarAtasan);
+        res.status(200).json(daftarKetuaTim);
     } catch (error) {
-        console.error("Gagal mengambil data atasan:", error);
+        console.error("Gagal mengambil data ketua tim:", error);
         res.status(500).json({
-            msg: "Terjadi kesalahan saat mengambil data atasan",
+            msg: "Terjadi kesalahan saat mengambil data ketua tim",
             error: error.message
         });
     }
 };
 
-//untuk form pengalihan tugas
+const getDaftarKepalaSapel = async (req, res) => {
+    try {
+        const daftarKepalaSapel = await Pegawai.findAll({
+            where: {
+                jabatanStruktural: "Kepala Satuan Pelayanan"
+            },
+            include: [
+                {
+                    model: User,
+                    where: { role: "atasan" },
+                    attributes: [],
+                    required: true
+                }
+            ],
+            attributes: ["id", "nama", "nip", "jabatanStruktural", "jabatanFungsional"],
+            order: [["nama", "ASC"]]
+        });
+
+        res.status(200).json(daftarKepalaSapel);
+    } catch (error) {
+        console.error("Gagal mengambil data kepala sapel:", error);
+        res.status(500).json({
+            msg: "Terjadi kesalahan saat mengambil data kepala sapel",
+            error: error.message
+        });
+    }
+};
+
 const getDaftarPegawai = async (req, res) => {
     try {
+        const idPegawaiLogin = req.user.idPegawai;
         const daftarPegawai = await Pegawai.findAll({
             where: {
                 jabatanStruktural: {
@@ -70,7 +96,7 @@ const getDaftarPegawai = async (req, res) => {
             include: [
                 {
                     model: User,
-                    where: { role: { [Op.notIn]: ["Admin"] } },
+                    where: { role: { [Op.notIn]: ["Admin"] }, idPegawai: { [Op.ne]: idPegawaiLogin } },
                     attributes: []
                 }
             ],
@@ -385,7 +411,8 @@ const cetakProfilPegawai = async (req, res) => {
 module.exports = {
     getAllPegawai,
     getPegawaiById,
-    getDaftarAtasan,
+    getDaftarKetuaTim,
+    getDaftarKepalaSapel,
     getDaftarPegawai,
     createPegawai,
     updatePegawai,

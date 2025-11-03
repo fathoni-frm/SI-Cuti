@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -39,20 +39,17 @@ const FormPengajuanCuti = () => {
 
 	const jenisCuti = location.state?.jenisCuti;
 
-	const [daftarAtasan, setDaftarAtasan] = useState([]);
 	const [daftarPegawai, setDaftarPegawai] = useState([]);
+	const [daftarKetuaTim, setDaftarKetuaTim] = useState([]);
+	const [daftarKepalaSapel, setDaftarKepalaSapel] = useState([]);
 	const [durasiCuti, setDurasiCuti] = useState(0);
 	const [sisaKuota, setSisaKuota] = useState(0);
 	const [totalKuota, setTotalKuota] = useState(0);
 	const [sudahFetchDraft, setSudahFetchDraft] = useState(false);
 	const fileInputRef = useRef(null);
+	const pelimpahanRef = useRef(null);
 
 	const isKuotaCutiValid = Array.isArray(kuotaCuti) && kuotaCuti.length > 0;
-
-	const optionsAtasan = daftarAtasan.map((atasan) => ({
-		value: atasan.id,
-		label: atasan.nama,
-	}));
 
 	const optionsPegawai = daftarPegawai.map((pegawai) => ({
 		value: pegawai.id,
@@ -64,9 +61,24 @@ const FormPengajuanCuti = () => {
 		satuanKerja: pegawai.satuanKerja,
 	}));
 
-	const findAtasanOption = (idPimpinan) => {
+	const optionsKetuaTim = daftarKetuaTim.map((ketuaTim) => ({
+		value: ketuaTim.id,
+		label: ketuaTim.nama,
+	}));
+
+	const optionsKepalaSapel = daftarKepalaSapel.map((kepalaSapel) => ({
+		value: kepalaSapel.id,
+		label: kepalaSapel.nama,
+	}));
+
+	const findKetuaTimOption = (idPimpinan) => {
 		if (!idPimpinan) return null;
-		return optionsAtasan.find((option) => option.value === idPimpinan) || null;
+		return optionsKetuaTim.find((option) => option.value === idPimpinan) || null;
+	};
+
+	const findKepalaSapelOption = (idPimpinan) => {
+		if (!idPimpinan) return null;
+		return optionsKepalaSapel.find((option) => option.value === idPimpinan) || null;
 	};
 
 	const findPelimpahanOption = (idPenerimaTugas) => {
@@ -88,15 +100,18 @@ const FormPengajuanCuti = () => {
 		</div>
 	);
 
-	const CustomDateInput = ({ value, onClick, placeholder }) => (
+	const CustomDateInput = forwardRef(({ value, onClick, placeholder, "data-field": dataField }, ref) => (
 		<button
+			ref={ref}
 			type="button"
+			data-field={dataField}
 			onClick={onClick}
-			className="flex items-center gap-2 w-33 py-2 border border-gray-400 rounded-lg bg-white text-center hover:ring-2 hover:ring-blue-400 transition-all">
+			className="flex items-center gap-2 w-33 py-2 border border-gray-400 rounded-lg bg-white text-center hover:ring-2 hover:ring-blue-400 transition-all"
+		>
 			<FaCalendarAlt className="ml-1 text-gray-600" />
 			<span className="text-sm text-gray-700">{value || placeholder}</span>
 		</button>
-	);
+	));
 
 	const handleSubmitCuti = async (values, isDraft) => {
 		try {
@@ -204,14 +219,52 @@ const FormPengajuanCuti = () => {
 	});
 	const { setFieldValue } = formik;
 
+	useEffect(() => {
+	if (Object.keys(formik.errors).length > 0 && formik.isSubmitting) {
+		const firstErrorField = Object.keys(formik.errors)[0];
+
+		// Jika field error adalah Select Pelimpahan
+		if (firstErrorField === "idPenerimaTugas" && pelimpahanRef.current?.controlRef) {
+		const selectElement = pelimpahanRef.current.controlRef; // Elemen DOM asli react-select
+		selectElement.scrollIntoView({
+			behavior: "smooth",
+			block: "center",
+		});
+		selectElement.classList.add("ring-2", "ring-red-400");
+		setTimeout(() => {
+			selectElement.classList.remove("ring-2", "ring-red-400");
+		}, 1500);
+		return;
+		}
+
+		// Default untuk input biasa
+		const errorElement = document.querySelector(
+		`[name="${firstErrorField}"], [data-field="${firstErrorField}"]`
+		);
+
+		if (errorElement) {
+		errorElement.scrollIntoView({
+			behavior: "smooth",
+			block: "center",
+		});
+		errorElement.classList.add("ring-2", "ring-red-400");
+		setTimeout(() => {
+			errorElement.classList.remove("ring-2", "ring-red-400");
+		}, 1500);
+		}
+	}
+	}, [formik.errors, formik.isSubmitting]);
+
 	const fetchAtasanDanPegawai = async () => {
 		try {
-			const [resAtasan, resPegawai] = await Promise.all([
-				axios.get("/form/atasan"),
+			const [resPegawai, resKetuaTim, resKepalaSapel] = await Promise.all([
 				axios.get("/form/pegawai"),
+				axios.get("/form/ketua-tim"),
+				axios.get("/form/kepala-sapel"),
 			]);
-			setDaftarAtasan(resAtasan.data);
 			setDaftarPegawai(resPegawai.data);
+			setDaftarKetuaTim(resKetuaTim.data);
+			setDaftarKepalaSapel(resKepalaSapel.data);
 		} catch (error) {
 			console.error("Gagal fetch data:", error);
 			toast.error("Gagal memuat data atasan dan pegawai");
@@ -238,11 +291,11 @@ const FormPengajuanCuti = () => {
 				alasanCuti: data.alasanCuti || "",
 				alamatCuti: data.alamatCuti || "",
 				lampiran: data.lampiran,
-				ketuaTim: findAtasanOption(
+				ketuaTim: findKetuaTimOption(
 					sortedVerifikasi.find((v) => v.jenisVerifikator === "Ketua Tim")
 						?.idPimpinan
 				),
-				kaSapel: findAtasanOption(
+				kaSapel: findKepalaSapelOption(
 					sortedVerifikasi.find(
 						(v) => v.jenisVerifikator === "Kepala Satuan Pelayanan"
 					)?.idPimpinan
@@ -267,10 +320,10 @@ const FormPengajuanCuti = () => {
 	}, []);
 
 	useEffect(() => {
-		if (daftarAtasan.length > 0 && id && !sudahFetchDraft) {
+		if (daftarKetuaTim.length > 0 && daftarKepalaSapel.length > 0 && id && !sudahFetchDraft) {
 			fetchDraft();
 		}
-	}, [daftarAtasan, id, sudahFetchDraft]);
+	}, [daftarKetuaTim, daftarKepalaSapel, id, sudahFetchDraft]);
 
 	useEffect(() => {
 		if ((formik.values.jenisCuti || jenisCuti) && isKuotaCutiValid) {
@@ -317,7 +370,7 @@ const FormPengajuanCuti = () => {
 							</FormFieldRow>
 						</div>
 					</BackgroundItem>
-
+					
 					{/* Keterangan Cuti */}
 					<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
 						<div className="space-y-3 p-4 sm:px-6">
@@ -336,17 +389,15 @@ const FormPengajuanCuti = () => {
 									<div>Total Kuota</div>
 									<div>:</div>
 								</div>
-								<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
-									<span className="text-sm px-3 py-1 text-white bg-green-500 rounded-full">
-										{totalKuota} hari
-									</span>
+								<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-2/5">
+									{totalKuota} hari
 								</div>
-								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:justify-between md:w-25">
 									<div>Sisa Kuota</div>
 									<div>:</div>
 								</div>
-								<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
-									<span className="text-sm px-3 py-1 text-white bg-yellow-500 rounded-full">
+								<div className="flex w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+									<span className="text-sm px-2 py-1 text-white bg-yellow-500 rounded-xl">
 										{sisaKuota} hari
 									</span>
 								</div>
@@ -357,7 +408,7 @@ const FormPengajuanCuti = () => {
 									<div>Periode Cuti</div>
 									<div>:</div>
 								</div>
-								<div className="flex justify-center space-x-1 w-fit mb-3 font-medium text-black md:ml-5 md:mb-0">
+								<div className="flex w-fit justify-center space-x-1 mb-3 font-medium text-black md:ml-5 md:mb-0 md:w-2/5">
 									<div className="w-fit xs:w-auto">
 										<DatePicker
 											name="tanggalMulai"
@@ -375,7 +426,7 @@ const FormPengajuanCuti = () => {
 												}
 												formik.setFieldValue("tanggalMulai", date);
 											}}
-											customInput={<CustomDateInput />}
+											customInput={<CustomDateInput data-field="tanggalMulai" />}
 											minDate={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}
 											filterDate={(date) =>
 												date.getDay() !== 0 && date.getDay() !== 6
@@ -403,7 +454,7 @@ const FormPengajuanCuti = () => {
 											onChange={(date) =>
 												formik.setFieldValue("tanggalSelesai", date)
 											}
-											customInput={<CustomDateInput />}
+											customInput={<CustomDateInput data-field="tanggalSelesai" />}
 											minDate={
 												formik.values.tanggalMulai
 													? new Date(formik.values.tanggalMulai)
@@ -424,7 +475,7 @@ const FormPengajuanCuti = () => {
 											)}
 									</div>
 								</div>
-								<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:ml-7 lg:ml-19 md:justify-between md:place-self-center md:w-25">
+								<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:justify-between md:place-self-center md:w-25">
 									<div>Durasi Cuti</div>
 									<div>:</div>
 								</div>
@@ -509,7 +560,7 @@ const FormPengajuanCuti = () => {
 									<Select
 										id="ketuaTim"
 										name="ketuaTim"
-										options={optionsAtasan}
+										options={optionsKetuaTim}
 										placeholder="Cari dan pilih nama ketua tim..."
 										className="react-select-container mt-1 font-medium text-black"
 										classNamePrefix="react-select"
@@ -535,7 +586,7 @@ const FormPengajuanCuti = () => {
 									<Select
 										id="kaSapel"
 										name="kaSapel"
-										options={optionsAtasan}
+										options={optionsKepalaSapel}
 										placeholder="Cari dan pilih nama kepala satuan pelayanan..."
 										className="react-select-container mt-1 font-medium text-black"
 										classNamePrefix="react-select"
@@ -579,14 +630,19 @@ const FormPengajuanCuti = () => {
 											<div className="w-full md:w-3/5 lg:w-1/2">
 												{/* Lebar Select di desktop */}
 												<Select
-													name="pelimpahanNama"
+													ref={pelimpahanRef}
+													name="idPenerimaTugas"
+													data-field="idPenerimaTugas"
 													options={optionsPegawai}
 													placeholder="Ketik Nama Pegawai . . ."
-													className="react-select-container"
+													className={`react-select-container ${
+													formik.touched.idPenerimaTugas && formik.errors.idPenerimaTugas
+														? "border border-red-500 rounded-md"
+														: ""
+													}`}
 													classNamePrefix="react-select"
 													value={optionsPegawai.find(
-														(option) =>
-															option.value === formik.values.idPenerimaTugas
+														(option) => option.value === formik.values.idPenerimaTugas
 													)}
 													onChange={(option) => {
 														if (option === null) {
@@ -598,41 +654,36 @@ const FormPengajuanCuti = () => {
 															formik.setFieldValue("pelimpahanJabatan", "");
 															formik.setFieldValue("pelimpahanSatuanKerja", "");
 														} else {
-															formik.setFieldValue(
-																"idPenerimaTugas",
-																option.value
-															);
-															formik.setFieldValue(
-																"pelimpahanNama",
-																option.label
-															);
+															formik.setFieldValue("idPenerimaTugas",option.value);
+															formik.setFieldValue("pelimpahanNama",option.label);
 															formik.setFieldValue("pelimpahanNip", option.nip);
-															formik.setFieldValue(
-																"pelimpahanPangkat",
-																option.pangkat
-															);
-															formik.setFieldValue(
-																"pelimpahanGolongan",
-																option.golongan
-															);
-															formik.setFieldValue(
-																"pelimpahanJabatan",
-																option.jabatan
-															);
-															formik.setFieldValue(
-																"pelimpahanSatuanKerja",
-																option.satuanKerja
-															);
+															formik.setFieldValue("pelimpahanPangkat",option.pangkat);
+															formik.setFieldValue("pelimpahanGolongan",option.golongan);
+															formik.setFieldValue("pelimpahanJabatan",option.jabatan);
+															formik.setFieldValue("pelimpahanSatuanKerja",option.satuanKerja);
 														}
+														formik.setTouched("idPenerimaTugas", true, false);
+														formik.validateField("idPenerimaTugas");
 													}}
 													isClearable
 													styles={{
-														// Sesuaikan styling react-select Anda
-														control: (base) => ({
+														control: (base, state) => ({
 															...base,
 															minHeight: "38px",
-															borderColor: "#d1d5db",
-															"&:hover": { borderColor: "#9ca3af" },
+															borderColor:
+																formik.touched.idPenerimaTugas &&
+																formik.errors.idPenerimaTugas
+																	? "#dc2626" 
+																	: state.isFocused
+																	? "#3b82f6"
+																	: "#d1d5db",
+															boxShadow: "none",
+															"&:hover": {
+															borderColor:
+																formik.touched.idPenerimaTugas && formik.errors.idPenerimaTugas
+																? "#ef4444"
+																: "#9ca3af",
+															},
 														}),
 														menu: (base) => ({ ...base, zIndex: 20 }),
 													}}
@@ -642,6 +693,11 @@ const FormPengajuanCuti = () => {
 												<span className="mt-1 md:mt-0 text-gray-700">
 													/ {formik.values.pelimpahanNip}
 												</span>
+											)}
+											{formik.touched.idPenerimaTugas && formik.errors.idPenerimaTugas && (
+												<p className="text-red-500 text-sm mt-1">
+													{formik.errors.idPenerimaTugas}
+												</p>
 											)}
 										</div>
 									</div>
@@ -693,7 +749,7 @@ const FormPengajuanCuti = () => {
 													href={`http://localhost:3000/uploads/lampiran/${formik.values.lampiran}`}
 													target="_blank"
 													rel="noopener noreferrer"
-													className="text-sm text-blue-500 underline">
+													className="text-sm text-blue-500 underline hover:text-blue-900">
 													Lihat lampiran
 												</a>
 											</>
