@@ -75,13 +75,13 @@ const TabelPelimpahan = ({
 				<table className="w-full text-sm shadow-sm rounded-lg">
 					<thead>
 						<tr className="text-xs text-black uppercase tracking-wider bg-gray-200">
-							<th className="px-2 py-3 rounded-tl-lg">No</th>
-							<th className="px-2 py-3">Tanggal Pengajuan</th>
-							<th className="px-2 py-3">Nama Pemohon</th>
-							<th className="px-2 py-3">Tanggal Mulai</th>
-							<th className="px-2 py-3">Tanggal Selesai</th>
-							<th className="px-2 py-3">Status</th>
-							<th className="px-2 py-3 rounded-tr-lg">Aksi</th>
+							<th className="px-2 py-3 rounded-tl-lg w-[5%]">No</th>
+							<th className="px-2 py-3 w-[15%]">Tanggal Pengajuan</th>
+							<th className="px-2 py-3 w-[25%]">Nama Pemohon</th>
+							<th className="px-2 py-3 w-[15%]">Tanggal Mulai</th>
+							<th className="px-2 py-3 w-[15%]">Tanggal Selesai</th>
+							<th className="px-2 py-3 w-[10%]">Status</th>
+							<th className="px-2 py-3 rounded-tr-lg w-[5%]">Aksi</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">

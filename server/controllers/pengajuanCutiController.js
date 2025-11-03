@@ -47,7 +47,7 @@ const getRiwayatCutiByPegawai = async (req, res) => {
                 },
                 idPegawai: idPegawai,
             },
-            order: [['updatedAt', 'DESC']],
+            order: [['tanggalPengajuan', 'DESC']],
         });
 
         res.status(200).json(pengajuan);

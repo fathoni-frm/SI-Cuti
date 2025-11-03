@@ -69,7 +69,7 @@ const TabelPermohonan = ({
 	if (!data || data.length === 0)
 		return (
 			<p className="flex justify-center ml-5 my-5">Tidak ada data permohonan</p>
-		);
+	);
 
 	return (
 		<>
@@ -77,22 +77,22 @@ const TabelPermohonan = ({
 				<table className="w-full text-sm shadow-sm rounded-lg">
 					<thead>
 						<tr className="text-xs text-black uppercase tracking-wider bg-gray-200">
-							<th className={`px-2 py-3 ${isDashboard ? "" : "rounded-tl-lg"}`}>
+							<th className={`px-2 py-3 w-[5%] ${isDashboard ? "" : "rounded-tl-lg"}`}>
 								No
 							</th>
-							<th className="px-2 py-3">Tanggal Pengajuan</th>
-							<th className="px-2 py-3">Nama Pemohon</th>
-							<th className="px-2 py-3">Jenis Cuti</th>
-							<th className="px-2 py-3">Mulai</th>
-							<th className="px-2 py-3">Selesai</th>
+							<th className="px-2 py-3 w-[15%]">Tanggal Pengajuan</th>
+							<th className="px-2 py-3 w-[20%]">Nama Pemohon</th>
+							<th className="px-2 py-3 w-[15%]">Jenis Cuti</th>
+							<th className="px-2 py-3 w-[10%]">Mulai</th>
+							<th className="px-2 py-3 w-[10%]">Selesai</th>
 							{showQuota && (
 								<>
-									<th className="px-2 py-3">Total Kuota</th>
-									<th className="px-2 py-3">Sisa Kuota</th>
+									<th className="px-2 py-3 w-[7%]">Total Kuota</th>
+									<th className="px-2 py-3 w-[7%]">Sisa Kuota</th>
 								</>
 							)}
-							<th className="px-2 py-3">Status</th>
-							<th className={`px-2 py-3 ${isDashboard ? "" : "rounded-tr-lg"}`}>
+							<th className="px-2 py-3 w-[10%]">Status</th>
+							<th className={`px-2 py-3 w-[5%] ${isDashboard ? "" : "rounded-tr-lg"}`}>
 								Aksi
 							</th>
 						</tr>
@@ -111,37 +111,37 @@ const TabelPermohonan = ({
 											: isDashboard && index.length === indexOfLastItem
 											? "rounded-bl-lg"
 											: ""
-									} px-2 py-2 font-medium text-black whitespace-nowrap`}>
+									} px-2 py-2 font-medium text-black`}>
 									{isDashboard
 										? index + 1
 										: (currentPage - 1) * itemsPerPage + index + 1}
 								</td>
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									{formatGMT8(item.tanggalPengajuan)}
 								</td>
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									{item.pegawai.nama}
 								</td>
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									{item.jenisCuti}
 								</td>
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									{formatGMT8(item.tanggalMulai, { showTime: false })}
 								</td>
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									{formatGMT8(item.tanggalSelesai, { showTime: false })}
 								</td>
 								{showQuota && (
 									<>
-										<td className="px-2 py-2 whitespace-nowrap">
+										<td className="px-2 py-2">
 											{item.totalKuota}
 										</td>
-										<td className="px-2 py-2 whitespace-nowrap">
+										<td className="px-2 py-2">
 											{item.sisaKuota}
 										</td>
 									</>
 								)}
-								<td className="px-2 py-2 whitespace-nowrap">
+								<td className="px-2 py-2">
 									<span
 										className={`text-xs font-semibold px-2 py-1 rounded-full ${
 											item.status === "Disetujui"
@@ -164,7 +164,7 @@ const TabelPermohonan = ({
 											: isDashboard && index.length === indexOfLastItem
 											? "rounded-br-lg"
 											: ""
-									} px-2 py-2 whitespace-nowrap relative`}>
+									} px-2 py-2 relative`}>
 									{lihat ? (
 										<button
 											onClick={(e) => {
@@ -187,8 +187,7 @@ const TabelPermohonan = ({
 												<div
 													ref={dropdownRef}
 													className="absolute z-20 top-full -mt-2 right-4 w-21 bg-white border border-gray-300 rounded-md shadow-md text-left">
-													<div
-														className="absolute -top-1.5 border-t border-l right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10"></div>
+													<div className="absolute -top-1.5 border-t border-l right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10"></div>
 													<div className="py-2 px-1.5">
 														<Link
 															to={`/detail-cuti/${item.idPengajuan || item.id}`}

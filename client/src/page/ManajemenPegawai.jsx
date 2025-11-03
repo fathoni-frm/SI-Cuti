@@ -212,13 +212,12 @@ const ManajemenPegawai = () => {
 						</div>
 
 						{/* Tabel */}
-						<div className="flex border border-gray-200 rounded-lg shadow-sm overflow-x-auto max-w-full">
-							<table className="table-fixed min-w-full divide-y divide-gray-200 shrink-0 grow-0">
-								{/* Header Tabel */}
-								<thead className="bg-gray-200">
-									<tr className="text-sm text-black tracking-wider">
+						<div className={`${window.innerWidth < 1024 ? "overflow-auto" : ""}`}>
+							<table className="w-full text-sm shadow-sm rounded-lg">
+								<thead>
+									<tr className="text-xs text-black tracking-wider bg-gray-200">
 										<th className="w-[35px] px-2 py-2">NO</th>
-										<th className="w-[230px] px-2 py-2 text-left">NAMA</th>
+										<th className="w-[230px] px-2 py-2">NAMA</th>
 										<th className="w-[100px] px-2 py-2">NIP</th>
 										<th className="w-[100px] px-2 py-2">UNIT KERJA</th>
 										<th className="w-[100px] px-2 py-2">GOLONGAN</th>
@@ -227,8 +226,6 @@ const ManajemenPegawai = () => {
 										<th className="w-[40px] px-2 py-2">AKSI</th>
 									</tr>
 								</thead>
-
-								{/* Body Tabel */}
 								<tbody className="bg-white divide-y divide-gray-200">
 									{currentItems.map((pegawai, index) => (
 										<tr
@@ -271,17 +268,8 @@ const ManajemenPegawai = () => {
 													{openDropdownIndex === index && (
 														<div
 															ref={dropdownRef}
-															className={`absolute z-20 ${
-																index >= currentItems.length - 2
-																	? "bottom-full -mb-4"
-																	: "top-full -mt-6"
-															} right-1 w-24 bg-white border border-gray-300 rounded-md shadow-md text-left`}>
-															<div
-																className={`absolute ${
-																	index >= currentItems.length - 2
-																		? "-bottom-1.5 border-b border-r"
-																		: "-top-1.5 border-t border-l"
-																} right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10`}></div>
+															className={"absolute z-20 top-full -mt-6 right-1 w-24 bg-white border border-gray-300 rounded-md shadow-md text-left"}>
+															<div className={`absolute -top-1.5 border-t border-l right-4 w-3 h-3 bg-white border-gray-300 rotate-45 z-10`}></div>
 															<div className="py-2.5 flex flex-col gap-1.5 px-2">
 																<Link
 																	to={`/detail-pegawai/${pegawai.id}`}
