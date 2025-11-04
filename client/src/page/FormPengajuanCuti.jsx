@@ -746,7 +746,7 @@ const FormPengajuanCuti = () => {
 												</span>
 												<br />
 												<a
-													href={`http://localhost:3000/uploads/lampiran/${formik.values.lampiran}`}
+													href={`${import.meta.env.VITE_PUBLIC_URL}/uploads/lampiran/${formik.values.lampiran}`}
 													target="_blank"
 													rel="noopener noreferrer"
 													className="text-sm text-blue-500 underline hover:text-blue-900">

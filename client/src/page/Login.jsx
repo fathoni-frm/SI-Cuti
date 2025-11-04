@@ -16,12 +16,13 @@ const Login = () => {
 		try {
 			await login({ username, password });
 			navigate("/dashboard");
-		} catch (err) {
+		} catch (error) {
 			Swal.fire({
 				icon: "error",
 				title: "Terjadi Kesalahan Saat Login",
 				text: "Pastikan Username Dan Password Anda Benar",
 			});
+			console.error("Login error:", error);
 		}
 	};
 

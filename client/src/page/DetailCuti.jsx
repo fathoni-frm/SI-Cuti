@@ -168,7 +168,7 @@ const DetailCuti = () => {
 
 	const handleCetakSurat = async () => {
 		if (!data.suratCuti || data.status !== "Disetujui") return;
-		const url = `http://localhost:3000/uploads/surat-cuti/${data.suratCuti}`;
+		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${data.suratCuti}`;
 		window.open(url, "_blank");
 	};
 
@@ -422,7 +422,7 @@ const DetailCuti = () => {
 					<BackgroundItem title="Lampiran" icon={<FaFileAlt />}>
 						<div className="p-4 sm:px-6">
 							<a
-								href={`http://localhost:3000/uploads/lampiran/${data.lampiran}`}
+								href={`${import.meta.env.VITE_PUBLIC_URL}/uploads/lampiran/${data.lampiran}`}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="inline-flex items-center gap-2.5 px-4 py-2.5 

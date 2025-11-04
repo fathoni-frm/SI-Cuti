@@ -44,7 +44,7 @@ const TabelPelimpahan = ({
 
 	const handleCetakSurat = async (item) => {
 		if (!item.suratCuti || item.status !== "Disetujui") return;
-		const url = `http://localhost:3000/uploads/surat-cuti/${item.suratCuti}`;
+		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${item.suratCuti}`;
 		window.open(url, "_blank");
 	};
 

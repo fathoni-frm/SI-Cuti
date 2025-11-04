@@ -436,7 +436,7 @@ export const validationSchemaEditDataDiri = Yup.object({
 
 export const validateNipUsername = async (nip, username) => {
     try {
-        const res = await axios.post("/pegawai/validate", { nip, username });
+        await axios.post("/pegawai/validate", { nip, username });
         // Jika berhasil, berarti tidak duplikat
         return true;
     } catch (error) {

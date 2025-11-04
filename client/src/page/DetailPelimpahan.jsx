@@ -39,7 +39,7 @@ const DetailPelimapahan = () => {
 
 	const handleCetakSurat = async () => {
 		if (!data.PengajuanCuti.suratCuti || data.PengajuanCuti.status !== "Disetujui") return;
-		const url = `http://localhost:3000/uploads/surat-cuti/${data.PengajuanCuti.suratCuti}`;
+		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${data.PengajuanCuti.suratCuti}`;
 		window.open(url, "_blank");
 	};
 

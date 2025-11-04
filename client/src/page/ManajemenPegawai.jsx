@@ -22,6 +22,7 @@ const ManajemenPegawai = () => {
 	const navigate = useNavigate();
 	const [pegawaiList, setPegawaiList] = useState([]);
 	const MySwal = withReactContent(Swal);
+	const URLTemplateImport = `${import.meta.env.VITE_PUBLIC_URL}/uploads/template/template-import.xlsx`;
 
 	const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
 	const dropdownRef = useRef(null);
@@ -65,7 +66,7 @@ const ManajemenPegawai = () => {
 				html: `
 				<div class="text-sm text-left space-y-3">
 					<p class="inline leading-5">Silakan pilih file Excel yang berisi data pegawai. Sesuaikan format data pegawai dengan template berikut :</p>
-					<a href="http://localhost:3000/uploads/template/template-import.xlsx"
+					<a href="${URLTemplateImport}"
 					   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-0.5 px-1 rounded text-xs transition"
 					   download>
 						📄 Template Import Pegawai
