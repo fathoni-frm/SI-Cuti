@@ -16,10 +16,10 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use("/api/v", cors({ origin: "http://localhost:5173" }), validasiRoutes);
+app.use("/api/v", cors({ origin: process.env.FRONTEND_URL }), validasiRoutes);
 
 app.use(cors({
-  origin: "http://localhost:5173", // GANTI SESUAI URL FRONTEND
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
