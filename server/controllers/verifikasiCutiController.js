@@ -356,7 +356,7 @@ const batalCutiOlehAdmin = async (req, res) => {
                 idPenerima: pengajuan.PelimpahanTuga.idPenerima,
                 idPengajuan: pengajuan.id,
                 judul: "Pelimpahan Tugas Dibatalkan",
-                pesan: `Pelimpahan tugas dari ${pengajuan.pegawai?.nama} telah dibatalkan karena permohonan cuti dibatalkan.`,
+                pesan: `Pelimpahan tugas dari ${pengajuan.pegawai?.nama} telah dibatalkan karena permohonan cuti dibatalkan oleh admin.`,
             });
         }
 

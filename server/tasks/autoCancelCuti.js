@@ -63,8 +63,17 @@ const cancelPengajuanCuti = async () => {
                 idPenerima: pengajuan.idPegawai,
                 idPengajuan: pengajuan.id,
                 judul: "Cuti Dibatalkan Otomatis",
-                pesan: `Permohonan cuti Anda dibatalkan otomatis oleh sistem karena tidak diverifikasi dalam waktu 3 hari.`,
+                pesan: "Permohonan cuti Anda dibatalkan otomatis oleh sistem karena tidak diverifikasi dalam waktu 3 hari.",
             });
+
+            if (pengajuan.PelimpahanTuga && pengajuan.PelimpahanTuga.status === 'Disetujui') {
+                await Notifikasi.create({
+                    idPenerima: pengajuan.PelimpahanTuga.idPenerima,
+                    idPengajuan: pengajuan.id,
+                    judul: 'Pelimpahan Tugas Dibatalkan',
+                    pesan: `Pelimpahan tugas dari ${pengajuan.pegawai?.nama} telah dibatalkan karena permohonan cuti dibatalkan oleh sistem.`,
+                });
+            }
             // console.log(`Pengajuan ID ${pengajuan.id} dibatalkan karena melewati batas waktu.`);
         }
         if (pengajuanTerlambat.length === 0) {
