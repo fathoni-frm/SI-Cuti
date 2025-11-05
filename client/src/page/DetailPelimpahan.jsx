@@ -143,14 +143,14 @@ const DetailPelimapahan = () => {
 					<div className="flex gap-3">
 						<button
 							onClick={handleCetakSurat}
-							disabled={!data.PengajuanCuti.suratCuti}
+							disabled={!data.PengajuanCuti.suratCuti && data.PengajuanCuti.status !== "Disetujui"}
 							className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition text-sm ${
-								data.PengajuanCuti.suratCuti
+								data.PengajuanCuti.suratCuti && data.PengajuanCuti.status === "Disetujui"
 									? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
 									: "bg-gray-300 cursor-not-allowed"
 							}`}
 							title={
-								data.PengajuanCuti.suratCuti
+								data.PengajuanCuti.suratCuti && data.PengajuanCuti.status === "Disetujui"
 									? "Cetak surat pelimpahan."
 									: "Surat pelimpahan belum tersedia."
 							}>
