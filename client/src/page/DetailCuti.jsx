@@ -97,6 +97,7 @@ const DetailCuti = () => {
 			confirmButtonColor: status === "Disetujui" ? "#00c951" : "#d33",
 			confirmButtonText: status === "Disetujui" ? "Ya, setujui" : "Ya, tolak",
 			cancelButtonText: "Batal",
+			reverseButtons: true,
 			inputValidator: (value) => {
 				if (!value) {
 					return "Komentar wajib diisi!";
