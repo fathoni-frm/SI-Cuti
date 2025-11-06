@@ -47,8 +47,8 @@ const DetailCuti = () => {
 
 	const awalCuti = new Date(data.tanggalMulai);
 	const batasPembatalan = new Date(awalCuti);
-	batasPembatalan.setDate(awalCuti.getDate() + 1);
-	const isPembatalanCutiSudahLewat = new Date() > batasPembatalan;
+	batasPembatalan.setDate(awalCuti.getDate() + 1); // H+1 23.59 setelah tanggal mulai cuti
+	const isPembatalanCutiSudahLewat = new Date() > batasPembatalan; 
 
 	const verifikasiList = data.VerifikasiCutis;
 	const giliran = verifikasiList.find(
@@ -199,7 +199,7 @@ const DetailCuti = () => {
 								}`}
 								title={
 									isPembatalanCutiSudahLewat
-										? "Tidak dapat membatalkan cuti karena cuti sudah lewat lebih dari 3 hari."
+										? "Tidak dapat membatalkan cuti, karena cuti sudah lewat lebih dari 1 hari."
 										: "Batalkan pengajuan cuti ini."
 								}>
 								<FaTimesCircle /> Batalkan Cuti

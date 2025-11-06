@@ -10,7 +10,7 @@ cron.schedule('0 0 * * *', async () => {
 const cancelPengajuanCuti = async () => {
     try {
         const batasTanggal = new Date();
-        batasTanggal.setDate(batasTanggal.getDate() - 3); // 3 hari sebelum hari ini
+        batasTanggal.setDate(batasTanggal.getDate() - 3); // H+3 23.59 dari tanggal pengajuan
 
         const pengajuanTerlambat = await PengajuanCuti.findAll({
             where: {
