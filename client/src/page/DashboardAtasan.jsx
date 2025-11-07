@@ -17,12 +17,13 @@ import {
 } from "react-icons/fa";
 
 const DashboardAtasan = () => {
-	const { user, isLoading } = useAuthStore();
+	const { user, detailPegawai, isLoading } = useAuthStore();
 	const [dataPermohonan, setDataPermohonan] = useState([]);
 	const [disetujui, setDisetujui] = useState(0);
 	const [ditolak, setDitolak] = useState(0);
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
 	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
+	const jenisKelamin = detailPegawai?.jenisKelamin;
 
 	const dataPermohonanPegawai = [
 		{
@@ -75,6 +76,13 @@ const DashboardAtasan = () => {
 			bgColor: "bg-red-600",
 		},
 	];
+
+	const filteredDataKuotaCuti = dataKuotaCuti.filter((cuti) => {
+		if (jenisKelamin === "Laki-laki" && cuti.jenisCuti === "Cuti Melahirkan") {
+			return false;
+		}
+		return true;
+	});
 
 	useEffect(() => {
 		const fetchVerifikasi = async () => {
@@ -167,7 +175,7 @@ const DashboardAtasan = () => {
 
 					{/* Kuota Cuti */}
 					<BackgroundItem title="Sisa Kuota Cuti Anda">
-						<TabelKuotaCuti data={dataKuotaCuti} />
+						<TabelKuotaCuti data={filteredDataKuotaCuti} />
 					</BackgroundItem>
 
 					{/* Riwayat Pengajuan Cuti Anda */}

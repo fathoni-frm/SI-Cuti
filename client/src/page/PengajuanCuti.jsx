@@ -12,8 +12,9 @@ import {
 } from "react-icons/fa";
 
 const PengajuanCuti = () => {
-	const { user } = useAuthStore();
+	const { user, detailPegawai } = useAuthStore();
 	const navigate = useNavigate();
+	const jenisKelamin = detailPegawai?.jenisKelamin;
 
 	const cutiOptions = [
 		{
@@ -42,17 +43,24 @@ const PengajuanCuti = () => {
 		},
 	];
 
+	const filteredCutiOptions = cutiOptions.filter((cuti) => {
+        if (jenisKelamin === "Laki-laki" && cuti.title === "Cuti Melahirkan") {
+            return false;
+        }
+        return true;
+    });
+	
 	const handleClick = (jenisCuti) => {
 		navigate("/pengajuan-cuti/form", { state: { jenisCuti } });
 	};
-
+	
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-4 sm:p-6 w-full">
 				<h1 className="text-2xl font-bold mb-6 text-gray-800">Pengajuan Cuti</h1>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-					{cutiOptions.map((cuti, index) => (
+					{filteredCutiOptions.map((cuti, index) => (
 						<button
 							key={index}
 							onClick={() => handleClick(cuti.title)}
