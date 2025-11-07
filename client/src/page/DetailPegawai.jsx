@@ -58,7 +58,7 @@ const DetailPegawai = () => {
 					tanggalLahir: formattedDate,
 					username: akun.username,
 					role: akun.role,
-					password: "Password tidak ditampilkan",
+					password: "*******************",
 				});
 
 				const kuotaRes = await axios.get(`/kuota-cuti/${id}`, {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormikContext, Form, Field, ErrorMessage } from "formik";
 import {
 	pangkatToGolongan,
@@ -9,6 +9,7 @@ import {
 import { FaUser, FaSchoolFlag } from "react-icons/fa6";
 import { HiBuildingOffice2 } from "react-icons/hi2";
 import { MdManageAccounts } from "react-icons/md";
+import { IoEyeSharp } from "react-icons/io5";
 
 const Label = ({ htmlFor, children }) => (
 	<label
@@ -111,6 +112,15 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 		"SMP / Sederajat",
 		"SMA / Sederajat",
 	].includes(pendidikan);
+	const [showPassword, setShowPassword] = useState(false);
+
+	const handleMouseDownPassword = () => {
+		setShowPassword(true);
+	};
+
+	const handleMouseUpPassword = () => {
+		setShowPassword(false);
+	};
 
 	useEffect(() => {
 		const gol = pangkatToGolongan[values.pangkat];
@@ -364,10 +374,18 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 				<TextInput
 					name="password"
 					label="Password"
-					type="password"
+					type={showPassword ? "text" : "password"}
 					isReadOnly={isReadOnly}
 					password={true}
 				/>
+				<button
+					type="button"
+					onMouseDown={handleMouseDownPassword}
+					onMouseUp={handleMouseUpPassword}
+					onMouseLeave={handleMouseUpPassword} 
+					className={`absolute right-18 flex items-center pt-9 pr-3 text-xl ${isReadOnly? 'text-gray-400 cursor-not-allowed' : showPassword ? 'text-gray-400 cursor-grabbing' : 'text-gray-900 cursor-pointer hover:scale-110'} transition-transform`}>
+					<IoEyeSharp />
+				</button>
 				<SelectInput
 					name="role"
 					label="Role"
