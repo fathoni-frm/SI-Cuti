@@ -107,6 +107,11 @@ const PengajuanCutiForm = () => {
 				return;
 			}
 
+			if (!values.idPenerimaTugas) {
+				toast.warning("Penerima tugas belum dipilih!");
+				return;
+			};
+
 			const formData = new FormData();
 			formData.append("idPegawai", detailPegawai.id);
 			formData.append("jenisCuti", jenisCuti);

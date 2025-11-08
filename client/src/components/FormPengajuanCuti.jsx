@@ -235,6 +235,7 @@ const FormPengajuanCuti = ({
 									/>
 								}
 								dateFormat="dd/MM/yyyy"
+								styles={getSelectClass("tanggalMulai")}
 							/>
 							{showError("tanggalMulai")}
 						</div>
@@ -264,6 +265,7 @@ const FormPengajuanCuti = ({
 									/>
 								}
 								dateFormat="dd/MM/yyyy"
+								styles={getSelectClass("tanggalSelesai")}
 							/>
 							{showError("tanggalSelesai")}
 						</div>
@@ -403,7 +405,7 @@ const FormPengajuanCuti = ({
 												href={`${import.meta.env.VITE_PUBLIC_URL}/uploads/lampiran/${formik.values.lampiran}`}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="text-blue-600 underline"
+												className="text-blue-600 underline hover:font-bold"
 											>
 												{formik.values.lampiran}
 											</a>
