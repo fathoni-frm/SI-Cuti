@@ -12,17 +12,13 @@ const TabelPelimpahan = ({
 	lihat = false,
 	currentPage = 1,
 	totalPages = 1,
-	onPageChange = () => {},
+	onPageChange = () => { },
 	itemsPerPage,
 }) => {
 	const { user } = useAuthStore();
 	const [selectedRow, setSelectedRow] = useState(null);
 	const dropdownRef = useRef(null);
 	const navigate = useNavigate();
-
-	const isPelimpahanDibatalkan = (item) =>
-		item.status === "Disetujui" &&
-		["Ditolak", "Dibatalkan"].includes(item.PengajuanCuti.status);
 
 	const handleLihatPelimpahan = async (item) => {
 		const { id, idPenerima, status } = item;
@@ -112,20 +108,17 @@ const TabelPelimpahan = ({
 								</td>
 								<td className="px-2 py-2 whitespace-nowrap">
 									<span
-										className={`text-xs font-semibold px-2 py-1 rounded-full ${
-											item.PengajuanCuti.status === "Disetujui"
+										className={`text-xs font-semibold px-2 py-1 rounded-full ${item.PengajuanCuti.status === "Disetujui"
 												? "bg-green-100 text-green-800"
 												: item.PengajuanCuti.status === "Ditolak"
-												? "bg-red-100 text-red-800"
-												: item.PengajuanCuti.status === "Diproses"
-												? "bg-yellow-100 text-yellow-800"
-												: item.PengajuanCuti.status === "Dibatalkan"
-												? "bg-red-100 text-red-800"
-												: "bg-gray-200 text-gray-800"
-										}`}>
-										{isPelimpahanDibatalkan(item)
-											? "Dibatalkan"
-											: item.PengajuanCuti.status}
+													? "bg-red-100 text-red-800"
+													: item.PengajuanCuti.status === "Diproses"
+														? "bg-yellow-100 text-yellow-800"
+														: item.PengajuanCuti.status === "Dibatalkan"
+															? "bg-gray-100 text-gray-700"
+															: "bg-blue-100 text-blue-700"
+											}`}>
+										{item.PengajuanCuti.status}
 									</span>
 								</td>
 								<td className="px-2 py-2 whitespace-nowrap relative">
@@ -169,22 +162,20 @@ const TabelPelimpahan = ({
 																item.PengajuanCuti.status !== "Disetujui" &&
 																!item.PengajuanCuti.suratCuti
 															}
-															className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${
-																item.PengajuanCuti.status === "Disetujui" &&
-																item.PengajuanCuti.suratCuti
+															className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${item.PengajuanCuti.status === "Disetujui" &&
+																	item.PengajuanCuti.suratCuti
 																	? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
 																	: "bg-gray-300 cursor-not-allowed"
-															}`}
+																}`}
 															title={`
-                                                            ${
-																															item.PengajuanCuti
-																																.status ===
-																																"Disetujui" &&
-																															item.PengajuanCuti
-																																.suratCuti
-																																? "Cetak surat cuti."
-																																: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
-																														}`}>
+                                                            ${item.PengajuanCuti
+																	.status ===
+																	"Disetujui" &&
+																	item.PengajuanCuti
+																		.suratCuti
+																	? "Cetak surat cuti."
+																	: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
+																}`}>
 															<FaPrint />
 															<span>Cetak</span>
 														</button>

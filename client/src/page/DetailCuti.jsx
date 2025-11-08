@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
 import { formatGMT8 } from "../schemas/timeFormatter";
+import { formatDateWithoutTimezone } from "../schemas/timeFormatter";
 import Swal from "sweetalert2";
 import MainLayout from "../Layouts/MainLayout";
 import BackgroundItem from "../components/BackgroundItem";
@@ -48,7 +49,7 @@ const DetailCuti = () => {
 	const awalCuti = new Date(data.tanggalMulai);
 	const batasPembatalan = new Date(awalCuti);
 	batasPembatalan.setDate(awalCuti.getDate() + 1); // H+1 23.59 setelah tanggal mulai cuti
-	const isPembatalanCutiSudahLewat = new Date() > batasPembatalan; 
+	const isPembatalanCutiSudahLewat = new Date() > batasPembatalan;
 
 	const verifikasiList = data.VerifikasiCutis;
 	const giliran = verifikasiList.find(
@@ -73,23 +74,31 @@ const DetailCuti = () => {
 		}
 	}
 
-	const FormFieldRow = ({ label, children }) => (
-		<div className="flex flex-col py-2 px-6 sm:flex-row sm:items-start">
-			<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
-				<div>{label}</div>
-				<div>:</div>
-			</div>
-			<div className="w-full text-base font-medium text-black md:ml-5 sm:w-3/4 lg:w-5/6">
-				{children}
-			</div>
+	const FormFieldRow = ({ label, data }) => (
+		<div>
+			<label className="block text-sm font-medium text-gray-600 mb-1">
+				{label}
+			</label>
+
+			{typeof data === "string" || typeof data === "number" ? (
+				<input
+					type="text"
+					value={data}
+					disabled
+					className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
+				/>
+			) : (
+				<div className="pt-2">
+					{data}
+				</div>
+			)}
 		</div>
 	);
 
 	const handleVerifikasi = async (status) => {
 		const { value: komentar } = await Swal.fire({
-			title: `Apakah Anda yakin ingin ${
-				status === "Disetujui" ? "menyetujui" : "menolak"
-			} cuti ini?`,
+			title: `Apakah Anda yakin ingin ${status === "Disetujui" ? "menyetujui" : "menolak"
+				} cuti ini?`,
 			input: "textarea",
 			inputLabel: "Berikan komentar atau alasan",
 			inputPlaceholder: "Masukkan komentar atau alasan Anda...",
@@ -172,7 +181,7 @@ const DetailCuti = () => {
 		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${data.suratCuti}`;
 		window.open(url, "_blank");
 	};
-
+	console.log(data);
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full space-y-5">
@@ -193,11 +202,10 @@ const DetailCuti = () => {
 							<button
 								onClick={handleBatalkanCuti}
 								disabled={isPembatalanCutiSudahLewat}
-								className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
-									isPembatalanCutiSudahLewat
-										? "bg-gray-300 cursor-not-allowed"
-										: "bg-red-600 hover:bg-red-700 cursor-pointer"
-								}`}
+								className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${isPembatalanCutiSudahLewat
+									? "bg-gray-300 cursor-not-allowed"
+									: "bg-red-600 hover:bg-red-700 cursor-pointer"
+									}`}
 								title={
 									isPembatalanCutiSudahLewat
 										? "Tidak dapat membatalkan cuti, karena cuti sudah lewat lebih dari 1 hari."
@@ -211,16 +219,14 @@ const DetailCuti = () => {
 						<button
 							onClick={handleCetakSurat}
 							disabled={data.status !== "Disetujui" && !data.suratCuti}
-							className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${
-								data.status === "Disetujui" && data.suratCuti
-									? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
-									: "bg-gray-300 cursor-not-allowed"
-							}`}
+							className={`flex items-center gap-2 px-4 py-2 rounded-md text-white transition ${data.status === "Disetujui" && data.suratCuti
+								? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer"
+								: "bg-gray-300 cursor-not-allowed"
+								}`}
 							title={`
-								${
-									data.status === "Disetujui" && data.suratCuti
-										? "Cetak surat cuti."
-										: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
+								${data.status === "Disetujui" && data.suratCuti
+									? "Cetak surat cuti."
+									: "Surat cuti tidak tersedia untuk pengajuan yang belum / tidak disetujui."
 								}`}>
 							<MdPrint /> Cetak Dokumen
 						</button>
@@ -230,109 +236,59 @@ const DetailCuti = () => {
 				<div className="space-y-5"></div>
 				{/* Profil Pegawai */}
 				<BackgroundItem title="Profil Pegawai" icon={<FaUser />}>
-					<div className="py-2">
-						<FormFieldRow label="Nama / NIP">{`${data.pegawai.nama} / ${data.pegawai.nip}`}</FormFieldRow>
-						<FormFieldRow label="Golongan / Jabatan">{`${data.pegawai.golongan} / ${data.pegawai.jabatanFungsional}`}</FormFieldRow>
-						<FormFieldRow label="Unit Kerja">
-							{data.pegawai.satuanKerja}
-						</FormFieldRow>
-						<FormFieldRow label="Nomor Telepon">
-							{data.pegawai.noHp}
-						</FormFieldRow>
+					<div className="px-6 py-4 text-gray-800 text-sm sm:text-base grid gap-4 sm:grid-cols-2">
+						<FormFieldRow label="Nama" data={data.pegawai.nama} />
+						<FormFieldRow label="NIP" data={data.pegawai.nip} />
+						<FormFieldRow label="Golongan" data={data.pegawai.golongan} />
+						<FormFieldRow label="Jabatan" data={data.pegawai.jabatanFungsional} />
+						<FormFieldRow label="Unit Kerja" data={data.pegawai.satuanKerja} />
+						<FormFieldRow label="Nomor Telepon" data={data.pegawai.noHp} />
 					</div>
 				</BackgroundItem>
 
 				{/* Keterangan Cuti */}
 				<BackgroundItem title="Keterangan Cuti" icon={<FaClipboardList />}>
-					<div className="space-y-3 p-4 sm:px-6">
-						<div className="flex flex-col md:flex-row md:items-baseline">
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:w-48">
-								<div>Jenis Cuti</div>
-								<div>:</div>
-							</div>
-							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
-								{data.jenisCuti}
-							</div>
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
-								<div>Status</div>
-								<div>:</div>
-							</div>
-							<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
+					<div className="px-6 py-4 text-gray-800 text-sm sm:text-base grid gap-4 sm:grid-cols-2">
+						<FormFieldRow label="Jenis Cuti" data={data.jenisCuti} />
+						<FormFieldRow
+							label="Status"
+							data={
 								<span
-									className={`text-sm px-3 py-1 rounded-full ${
-										data.status === "Disetujui"
-											? "bg-green-100 text-green-800"
-											: data.status === "Ditolak"
-											? "bg-red-100 text-red-800"
+									className={`px-3 py-3 rounded-md text-sm font-semibold ${data.status === "Disetujui"
+										? "bg-green-100 text-green-700"
+										: data.status === "Ditolak"
+											? "bg-red-100 text-red-700"
 											: data.status === "Diproses"
-											? "bg-yellow-100 text-yellow-800"
-											: data.status === "Dibatalkan"
-											? "bg-red-100 text-red-800"
-											: "bg-gray-200 text-gray-800"
-									}`}>
+												? "bg-yellow-100 text-yellow-700"
+												: data.status === "Dibatalkan"
+													? "bg-gray-100 text-gray-700"
+													: "bg-blue-100 text-blue-700"
+										}`}
+								>
 									{data.status}
 								</span>
-							</div>
-						</div>
-
-						<div className="flex flex-col md:flex-row md:items-baseline">
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:justify-between md:w-48">
-								<div>Total Kuota</div>
-								<div>:</div>
-							</div>
-							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
-								<span className="text-sm px-3 py-1 text-white bg-green-500 rounded-full">
-									{data.totalKuota} hari
+							}
+						/>
+						<FormFieldRow
+							label="Sisa Kuota Cuti"
+							data={
+								<span className="bg-blue-100 text-blue-700 px-3 py-3 rounded-md text-sm font-semibold">
+									{data.sisaKuota} Hari
 								</span>
-							</div>
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-1 md:mb-0 md:ml-10 md:justify-between md:w-25">
-								<div>Sisa Kuota</div>
-								<div>:</div>
-							</div>
-							<div className="w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
-								<span className="text-sm px-3 py-1 text-white bg-yellow-500 rounded-full">
-									{data.sisaKuota} hari
+							}
+						/>
+						<FormFieldRow
+							label="Durasi Cuti"
+							data={
+								<span className="bg-yellow-100 text-yellow-700 px-3 py-3 rounded-md text-sm font-semibold">
+									{data.durasi} Hari
 								</span>
-							</div>
-						</div>
-
-						<div className="flex flex-col md:flex-row md:items-baseline">
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 mb-0.5 md:mb-0 md:justify-between md:w-48">
-								<div>Periode Cuti</div>
-								<div>:</div>
-							</div>
-							<div className="w-fit mb-3 font-medium text-black md:mb-0 md:ml-5 md:mt-0 md:w-1/3">
-								{formatGMT8(data.tanggalMulai, { showTime: false })} s.d.{" "}
-								{formatGMT8(data.tanggalSelesai, { showTime: false })}
-							</div>
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:ml-10 md:justify-between md:w-25">
-								<div>Durasi Cuti</div>
-								<div>:</div>
-							</div>
-							<div className="flex w-fit font-medium text-black md:ml-5 md:mt-0 md:flex-1">
-								<span>{`${data.durasi} hari`}</span>
-							</div>
-						</div>
-
-						<div className="flex flex-col md:flex-row md:items-start">
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
-								<div>Alasan Cuti</div>
-								<div>:</div>
-							</div>
-							<div className="w-full font-medium text-black mt-1 md:ml-5 md:mt-0 md:flex-1">
-								{data.alasanCuti}
-							</div>
-						</div>
-
-						<div className="flex flex-col md:flex-row md:items-start">
-							<div className="flex w-fit font-semibold text-gray-500 space-x-1 md:justify-between md:place-self-center md:w-48">
-								<div>Alamat Cuti</div>
-								<div>:</div>
-							</div>
-							<div className="w-full font-medium text-black mt-1 md:ml-5 md:mt-0 md:flex-1">
-								{data.alamatCuti}
-							</div>
-						</div>
+							}
+						/>
+						<FormFieldRow label="Tanggal Mulai" data={formatDateWithoutTimezone(data.tanggalMulai)} />
+						<FormFieldRow label="Tanggal Selesai" data={formatDateWithoutTimezone(data.tanggalSelesai)} />
+						<FormFieldRow label="Alasan Cuti" data={data.alasanCuti} />
+						<FormFieldRow label="Alamat Selama Cuti" data={data.alamatCuti} />
 					</div>
 				</BackgroundItem>
 
@@ -377,43 +333,19 @@ const DetailCuti = () => {
 				{/* Formulir Pelimpahan Tugas */}
 				{data.PelimpahanTuga && (
 					<BackgroundItem title="Formulir Pelimpahan Tugas" icon={<FaTasks />}>
-						<div className="p-4 sm:px-6">
-							<p className="mb-4 font-medium text-black text-justify">
+						<div className="px-6 pt-4">
+							<p className="font-medium text-black text-justify">
 								Selama masa cuti saya, saya melimpahkan Tugas dan Kewenangan
 								yang berkaitan dengan kegiatan teknis kepada :
 							</p>
-
-							<div className="space-y-3 md:space-y-2">
-								<div className="flex flex-col md:flex-row md:items-baseline py-2">
-									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
-										<div>Nama / NIP</div>
-										<div>:</div>
-									</div>
-									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{`${data.PelimpahanTuga.penerima.nama} / ${data.PelimpahanTuga.penerima.nip}`}
-									</div>
-								</div>
-
-								<div className="flex flex-col md:flex-row md:items-baseline py-2">
-									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
-										<div>Pangkat / Golongan / Jabatan</div>
-										<div>:</div>
-									</div>
-									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{`${data.PelimpahanTuga.penerima.pangkat} / ${data.PelimpahanTuga.penerima.golongan} / ${data.PelimpahanTuga.penerima.jabatanFungsional}`}
-									</div>
-								</div>
-
-								<div className="flex flex-col md:flex-row md:items-baseline py-2">
-									<div className="flex w-fit font-semibold text-gray-600 mb-1 space-x-1 md:justify-between md:mb-0 md:w-3xs">
-										<div>Satuan Pelayanan</div>
-										<div>:</div>
-									</div>
-									<div className="font-medium text-black md:ml-1 md:flex-1">
-										{data.PelimpahanTuga.penerima.satuanKerja}
-									</div>
-								</div>
-							</div>
+						</div>
+						<div className="px-6 py-4 text-gray-800 text-sm sm:text-base grid gap-4 sm:grid-cols-2">
+							<FormFieldRow label="Nama" data={data.PelimpahanTuga.penerima.nama} />
+							<FormFieldRow label="NIP" data={data.PelimpahanTuga.penerima.nip} />
+							<FormFieldRow label="Pangkat" data={data.PelimpahanTuga.penerima.pangkat} />
+							<FormFieldRow label="Golongan" data={data.PelimpahanTuga.penerima.golongan} />
+							<FormFieldRow label="Jabatan" data={data.PelimpahanTuga.penerima.jabatanFungsional} />
+							<FormFieldRow label="Unit Kerja" data={data.PelimpahanTuga.penerima.satuanKerja} />
 						</div>
 					</BackgroundItem>
 				)}
@@ -469,41 +401,39 @@ const DetailCuti = () => {
 								<div className="relative">
 									<div
 										className={`absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 border-2 border-white rounded-full shadow-sm
-                        						${
-																			pelimpahan.status === "Disetujui"
-																				? "bg-green-500 ring-2 ring-green-300"
-																				: pelimpahan.status === "Ditolak"
-																				? "bg-red-500 ring-2 ring-red-300"
-																				: pelimpahan.status === "Diproses"
-																				? "bg-yellow-500 ring-2 ring-yellow-300"
-																				: pelimpahan.status === "Dibatalkan"
-																				? "bg-gray-500 ring-2 ring-gray-300"
-																				: "bg-blue-500 ring-2 ring-blue-300"
-																		}`}></div>
+                        						${pelimpahan.status === "Disetujui"
+												? "bg-green-500 ring-2 ring-green-300"
+												: pelimpahan.status === "Ditolak"
+													? "bg-red-500 ring-2 ring-red-300"
+													: pelimpahan.status === "Diproses"
+														? "bg-yellow-500 ring-2 ring-yellow-300"
+														: pelimpahan.status === "Dibatalkan"
+															? "bg-gray-500 ring-2 ring-gray-300"
+															: "bg-blue-500 ring-2 ring-blue-300"
+											}`}></div>
 									<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
 										<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
 											<h4 className="text-sm font-semibold text-gray-800">
 												Pelimpahan Tugas
 												<span
 													className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
-                                    					${
-																								pelimpahan.status ===
-																								"Disetujui"
-																									? "bg-green-100 text-green-800"
-																									: pelimpahan.status ===
-																									  "Ditolak"
-																									? "bg-red-100 text-red-800"
-																									: pelimpahan.status ===
-																									  "Diproses"
-																									? "bg-yellow-100 text-yellow-800"
-																									: pelimpahan.status ===
-																									  "Belum Diverifikasi"
-																									? "bg-blue-100 text-blue-800"
-																									: pelimpahan.status ===
-																									  "Dibatalkan"
-																									? "bg-gray-100 text-gray-800"
-																									: ""
-																							}`}>
+                                    					${pelimpahan.status ===
+															"Disetujui"
+															? "bg-green-100 text-green-800"
+															: pelimpahan.status ===
+																"Ditolak"
+																? "bg-red-100 text-red-800"
+																: pelimpahan.status ===
+																	"Diproses"
+																	? "bg-yellow-100 text-yellow-800"
+																	: pelimpahan.status ===
+																		"Belum Diverifikasi"
+																		? "bg-blue-100 text-blue-800"
+																		: pelimpahan.status ===
+																			"Dibatalkan"
+																			? "bg-gray-100 text-gray-800"
+																			: ""
+														}`}>
 													{pelimpahan.status}
 												</span>
 											</h4>
@@ -511,10 +441,10 @@ const DetailCuti = () => {
 												{pelimpahan.status !== "Belum Diverifikasi"
 													? formatGMT8(pelimpahan.updatedAt)
 													: pelimpahan.statusVerifikasi === "Dibatalkan"
-													? formatGMT8(pelimpahan.updatedAt, {
+														? formatGMT8(pelimpahan.updatedAt, {
 															showTime: false,
-													  })
-													: ""}
+														})
+														: ""}
 											</p>
 										</div>
 										<p className="text-xs text-gray-600 mb-1">
@@ -528,16 +458,16 @@ const DetailCuti = () => {
 											{pelimpahan.komentar
 												? `Komentar: ${pelimpahan.komentar}`
 												: pelimpahan.status === "Belum Diverifikasi"
-												? "Menunggu persetujuan dari pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam."
-												: pelimpahan.status === "Diproses"
-												? "Pengajuan telah ditinjau oleh pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam"
-												: pelimpahan.status === "Disetujui"
-												? "Pelimpahan tugas telah disetujui oleh pegawai terkait."
-												: pelimpahan.status === "Ditolak"
-												? "Pelimpahan tugas ditolak."
-												: pelimpahan.status === "Dibatalkan"
-												? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pegawai terkait apabila melakukan pengajuan kembali."
-												: ""}
+													? "Menunggu persetujuan dari pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam."
+													: pelimpahan.status === "Diproses"
+														? "Pengajuan telah ditinjau oleh pegawai terkait. Hubungi pegawai terkait apabila belum disetujui / ditolak dalam 24 jam"
+														: pelimpahan.status === "Disetujui"
+															? "Pelimpahan tugas telah disetujui oleh pegawai terkait."
+															: pelimpahan.status === "Ditolak"
+																? "Pelimpahan tugas ditolak."
+																: pelimpahan.status === "Dibatalkan"
+																	? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pegawai terkait apabila melakukan pengajuan kembali."
+																	: ""}
 										</p>
 									</div>
 								</div>
@@ -551,61 +481,59 @@ const DetailCuti = () => {
 										{/* titik */}
 										<div
 											className={`absolute -left-[calc(1.5rem_+_1px_+_0.375rem)] top-2 w-3 h-3 border-2 border-white rounded-full shadow-sm
-                        						${
-																			v.statusVerifikasi === "Disetujui"
-																				? "bg-green-500 ring-2 ring-green-300"
-																				: v.statusVerifikasi === "Ditolak" ||
-																				  (v.statusVerifikasi ===
-																						"Dibatalkan" &&
-																						v.jenisVerifikator === "Admin")
-																				? "bg-red-500 ring-2 ring-red-300"
-																				: v.statusVerifikasi === "Diproses"
-																				? "bg-yellow-500 ring-2 ring-yellow-300"
-																				: v.statusVerifikasi === "Dibatalkan"
-																				? "bg-gray-500 ring-2 ring-gray-300"
-																				: "bg-blue-500 ring-2 ring-blue-300"
-																		}`}></div>
+                        						${v.statusVerifikasi === "Disetujui"
+													? "bg-green-500 ring-2 ring-green-300"
+													: v.statusVerifikasi === "Ditolak" ||
+														(v.statusVerifikasi ===
+															"Dibatalkan" &&
+															v.jenisVerifikator === "Admin")
+														? "bg-red-500 ring-2 ring-red-300"
+														: v.statusVerifikasi === "Diproses"
+															? "bg-yellow-500 ring-2 ring-yellow-300"
+															: v.statusVerifikasi === "Dibatalkan"
+																? "bg-gray-500 ring-2 ring-gray-300"
+																: "bg-blue-500 ring-2 ring-blue-300"
+												}`}></div>
 										<div className="p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm ">
 											<div className="flex flex-col sm:flex-row justify-between sm:items-center mb-1.5">
 												<h4 className="text-sm font-semibold text-gray-800">
 													{v.jenisVerifikator}
 													<span
 														className={`px-2 py-0.5 ml-2 rounded-full text-xs font-medium
-                                    					${
-																								v.statusVerifikasi ===
-																								"Disetujui"
-																									? "bg-green-100 text-green-800"
-																									: v.statusVerifikasi ===
-																											"Ditolak" ||
-																									  (v.statusVerifikasi ===
-																											"Dibatalkan" &&
-																											v.jenisVerifikator ===
-																												"Admin")
-																									? "bg-red-100 text-red-800"
-																									: v.statusVerifikasi ===
-																									  "Diproses"
-																									? "bg-yellow-100 text-yellow-800"
-																									: v.statusVerifikasi ===
-																									  "Belum Diverifikasi"
-																									? "bg-blue-100 text-blue-800"
-																									: v.statusVerifikasi ===
-																									  "Dibatalkan"
-																									? "bg-gray-100 text-gray-800"
-																									: ""
-																							}`}>
+                                    					${v.statusVerifikasi ===
+																"Disetujui"
+																? "bg-green-100 text-green-800"
+																: v.statusVerifikasi ===
+																	"Ditolak" ||
+																	(v.statusVerifikasi ===
+																		"Dibatalkan" &&
+																		v.jenisVerifikator ===
+																		"Admin")
+																	? "bg-red-100 text-red-800"
+																	: v.statusVerifikasi ===
+																		"Diproses"
+																		? "bg-yellow-100 text-yellow-800"
+																		: v.statusVerifikasi ===
+																			"Belum Diverifikasi"
+																			? "bg-blue-100 text-blue-800"
+																			: v.statusVerifikasi ===
+																				"Dibatalkan"
+																				? "bg-gray-100 text-gray-800"
+																				: ""
+															}`}>
 														{v.statusVerifikasi}
 													</span>
 												</h4>
 												<p className="text-xs text-gray-500 mt-0.5 sm:mt-0">
 													{(v.jenisVerifikator === "Admin" &&
 														v.statusVerifikasi === "Dibatalkan") ||
-													(v.statusVerifikasi !== "Belum Diverifikasi" &&
-														v.statusVerifikasi !== "Dibatalkan")
+														(v.statusVerifikasi !== "Belum Diverifikasi" &&
+															v.statusVerifikasi !== "Dibatalkan")
 														? formatGMT8(v.updatedAt)
 														: v.jenisVerifikator !== "Admin" &&
-														  v.statusVerifikasi === "Dibatalkan"
-														? formatGMT8(v.updatedAt, { showTime: false })
-														: ""}
+															v.statusVerifikasi === "Dibatalkan"
+															? formatGMT8(v.updatedAt, { showTime: false })
+															: ""}
 												</p>
 											</div>
 											<p className="text-xs text-gray-600 mb-1">
@@ -622,18 +550,18 @@ const DetailCuti = () => {
 													v.jenisVerifikator !== "Admin") ||
 												(v.statusVerifikasi === "Dibatalkan" &&
 													v.jenisVerifikator !== "Admin")) && (
-												<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
-													{v.komentar
-														? `Komentar: ${v.komentar}`
-														: v.statusVerifikasi === "Belum Diverifikasi"
-														? "Menunggu verifikasi dari pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam."
-														: v.statusVerifikasi === "Diproses"
-														? "Pengajuan telah ditinjau oleh pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam"
-														: v.statusVerifikasi === "Dibatalkan"
-														? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pejabat terkait apabila melakukan pengajuan kembali."
-														: ""}
-												</p>
-											)}
+													<p className="mt-2 text-xs text-gray-500 italic bg-gray-100 p-2 rounded-md border/50">
+														{v.komentar
+															? `Komentar: ${v.komentar}`
+															: v.statusVerifikasi === "Belum Diverifikasi"
+																? "Menunggu verifikasi dari pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam."
+																: v.statusVerifikasi === "Diproses"
+																	? "Pengajuan telah ditinjau oleh pejabat terkait. Hubungi pejabat terkait apabila belum diverifikasi dalam 24 jam"
+																	: v.statusVerifikasi === "Dibatalkan"
+																		? "Pengajuan telah dibatalkan oleh sistem, karena pengajuan telah expired. Hubungi pejabat terkait apabila melakukan pengajuan kembali."
+																		: ""}
+													</p>
+												)}
 										</div>
 									</div>
 								))}

@@ -20,9 +20,10 @@ import TambahPegawai from "./page/TambahPegawai";
 import EditPegawai from "./page/EditPegawai";
 import DetailPegawai from "./page/DetailPegawai";
 import PengajuanCuti from "./page/PengajuanCuti";
-import FormPengajuanCuti from "./page/FormPengajuanCuti";
+import PengajuanCutiForm from "./page/PengajuanCutiForm";
 import RiwayatPengajuanCuti from "./page/RiwayatPengajuanCuti";
 import DraftPengajuan from "./page/DraftPengajuan";
+import EditDraft from "./page/EditDraft";
 import PengaturanProfil from "./page/PengaturanProfil";
 import EditPengaturanProfil from "./page/EditPengaturanProfil";
 import Spinner from "./components/Spinner";
@@ -170,7 +171,7 @@ const App = () => {
 						path="/pengajuan-cuti/form"
 						element={
 							<ProtectedRoute>
-								<FormPengajuanCuti />
+								<PengajuanCutiForm />
 							</ProtectedRoute>
 						}
 					/>
@@ -178,7 +179,7 @@ const App = () => {
 						path="/pengajuan-cuti/edit/:id"
 						element={
 							<ProtectedRoute>
-								<FormPengajuanCuti />
+								<EditDraft />
 							</ProtectedRoute>
 						}
 					/>

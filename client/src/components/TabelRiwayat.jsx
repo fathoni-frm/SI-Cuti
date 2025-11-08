@@ -10,7 +10,7 @@ const TabelRiwayat = ({
 	isDashboard = false,
 	currentPage = 1,
 	totalPages = 1,
-	onPageChange = () => {},
+	onPageChange = () => { },
 	indexOfLastItem,
 	itemsPerPage,
 }) => {
@@ -68,17 +68,15 @@ const TabelRiwayat = ({
 						{data.map((item, index) => (
 							<tr
 								key={item.id}
-								className={`text-gray-700 text-center ${
-									index % 2 === 0 ? "bg-white" : "bg-gray-50"
-								} hover:bg-gray-100`}>
+								className={`text-gray-700 text-center ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+									} hover:bg-gray-100`}>
 								<td
-									className={`${
-										indexOfLastItem
+									className={`${indexOfLastItem
 											? "rounded-bl-lg"
 											: isDashboard && index.length === indexOfLastItem
-											? "rounded-bl-lg"
-											: ""
-									} px-2 py-2 font-medium text-black whitespace-nowrap`}>
+												? "rounded-bl-lg"
+												: ""
+										} px-2 py-2 font-medium text-black whitespace-nowrap`}>
 									{isDashboard
 										? index + 1
 										: (currentPage - 1) * itemsPerPage + index + 1}
@@ -97,28 +95,26 @@ const TabelRiwayat = ({
 								</td>
 								<td className="px-2 py-2 whitespace-nowrap">
 									<span
-										className={`text-xs font-semibold px-3 py-1 rounded-full ${
-											item.status === "Disetujui"
+										className={`text-xs font-semibold px-3 py-1 rounded-full ${item.status === "Disetujui"
 												? "bg-green-100 text-green-800"
 												: item.status === "Ditolak"
-												? "bg-red-100 text-red-800"
-												: item.status === "Diproses"
-												? "bg-yellow-100 text-yellow-800"
-												: item.status === "Dibatalkan"
-												? "bg-red-100 text-red-800"
-												: "bg-gray-200 text-gray-800"
-										}`}>
+													? "bg-red-100 text-red-800"
+													: item.status === "Diproses"
+														? "bg-yellow-100 text-yellow-800"
+														: item.status === "Dibatalkan"
+															? "bg-gray-100 text-gray-700"
+															: "bg-blue-100 text-blue-700"
+											}`}>
 										{item.status}
 									</span>
 								</td>
 								<td
-									className={`${
-										indexOfLastItem
+									className={`${indexOfLastItem
 											? "rounded-br-lg"
 											: isDashboard && index.length === indexOfLastItem
-											? "rounded-br-lg"
-											: ""
-									} px-2 py-2 whitespace-nowrap relative`}>
+												? "rounded-br-lg"
+												: ""
+										} px-2 py-2 whitespace-nowrap relative`}>
 									<button
 										onClick={() => toggleMenu(index)}
 										className="text-gray-500 p-1 rounded-xl hover:text-gray-700 hover:bg-gray-200 cursor-pointer">
@@ -146,11 +142,10 @@ const TabelRiwayat = ({
 													disabled={
 														item.status !== "Disetujui" && !item.suratCuti
 													}
-													className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${
-														item.status === "Disetujui" && item.suratCuti
+													className={`flex items-center gap-2 px-1.5 py-0.5 mx-auto text-sm font-semibold text-white transition duration-150 rounded-md ${item.status === "Disetujui" && item.suratCuti
 															? "bg-emerald-600 hover:bg-emerald-800 cursor-pointer"
 															: "bg-gray-300 cursor-not-allowed"
-													}`}>
+														}`}>
 													<FaPrint />
 													<span>Cetak</span>
 												</button>
