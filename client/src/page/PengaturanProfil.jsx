@@ -19,7 +19,7 @@ const PengaturanProfil = () => {
 	useEffect(() => {
 		const fetchPegawai = async () => {
 			try {
-				const res = await axios.get(`/pegawai/${user.id}`);
+				const res = await axios.get(`/pegawai/${user.idPegawai}`);
 				const pegawaiData = res.data;
 				const [tempatLahir, tanggalLahir] = pegawaiData.ttl
 					? pegawaiData.ttl.split(", ")
@@ -50,17 +50,17 @@ const PengaturanProfil = () => {
 		fetchPegawai();
 	}, [user]);
 
-	const handleCetak = async (id) => {
+	const handleCetak = async (idPegawai) => {
 		try {
 			setIsDownloading(true);
-			const response = await axios.get(`/pegawai/cetak/${id}`, {
+			const response = await axios.get(`/pegawai/cetak/${idPegawai}`, {
 				responseType: "blob",
 			});
 			const blob = new Blob([response.data], { type: "application/pdf" });
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = `profil-${id}.pdf`;
+			a.download = `profil-${idPegawai}.pdf`;
 			a.click();
 		} catch (error) {
 			console.error("Gagal mencetak PDF:", error);
@@ -81,7 +81,7 @@ const PengaturanProfil = () => {
 					</h1>
 					<div className="flex justify-around gap-2">
 						<Link
-							onClick={() => handleCetak(user.id)}
+							onClick={() => handleCetak(user.idPegawai)}
 							className={`flex justify-center items-center w-full gap-2 px-3 py-2 rounded-md ${
 								isDownloading
 									? "bg-blue-600 cursor-not-allowed"

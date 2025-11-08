@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useFormikContext, Form, Field, ErrorMessage } from "formik";
 import { FaUser, FaSchoolFlag } from "react-icons/fa6";
 import { HiBuildingOffice2 } from "react-icons/hi2";

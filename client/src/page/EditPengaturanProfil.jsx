@@ -22,7 +22,7 @@ const EditPengaturanProfil = () => {
 	const fetchPegawai = async () => {
 		try {
 			const currentToken = await getValidToken();
-			const res = await axios.get(`/pegawai/${user.id}`, {
+			const res = await axios.get(`/pegawai/${user.idPegawai}`, {
 				headers: {
 					Authorization: `Bearer ${currentToken}`,
 				},
@@ -77,7 +77,7 @@ const EditPengaturanProfil = () => {
 			isMounted = false;
 			clearInterval(interval);
 		};
-	}, [user.id, refreshToken, navigate]);
+	}, [user.idPegawai, refreshToken, navigate]);
 
 	const handleSubmit = async (values) => {
 		Swal.fire({
@@ -101,7 +101,7 @@ const EditPengaturanProfil = () => {
 					delete updatedValues.User;
 
 					const token = await getValidToken();
-					await axios.put(`/pegawai/${user.id}`, updatedValues, {
+					await axios.put(`/pegawai/${user.idPegawai}`, updatedValues, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},

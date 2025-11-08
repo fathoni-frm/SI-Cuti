@@ -127,7 +127,7 @@ const getPegawaiById = async (req, res) => {
             return res.status(404).json({ msg: "Pegawai tidak ditemukan" });
         }
 
-        res.json({
+        res.status(200).json({
             ...pegawai.get({ plain: true }),
             user: pegawai.user // Data user akan tergabung
         });
