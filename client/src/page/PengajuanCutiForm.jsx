@@ -64,13 +64,13 @@ const PengajuanCutiForm = () => {
 				"daftarAtasan",
 				JSON.stringify(
 					[
-						values.ketuaTim && {
-							id: values.ketuaTim.value,
-							jenis: "Ketua Tim",
-						},
 						values.kaSapel && {
 							id: values.kaSapel.value,
 							jenis: "Kepala Satuan Pelayanan",
+						},
+						values.ketuaTim && {
+							id: values.ketuaTim.value,
+							jenis: "Ketua Tim",
 						},
 					].filter(Boolean)
 				)
@@ -131,13 +131,13 @@ const PengajuanCutiForm = () => {
 				"daftarAtasan",
 				JSON.stringify(
 					[
-						values.ketuaTim && {
-							id: values.ketuaTim.value,
-							jenis: "Ketua Tim",
-						},
 						values.kaSapel && {
 							id: values.kaSapel.value,
 							jenis: "Kepala Satuan Pelayanan",
+						},
+						values.ketuaTim && {
+							id: values.ketuaTim.value,
+							jenis: "Ketua Tim",
 						},
 					].filter(Boolean)
 				)

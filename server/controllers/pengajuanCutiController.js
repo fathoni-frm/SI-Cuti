@@ -170,7 +170,7 @@ const createPengajuanCuti = async (req, res) => {
             await VerifikasiCuti.create({
                 idPengajuan: pengajuanId,
                 idPimpinan: verifikator.id,
-                urutanVerifikasi: i + 1,
+                urutanVerifikasi: verifikator.jenis === "Ketua Tim" ? 2 : 1,
                 statusVerifikasi: statusVerifikasi,
                 jenisVerifikator: verifikator.jenis,
             });
@@ -319,7 +319,7 @@ const updatePengajuanCuti = async (req, res) => {
             await VerifikasiCuti.create({
                 idPengajuan: id,
                 idPimpinan: verifikator.id,
-                urutanVerifikasi: i + 1,
+                urutanVerifikasi: verifikator.jenis === "Ketua Tim" ? 2 : 1,
                 statusVerifikasi: statusVerifikasi,
                 jenisVerifikator: verifikator.jenis,
             });
