@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import axios from "../api/axios";
 import MainLayout from "../Layouts/MainLayout";
 import Spinner from "../components/Spinner";
@@ -19,7 +20,7 @@ const EditDraft = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const { user, detailPegawai, kuotaCuti, isLoading } = useAuthStore();
-	const { daftarPegawai, daftarKetuaTim, daftarKepalaSapel } = useFormOptions();
+	const { daftarPegawai, daftarKetuaTim, daftarKepalaSapel, konfigurasiSistem } = useFormOptions();
 
 	const [jenisCuti, setJenisCuti] = useState("");
 	const [isFetching, setIsFetching] = useState(true);
@@ -45,14 +46,14 @@ const EditDraft = () => {
 
 			const pelimpahan = data.PelimpahanTuga
 				? {
-                    value: data.PelimpahanTuga.idPenerima,
-                    label: data.PelimpahanTuga.nama,
-                    nip: data.PelimpahanTuga.nip,
-                    pangkat: data.PelimpahanTuga.pangkat,
-                    golongan: data.PelimpahanTuga.golongan,
-                    jabatan: data.PelimpahanTuga.jabatan,
-                    satuanKerja: data.PelimpahanTuga.satuanKerja,
-				  }
+					value: data.PelimpahanTuga.idPenerima,
+					label: data.PelimpahanTuga.nama,
+					nip: data.PelimpahanTuga.nip,
+					pangkat: data.PelimpahanTuga.pangkat,
+					golongan: data.PelimpahanTuga.golongan,
+					jabatan: data.PelimpahanTuga.jabatan,
+					satuanKerja: data.PelimpahanTuga.satuanKerja,
+				}
 				: null;
 
 			formik.setValues({
@@ -92,7 +93,7 @@ const EditDraft = () => {
 		initialValues,
 		validationSchema,
 		enableReinitialize: true,
-		onSubmit: () => {},
+		onSubmit: () => { },
 	});
 
 	useEffect(() => {
@@ -162,69 +163,84 @@ const EditDraft = () => {
 
 	// 🔹 Ajukan Cuti (final)
 	const handleSubmitFinal = async (values) => {
-		try {
-			if (durasiCuti <= 0) {
-				toast.warning("Durasi cuti belum valid! Perhatikan lagi tanggal mulai dan selesai.");
-				return;
-			}
-
-			if (durasiCuti > sisaKuota) {
-				toast.warning(
-					`Sisa kuota ${jenisCuti} Anda hanya ${sisaKuota} hari, sedangkan Anda mengajukan ${durasiCuti} hari.`
-				);
-				return;
-			}
-
-			if (!values.idPenerimaTugas) {
-				toast.warning("Penerima tugas belum dipilih!");
-				return;
-			}
-
-			const formData = new FormData();
-			formData.append("idPegawai", detailPegawai.id);
-			formData.append("jenisCuti", jenisCuti);
-			formData.append("tanggalMulai", values.tanggalMulai);
-			formData.append("tanggalSelesai", values.tanggalSelesai);
-			formData.append("durasi", durasiCuti);
-			formData.append("alasanCuti", values.alasanCuti);
-			formData.append("alamatCuti", values.alamatCuti);
-			formData.append("isDraft", false);
-			formData.append("tanggalPengajuan", new Date().toISOString());
-			formData.append("totalKuota", totalKuota);
-			formData.append("sisaKuota", sisaKuota);
-
-			if (values.lampiran) formData.append("lampiran", values.lampiran);
-
-			formData.append(
-				"daftarAtasan",
-				JSON.stringify(
-					[
-						values.kaSapel && {
-							id: values.kaSapel.value,
-							jenis: "Kepala Satuan Pelayanan",
-						},
-						values.ketuaTim && {
-							id: values.ketuaTim.value,
-							jenis: "Ketua Tim",
-						},
-					].filter(Boolean)
-				)
-			);
-
-			if (values.idPenerimaTugas) {
-				formData.append("idPenerimaTugas", values.idPenerimaTugas);
-			}
-
-			await axios.put(`/pengajuan-cuti/${id}`, formData, {
-				headers: { "Content-Type": "multipart/form-data" },
-			});
-
-			toast.success("Pengajuan cuti berhasil dikirim!");
-			navigate("/riwayat-cuti");
-		} catch (err) {
-			console.error(err);
-			toast.error(err.response?.data?.msg || "Gagal mengajukan cuti");
+		if (durasiCuti <= 0) {
+			toast.warning("Durasi cuti belum valid! Perhatikan lagi tanggal mulai dan selesai.");
+			return;
 		}
+
+		if (durasiCuti > sisaKuota) {
+			toast.warning(
+				`Sisa kuota ${jenisCuti} Anda hanya ${sisaKuota} hari, sedangkan Anda mengajukan ${durasiCuti} hari.`
+			);
+			return;
+		}
+
+		if (!values.idPenerimaTugas) {
+			toast.warning("Penerima tugas belum dipilih!");
+			return;
+		}
+
+		Swal.fire({
+			title: "Yakin ingin mengajukan cuti?",
+			text: "Pengajuan cuti tidak dapat diubah setelah diajukan! Pastikan data sudah benar.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#00c951",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Ya, kirim!",
+			cancelButtonText: "Batal",
+			reverseButtons: true,
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+
+					const formData = new FormData();
+					formData.append("idPegawai", detailPegawai.id);
+					formData.append("jenisCuti", jenisCuti);
+					formData.append("tanggalMulai", values.tanggalMulai);
+					formData.append("tanggalSelesai", values.tanggalSelesai);
+					formData.append("durasi", durasiCuti);
+					formData.append("alasanCuti", values.alasanCuti);
+					formData.append("alamatCuti", values.alamatCuti);
+					formData.append("isDraft", false);
+					formData.append("tanggalPengajuan", new Date().toISOString());
+					formData.append("totalKuota", totalKuota);
+					formData.append("sisaKuota", sisaKuota);
+
+					if (values.lampiran) formData.append("lampiran", values.lampiran);
+
+					formData.append(
+						"daftarAtasan",
+						JSON.stringify(
+							[
+								values.kaSapel && {
+									id: values.kaSapel.value,
+									jenis: "Kepala Satuan Pelayanan",
+								},
+								values.ketuaTim && {
+									id: values.ketuaTim.value,
+									jenis: "Ketua Tim",
+								},
+							].filter(Boolean)
+						)
+					);
+
+					if (values.idPenerimaTugas) {
+						formData.append("idPenerimaTugas", values.idPenerimaTugas);
+					}
+
+					await axios.put(`/pengajuan-cuti/${id}`, formData, {
+						headers: { "Content-Type": "multipart/form-data" },
+					});
+
+					toast.success("Pengajuan cuti berhasil dikirim!");
+					navigate("/riwayat-cuti");
+				} catch (err) {
+					console.error(err);
+					toast.error(err.response?.data?.msg || "Gagal mengajukan cuti");
+				}
+			}
+		});
 	};
 
 	if (isLoading || isFetching || !detailPegawai || !Array.isArray(kuotaCuti)) {
@@ -246,6 +262,7 @@ const EditDraft = () => {
 				daftarPegawai={daftarPegawai}
 				daftarKetuaTim={daftarKetuaTim}
 				daftarKepalaSapel={daftarKepalaSapel}
+				konfigurasiSistem={konfigurasiSistem}
 			/>
 		</MainLayout>
 	);

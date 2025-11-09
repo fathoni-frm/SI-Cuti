@@ -181,7 +181,7 @@ const DetailCuti = () => {
 		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${data.suratCuti}`;
 		window.open(url, "_blank");
 	};
-	console.log(data);
+	
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-6 w-full space-y-5">

@@ -29,6 +29,7 @@ const FormPengajuanCuti = ({
 	daftarPegawai,
 	daftarKetuaTim,
 	daftarKepalaSapel,
+	konfigurasiSistem,
 }) => {
 	const fileInputRef = useRef(null);
 	const isEdit = mode === "edit";
@@ -317,7 +318,7 @@ const FormPengajuanCuti = ({
 							</label>
 							<input
 								type="text"
-								value="Drh. Arum Kusnila Dewi, M.Si"
+								value={konfigurasiSistem ? konfigurasiSistem.kepalaBalai.nama : "Terjadi kesalahan"}
 								disabled
 								className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
 							/>
@@ -328,7 +329,7 @@ const FormPengajuanCuti = ({
 							</label>
 							<input
 								type="text"
-								value="Agus Ali Hamzah, S.H., M.A.P"
+								value={konfigurasiSistem ? konfigurasiSistem.kepalaBagianUmum.nama : "Terjadi kesalahan"}
 								disabled
 								className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
 							/>

@@ -13,20 +13,23 @@ const useFormOptions = () => {
   const [daftarPegawai, setDaftarPegawai] = useState([]);
   const [daftarKetuaTim, setDaftarKetuaTim] = useState([]);
   const [daftarKepalaSapel, setDaftarKepalaSapel] = useState([]);
+  const [konfigurasiSistem, setKonfigurasiSistem] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [pegawaiRes, ketuaTimRes, kepalaSapelRes] = await Promise.all([
+        const [pegawaiRes, ketuaTimRes, kepalaSapelRes, konfigurasiRes] = await Promise.all([
           axios.get("/form/pegawai"),
           axios.get("/form/ketua-tim"),
           axios.get("/form/kepala-sapel"),
+          axios.get("/konfigurasi-sistem"),
         ]);
 
         setDaftarPegawai(pegawaiRes.data || []);
         setDaftarKetuaTim(ketuaTimRes.data || []);
         setDaftarKepalaSapel(kepalaSapelRes.data || []);
+        setKonfigurasiSistem(konfigurasiRes.data || null);
       } catch (err) {
         console.error(err);
         toast.error("Gagal memuat data referensi form pengajuan cuti");
@@ -42,6 +45,7 @@ const useFormOptions = () => {
     daftarPegawai,
     daftarKetuaTim,
     daftarKepalaSapel,
+    konfigurasiSistem,
     loading,
   };
 };

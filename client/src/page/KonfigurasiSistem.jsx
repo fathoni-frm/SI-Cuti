@@ -56,31 +56,44 @@ const KonfigurasiSistem = () => {
             });
             return;
         }
+        Swal.fire({
+            title: "Yakin ingin mengubah konfigurasi?",
+            text: "Perubahan akan mempengaruhi sistem secara keseluruhan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, simpan!",
+            cancelButtonText: "Batal",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    setSaving(true);
+                    await axios.put("/konfigurasi-sistem", {
+                        idKepalaBalai: konfigurasi.idKepalaBalai,
+                        idKepalaBagianUmum: konfigurasi.idKepalaBagianUmum,
+                    });
 
-        try {
-            setSaving(true);
-            await axios.put("/konfigurasi-sistem", {
-                idKepalaBalai: konfigurasi.idKepalaBalai,
-                idKepalaBagianUmum: konfigurasi.idKepalaBagianUmum,
-            });
-
-            Swal.fire({
-                icon: "success",
-                title: "Berhasil Disimpan!",
-                text: "Konfigurasi sistem berhasil diperbarui.",
-                timer: 2000,
-                showConfirmButton: false,
-            });
-        } catch (error) {
-            console.error("Gagal menyimpan konfigurasi:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Gagal Menyimpan",
-                text: "Terjadi kesalahan saat memperbarui konfigurasi.",
-            });
-        } finally {
-            setSaving(false);
-        }
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil Disimpan!",
+                        text: "Konfigurasi sistem berhasil diperbarui.",
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                } catch (error) {
+                    console.error("Gagal menyimpan konfigurasi:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal Menyimpan",
+                        text: "Terjadi kesalahan saat memperbarui konfigurasi.",
+                    });
+                } finally {
+                    setSaving(false);
+                }
+            }
+        });
     };
 
     if (isLoading) return <Spinner />;
@@ -161,8 +174,8 @@ const KonfigurasiSistem = () => {
                             onClick={handleSave}
                             disabled={saving}
                             className={`flex items-center gap-2 px-5 py-2 rounded-lg font-semibold text-white transition-all ${saving
-                                    ? "bg-blue-300 cursor-not-allowed"
-                                    : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                                ? "bg-blue-300 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
                                 }`}
                         >
                             {saving ? (

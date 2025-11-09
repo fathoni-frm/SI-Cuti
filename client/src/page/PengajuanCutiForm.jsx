@@ -21,7 +21,7 @@ const PengajuanCutiForm = () => {
 	const jenisCuti = location.state?.jenisCuti;
 
 	const { user, detailPegawai, kuotaCuti, isLoading } = useAuthStore();
-	const { daftarPegawai, daftarKetuaTim, daftarKepalaSapel } = useFormOptions();
+	const { daftarPegawai, daftarKetuaTim, daftarKepalaSapel, konfigurasiSistem } = useFormOptions();
 
 	// 🔹 Formik Setup
 	const formik = useFormik({
@@ -185,6 +185,7 @@ const PengajuanCutiForm = () => {
 				daftarPegawai={daftarPegawai}
 				daftarKetuaTim={daftarKetuaTim}
 				daftarKepalaSapel={daftarKepalaSapel}
+				konfigurasiSistem={konfigurasiSistem}
 			/>
 		</MainLayout>
 	);
