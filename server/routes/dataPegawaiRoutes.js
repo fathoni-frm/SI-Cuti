@@ -10,6 +10,8 @@ router.get('/pegawai', authorizeRoles('Admin'), dataPegawaiController.getAllPega
 router.post('/pegawai', authorizeRoles('Admin'), dataPegawaiController.createPegawai);
 router.delete('/pegawai/:id', authorizeRoles('Admin'), dataPegawaiController.deletePegawai);
 router.post('/pegawai/import', upload.single("file"), authorizeRoles('Admin'), dataPegawaiController.importPegawai);
+router.get('/list/kepala-balai', authorizeRoles('Admin'), dataPegawaiController.getDaftarKepalaBalai);
+router.get('/list/kepala-bagian-umum', authorizeRoles('Admin'), dataPegawaiController.getDaftarKepalaBagianUmum);
 
 router.get('/pegawai/:id', dataPegawaiController.getPegawaiById);
 router.get('/form/pegawai', dataPegawaiController.getDaftarPegawai);

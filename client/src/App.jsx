@@ -26,6 +26,7 @@ import DraftPengajuan from "./page/DraftPengajuan";
 import EditDraft from "./page/EditDraft";
 import PengaturanProfil from "./page/PengaturanProfil";
 import EditPengaturanProfil from "./page/EditPengaturanProfil";
+import KonfigurasiSistem from "./page/KonfigurasiSistem";
 import Spinner from "./components/Spinner";
 
 const App = () => {
@@ -156,6 +157,14 @@ const App = () => {
 						element={
 							<ProtectedRoute allowedRoles={["Admin"]}>
 								<DetailPegawai />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/konfigurasi-sistem"
+						element={
+							<ProtectedRoute allowedRoles={["Admin"]}>
+								<KonfigurasiSistem />
 							</ProtectedRoute>
 						}
 					/>

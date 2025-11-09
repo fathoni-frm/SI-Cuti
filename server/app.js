@@ -11,6 +11,7 @@ const verifikasiCutiRoutes = require("./routes/verifikasiCutiRoutes");
 const pelimpahanTugasRoutes = require("./routes/pelimpahanTugasRoutes");
 const validasiRoutes = require("./routes/validasiRoutes");
 const notifikasiRoutes = require("./routes/notifikasiRoutes");
+const konfigurasiSistemRoutes = require("./routes/konfigurasiSistemRoutes");
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/pengajuan-cuti", pengajuanCutiRoutes);
 app.use("/api", verifikasiCutiRoutes);
 app.use("/api", pelimpahanTugasRoutes);
 app.use("/api/notifikasi", notifikasiRoutes);
+app.use("/api/konfigurasi-sistem", konfigurasiSistemRoutes);
 
 app.listen(PORT, async () => {
   try {
