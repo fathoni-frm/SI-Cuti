@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     idPengajuan: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     judul: {
       type: DataTypes.STRING,

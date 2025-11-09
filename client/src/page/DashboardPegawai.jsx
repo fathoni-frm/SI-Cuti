@@ -75,7 +75,7 @@ const DashboardPegawai = () => {
 		fetchKuotaCuti();
 		fetchRiwayat();
 	}, []);
-	
+
 	return (
 		<MainLayout role="Pegawai">
 			<div className="flex flex-col lg:flex-row flex-grow">
@@ -88,9 +88,11 @@ const DashboardPegawai = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem title="Sisa Kuota Cuti Anda">
-						<TabelKuotaCuti data={filteredDataKuotaCuti} />
-					</BackgroundItem>
+					<div id="kuota-cuti">
+						<BackgroundItem title="Sisa Kuota Cuti Anda">
+							<TabelKuotaCuti data={filteredDataKuotaCuti} />
+						</BackgroundItem>
+					</div>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
 					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">

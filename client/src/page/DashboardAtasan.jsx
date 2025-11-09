@@ -174,9 +174,11 @@ const DashboardAtasan = () => {
 					/>
 
 					{/* Kuota Cuti */}
-					<BackgroundItem title="Sisa Kuota Cuti Anda">
-						<TabelKuotaCuti data={filteredDataKuotaCuti} />
-					</BackgroundItem>
+					<div id="kuota-cuti">
+						<BackgroundItem title="Sisa Kuota Cuti Anda">
+							<TabelKuotaCuti data={filteredDataKuotaCuti} />
+						</BackgroundItem>
+					</div>
 
 					{/* Riwayat Pengajuan Cuti Anda */}
 					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">

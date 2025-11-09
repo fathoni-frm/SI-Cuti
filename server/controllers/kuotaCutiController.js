@@ -1,4 +1,4 @@
-const { Pegawai, KuotaCuti } = require("../models");
+const { Pegawai, KuotaCuti, Notifikasi } = require("../models");
 
 const getKuotaCutiByUser = async (req, res) => {
     try {
@@ -59,7 +59,7 @@ const updateKuotaCuti = async (req, res) => {
         const updatedData = [];
 
         for (const item of kuotaArray) {
-            const { id, totalKuota, sisaKuota } = item;
+            const { id, idPegawai, totalKuota, sisaKuota } = item;
 
             const kuota = await KuotaCuti.findByPk(id);
             if (!kuota) continue;
@@ -71,6 +71,13 @@ const updateKuotaCuti = async (req, res) => {
 
             updatedData.push(kuota);
         }
+
+        await Notifikasi.create({
+            idPenerima: kuotaArray[0].idPegawai,
+            idPengajuan: null,
+            judul: "Pembaruan Kuota Cuti",
+            pesan: "Kuota cuti Anda telah diperbarui oleh Admin. Harap cek kuota cuti Anda.",
+        });
 
         return res.status(200).json({
             msg: "Semua kuota cuti berhasil diperbarui",
@@ -86,7 +93,7 @@ const tambahKuotaCutiTahunan = async (req, res) => {
 		const { idPegawai, jumlah } = req.body;
 
 		if (!idPegawai || !jumlah) {
-			return res.status(400).json({ message: "idPegawai dan jumlah wajib diisi" });
+			return res.status(400).json({ message: "Pegawai dan jumlah wajib diisi" });
 		}
 
 		const kuota = await KuotaCuti.findOne({
@@ -105,6 +112,13 @@ const tambahKuotaCutiTahunan = async (req, res) => {
 		kuota.totalKuota += parseInt(jumlah);
 		kuota.sisaKuota += parseInt(jumlah);
 		await kuota.save();
+
+        await Notifikasi.create({
+            idPenerima: idPegawai,
+            idPengajuan: null,
+            judul: "Penambahan Kuota Cuti",
+            pesan: `Kuota cuti tahunan Anda telah ditambahkan Admin sebanyak ${jumlah} hari.`,
+        });
 
 		return res.status(200).json({
 			message: "Kuota cuti tahunan berhasil ditambahkan.",

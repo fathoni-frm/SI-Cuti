@@ -34,6 +34,8 @@ const tandaiSudahDibaca = async (req, res) => {
         await pelimpahan.update({ status: "Diproses" });
       }
       return res.status(200).json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "pelimpahan", idPelimpahan: pelimpahan.id });
+    } else if (notifikasi.judul === "Penambahan Kuota Cuti" || notifikasi.judul === "Pembaruan Kuota Cuti") { 
+      return res.status(200).json({ msg: "Notifikasi ditandai sudah dibaca", tipe: "kuota" });
     } else {
       const verifikasi = await VerifikasiCuti.findOne({ where: { idPengajuan, idPimpinan: idPegawai } });
       if (verifikasi && verifikasi.statusVerifikasi === "Belum Diverifikasi") {

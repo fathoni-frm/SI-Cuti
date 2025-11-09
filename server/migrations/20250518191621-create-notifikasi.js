@@ -15,7 +15,7 @@ module.exports = {
       },
       idPengajuan: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       judul: {
         type: Sequelize.STRING,

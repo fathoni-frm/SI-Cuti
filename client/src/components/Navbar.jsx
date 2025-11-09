@@ -41,6 +41,8 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 
 			if (res.data.tipe === "pelimpahan" && res.data.idPelimpahan) {
 				navigate(`/detail-pelimpahan/${res.data.idPelimpahan}`);
+			} else if (res.data.tipe === "kuota") {
+				navigate("/dashboard#kuota-cuti");
 			} else {
 				navigate(`/detail-cuti/${idPengajuan}`);
 			}
