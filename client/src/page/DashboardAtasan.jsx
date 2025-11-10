@@ -16,13 +16,12 @@ import {
 } from "react-icons/fa";
 
 const DashboardAtasan = () => {
-	const { user, detailPegawai, isLoading } = useAuthStore();
+	const { user, isLoading } = useAuthStore();
 	const [dataPermohonan, setDataPermohonan] = useState([]);
 	const [disetujui, setDisetujui] = useState(0);
 	const [ditolak, setDitolak] = useState(0);
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
 	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
-	const jenisKelamin = detailPegawai?.jenisKelamin;
 	const [konfigurasi, setKonfigurasi] = useState(null);
 
 	const dataPermohonanPegawai = [
@@ -76,13 +75,6 @@ const DashboardAtasan = () => {
 			bgColor: "bg-red-600",
 		},
 	];
-
-	const filteredDataKuotaCuti = dataKuotaCuti.filter((cuti) => {
-		if (jenisKelamin === "Laki-laki" && cuti.jenisCuti === "Cuti Melahirkan") {
-			return false;
-		}
-		return true;
-	});
 
 	useEffect(() => {
 		const fetchKonfigurasi = async () => {
@@ -147,7 +139,7 @@ const DashboardAtasan = () => {
 	}, []);
 
 	if (isLoading) return <Spinner />;
-	console.log(konfigurasi);
+	
 	return (
 		<LayoutDashboard role="Atasan">
 			<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -183,7 +175,7 @@ const DashboardAtasan = () => {
 						{/* Kuota Cuti */}
 						<div id="kuota-cuti">
 							<BackgroundItem title="Sisa Kuota Cuti Anda">
-								<TabelKuotaCuti data={filteredDataKuotaCuti} />
+								<TabelKuotaCuti data={dataKuotaCuti} />
 							</BackgroundItem>
 						</div>
 

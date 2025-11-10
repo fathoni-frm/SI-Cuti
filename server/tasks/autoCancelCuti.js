@@ -79,7 +79,7 @@ const cancelPengajuanCuti = async () => {
         if (pengajuanTerlambat.length === 0) {
             console.log('Tidak ada pengajuan cuti yang harus dibatalkan.');
         } else {
-            console.log('Ada pengajuan cuti yang harus dibatalkan.');
+            console.log('Ada pengajuan cuti yang dibatalkan.');
         }
     } catch (error) {
         console.error('Terjadi kesalahan:', error);

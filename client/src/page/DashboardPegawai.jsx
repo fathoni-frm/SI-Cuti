@@ -10,10 +10,9 @@ import Spinner from "../components/Spinner";
 import { FaCheckCircle, FaSpinner, FaTimesCircle } from "react-icons/fa";
 
 const DashboardPegawai = () => {
-	const { user, detailPegawai, isLoading } = useAuthStore();
+	const { user, isLoading } = useAuthStore();
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
 	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
-	const jenisKelamin = detailPegawai?.jenisKelamin;
 
 	const dataPengajuanAnda = [
 		{
@@ -42,13 +41,6 @@ const DashboardPegawai = () => {
 			bgColor: "bg-red-600",
 		},
 	];
-
-	const filteredDataKuotaCuti = dataKuotaCuti.filter((cuti) => {
-		if (jenisKelamin === "Laki-laki" && cuti.jenisCuti === "Cuti Melahirkan") {
-			return false;
-		}
-		return true;
-	});
 
 	useEffect(() => {
 		const fetchKuotaCuti = async () => {
@@ -90,7 +82,7 @@ const DashboardPegawai = () => {
 				{/* Kuota Cuti */}
 				<div id="kuota-cuti">
 					<BackgroundItem title="Sisa Kuota Cuti Anda">
-						<TabelKuotaCuti data={filteredDataKuotaCuti} />
+						<TabelKuotaCuti data={dataKuotaCuti} />
 					</BackgroundItem>
 				</div>
 

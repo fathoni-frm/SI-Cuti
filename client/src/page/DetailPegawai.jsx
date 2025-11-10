@@ -21,13 +21,6 @@ const DetailPegawai = () => {
 	const [kuotaCuti, setKuotaCuti] = useState([]);
 	const [loading, setLoading] = useState(true);
 
-	const filteredKuotaCuti = kuotaCuti.filter((cuti) =>{
-		if(initialData.jenisKelamin === "Laki-laki" && cuti.jenisCuti === "Cuti Melahirkan"){
-			return false;
-		}
-		return true;
-	});
-
 	useEffect(() => {
 		const fetchPegawai = async () => {
 			try {
@@ -141,7 +134,7 @@ const DetailPegawai = () => {
 						<BackgroundItem
 							title="Informasi Kuota Cuti Pegawai"
 							icon={<FaCalendarAlt />}>
-							<TabelKuotaCuti data={filteredKuotaCuti} />
+							<TabelKuotaCuti data={kuotaCuti} />
 						</BackgroundItem>
 					</div>
 				</BackgroundItem>

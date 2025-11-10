@@ -37,7 +37,7 @@ const ValidasiQrCode = () => {
 			</div>
 		);
 	}
-	console.log(data);
+	
 	return (
 		<div className="max-w-3xl mx-auto md:my-10 bg-white border border-gray-300 p-8 rounded-lg shadow-lg">
 			{/* Header */}

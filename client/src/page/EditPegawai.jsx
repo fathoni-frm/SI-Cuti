@@ -63,13 +63,6 @@ const EditPegawai = () => {
 		}
 	};
 
-	const filteredKuotaCuti = kuotaCuti.filter((cuti) =>{
-		if(initialData.jenisKelamin === "Laki-laki" && cuti.jenisCuti === "Cuti Melahirkan"){
-			return false;
-		}
-		return true;
-	});
-
 	useEffect(() => {
 		let isMounted = true;
 
@@ -196,7 +189,7 @@ const EditPegawai = () => {
 							icon={<FaCalendarAlt />}>
 							<TabelKuotaCuti
 								ref={tabelKuotaRef}
-								data={filteredKuotaCuti}
+								data={kuotaCuti}
 								isEditing={true}
 							/>
 						</BackgroundItem>
