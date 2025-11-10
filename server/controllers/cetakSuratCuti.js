@@ -80,8 +80,7 @@ const generateNomorSurat = async () => {
     .replace("{{tahun}}", tahun);
 
   const nomorSurat = `${konfigurasi.nomorTerakhir
-    .toString()
-    .padStart(3, "0")}/${nomorFormat}`;
+    .toString()}/${nomorFormat}`;
   return nomorSurat;
 };
 
