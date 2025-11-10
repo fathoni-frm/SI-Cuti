@@ -23,6 +23,7 @@ const DashboardAtasan = () => {
 	const [dataKuotaCuti, setDataKuotaCuti] = useState([]);
 	const [dataRiwayatCuti, setDataRiwayatCuti] = useState([]);
 	const jenisKelamin = detailPegawai?.jenisKelamin;
+	const [konfigurasi, setKonfigurasi] = useState(null);
 
 	const dataPermohonanPegawai = [
 		{
@@ -84,6 +85,11 @@ const DashboardAtasan = () => {
 	});
 
 	useEffect(() => {
+		const fetchKonfigurasi = async () => {
+			const res = await axios.get("/konfigurasi-sistem");
+			setKonfigurasi(res.data);
+		};
+
 		const fetchVerifikasi = async () => {
 			try {
 				const res = await axios.get("/permohonan-cuti/atasan");
@@ -134,13 +140,14 @@ const DashboardAtasan = () => {
 			}
 		};
 
+		fetchKonfigurasi();
 		fetchVerifikasi();
 		fetchKuotaCuti();
 		fetchRiwayat();
 	}, []);
 
 	if (isLoading) return <Spinner />;
-
+	console.log(konfigurasi);
 	return (
 		<LayoutDashboard role="Atasan">
 			<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -163,35 +170,38 @@ const DashboardAtasan = () => {
 					/>
 				</BackgroundItem>
 
+				{user.id !== konfigurasi?.idKepalaBalai && user.id !== konfigurasi?.idKepalaBagianUmum && (
+					<>
+						<hr className="border-2 border-gray-900 w-full my-5" />
 
-				<hr className="border-2 border-gray-900 w-full my-5" />
+						{/* Rekap Pengajuan Cuti Anda */}
+						<SummaryCards
+							title="Rekap Pengajuan Cuti Anda"
+							data={dataPengajuanAnda}
+						/>
 
-				{/* Rekap Pengajuan Cuti Anda */}
-				<SummaryCards
-					title="Rekap Pengajuan Cuti Anda"
-					data={dataPengajuanAnda}
-				/>
+						{/* Kuota Cuti */}
+						<div id="kuota-cuti">
+							<BackgroundItem title="Sisa Kuota Cuti Anda">
+								<TabelKuotaCuti data={filteredDataKuotaCuti} />
+							</BackgroundItem>
+						</div>
 
-				{/* Kuota Cuti */}
-				<div id="kuota-cuti">
-					<BackgroundItem title="Sisa Kuota Cuti Anda">
-						<TabelKuotaCuti data={filteredDataKuotaCuti} />
-					</BackgroundItem>
-				</div>
-
-				{/* Riwayat Pengajuan Cuti Anda */}
-				<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
-					<TabelRiwayat
-						data={dataRiwayatCuti
-							.sort(
-								(a, b) =>
-									new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
-							)
-							.slice(0, 5)}
-						showPagination={false}
-						isDashboard={true}
-					/>
-				</BackgroundItem>
+						{/* Riwayat Pengajuan Cuti Anda */}
+						<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
+							<TabelRiwayat
+								data={dataRiwayatCuti
+									.sort(
+										(a, b) =>
+											new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+									)
+									.slice(0, 5)}
+								showPagination={false}
+								isDashboard={true}
+							/>
+						</BackgroundItem>
+					</>
+				)}
 			</div>
 		</LayoutDashboard>
 	);

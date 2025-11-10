@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import useAuthStore from "../store/authStore";
+import axios from "../api/axios";
 import { FaHome, FaHistory, FaFileAlt, FaClipboardCheck, FaPeopleArrows } from "react-icons/fa";
 import { AiFillFileAdd } from "react-icons/ai";
 
 const SidebarAtasan = ({ isSidebarOpen, toggleSidebar }) => {
 	const location = useLocation();
+	const { user } = useAuthStore();
+	const [konfigurasi, setKonfigurasi] = useState(null);
 
 	const isActive = (path) =>
 		location.pathname.startsWith(path)
@@ -44,16 +48,22 @@ const SidebarAtasan = ({ isSidebarOpen, toggleSidebar }) => {
 		}
 	};
 
-	const linkTextClass = `${
-		isSidebarOpen ? "opacity-100" : "opacity-0 lg:opacity-0 lg:invisible"
-	} transition-opacity duration-100 delay-100`;
+	const linkTextClass = `${isSidebarOpen ? "opacity-100" : "opacity-0 lg:opacity-0 lg:invisible"
+		} transition-opacity duration-100 delay-100`;
+
+	useEffect(() => {
+		const fetchKonfigurasi = async () => {
+			const res = await axios.get("/konfigurasi-sistem");
+			setKonfigurasi(res.data);
+		};
+		fetchKonfigurasi();
+	}, []);
 
 	return (
 		<aside className={sidebarClasses} aria-label="Sidebar Atasan">
 			<div
-				className={`${
-					isSidebarOpen ? "opacity-100" : "opacity-0 lg:opacity-100"
-				} w-full h-full transition-opacity duration-150 delay-100 space-y-1`}>
+				className={`${isSidebarOpen ? "opacity-100" : "opacity-0 lg:opacity-100"
+					} w-full h-full transition-opacity duration-150 delay-100 space-y-1`}>
 				<Link
 					to="/dashboard"
 					onClick={handleMobileLinkClick}
@@ -63,39 +73,39 @@ const SidebarAtasan = ({ isSidebarOpen, toggleSidebar }) => {
 					<FaHome className="text-2xl flex-shrink-0" />
 					<span className={linkTextClass}>Dashboard</span>
 				</Link>
-				<Link
-					to="/pengajuan-cuti"
-					onClick={handleMobileLinkClick}
-					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
-						"/pengajuan-cuti"
-					)}`}>
-					<AiFillFileAdd className="text-xl flex-shrink-0" />
-					<span className={linkTextClass}>Pengajuan Cuti</span>
-				</Link>
-				<Link
-					to="/riwayat-cuti"
-					onClick={handleMobileLinkClick}
-					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
-						"/riwayat-cuti"
-					)}`}>
-					<FaHistory className="text-xl flex-shrink-0" />
-					<span className={linkTextClass}>Riwayat Pengajuan</span>
-				</Link>
-				<Link
-					to="/draft-cuti"
-					onClick={handleMobileLinkClick}
-					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
-						"/draft-cuti"
-					)}`}>
-					<FaFileAlt className="text-xl flex-shrink-0" />
-					<span className={linkTextClass}>Draft Pengajuan</span>
-				</Link>
+				{user.id !== konfigurasi?.idKepalaBalai && user.id !== konfigurasi?.idKepalaBagianUmum && (
+					<>
+						<Link
+							to="/pengajuan-cuti"
+							onClick={handleMobileLinkClick}
+							className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+								"/pengajuan-cuti"
+							)}`}>
+							<AiFillFileAdd className="text-xl flex-shrink-0" />
+							<span className={linkTextClass}>Pengajuan Cuti</span>
+						</Link>
+						<Link
+							to="/riwayat-cuti"
+							onClick={handleMobileLinkClick}
+							className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+								"/riwayat-cuti"
+							)}`}>
+							<FaHistory className="text-xl flex-shrink-0" />
+							<span className={linkTextClass}>Riwayat Pengajuan</span>
+						</Link>
+						<Link
+							to="/draft-cuti"
+							onClick={handleMobileLinkClick}
+							className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+								"/draft-cuti"
+							)}`}>
+							<FaFileAlt className="text-xl flex-shrink-0" />
+							<span className={linkTextClass}>Draft Pengajuan</span>
+						</Link>
 
-				<hr
-					className={`border-1 border-gray-600 w-5/6 mx-auto my-2 transition-opacity duration-150 ${
-						isSidebarOpen ? "opacity-100" : "opacity-0"
-					}`}
-				/>
+						<hr className={`border-1 border-gray-600 w-5/6 mx-auto my-2 transition-opacity duration-150 ${isSidebarOpen ? "opacity-100" : "opacity-0"}`}/>
+					</>
+				)}
 
 				<Link
 					to="/permohonan-cuti"
