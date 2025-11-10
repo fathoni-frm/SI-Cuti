@@ -67,6 +67,11 @@ const generateNomorSurat = async () => {
     }
   }
 
+  const lastUpdatedYear = konfigurasi.updatedAt.getFullYear();
+  if (lastUpdatedYear !== now.getFullYear()) {
+    konfigurasi.nomorTerakhir = 0;
+  }
+
   konfigurasi.nomorTerakhir += 1;
   await konfigurasi.save();
 

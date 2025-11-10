@@ -126,7 +126,7 @@ const KonfigurasiSistem = () => {
 
     return (
         <MainLayout role={user.role}>
-            <div className="w-full p-6 bg-gray-100 min-h-screen">
+            <div className="p-6 w-full">
                 <div className="flex items-center gap-3 mb-6">
                     <FaUserCog className="text-blue-500 text-2xl" />
                     <h1 className="text-2xl font-bold text-gray-800">
