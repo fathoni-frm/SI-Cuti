@@ -17,6 +17,18 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      formatNomorSurat: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      nomorTerakhir: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      resetBulanan: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -33,6 +45,9 @@ module.exports = {
       {
         idKepalaBalai: 1,
         idKepalaBagianUmum: 1,
+        formatNomorSurat: "BBKHITK/HRD/{{bulan}}/{{tahun}}",
+        nomorTerakhir: 0,
+        resetBulanan: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       },

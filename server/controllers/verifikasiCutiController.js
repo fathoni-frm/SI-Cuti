@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const { VerifikasiCuti, PengajuanCuti, PelimpahanTugas, Pegawai, KuotaCuti, Notifikasi } = require('../models');
-const { generateSuratCuti } = require('./cetakSuratCutiController');
+const { generateSuratCuti } = require('./cetakSuratCuti');
 
 const getDataPermohonanCutiAdmin = async (req, res) => {
     try {

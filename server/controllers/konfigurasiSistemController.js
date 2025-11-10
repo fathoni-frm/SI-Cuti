@@ -7,12 +7,12 @@ const getKonfigurasi = async (req, res) => {
         {
           model: Pegawai,
           as: "kepalaBalai",
-          attributes: ["id", "nama", "nip", "jabatanFungsional"],
+          attributes: ["id", "nama", "nip", "jabatanStruktural"],
         },
         {
           model: Pegawai,
           as: "kepalaBagianUmum",
-          attributes: ["id", "nama", "nip", "jabatanFungsional"],
+          attributes: ["id", "nama", "nip", "jabatanStruktural"],
         },
       ],
     });
@@ -30,10 +30,10 @@ const getKonfigurasi = async (req, res) => {
 
 const updateKonfigurasi = async (req, res) => {
   try {
-    const { idKepalaBalai, idKepalaBagianUmum } = req.body;
+    const { idKepalaBalai, idKepalaBagianUmum, formatNomorSurat, nomorTerakhir, resetBulanan } = req.body;
 
-    if (!idKepalaBalai || !idKepalaBagianUmum) {
-      return res.status(400).json({ msg: "Kedua field wajib diisi." });
+    if (!idKepalaBalai || !idKepalaBagianUmum || !formatNomorSurat || nomorTerakhir === undefined || resetBulanan === undefined) {
+      return res.status(400).json({ msg: "Semua field wajib diisi." });
     }
 
     const konfigurasi = await KonfigurasiSistem.findOne();
@@ -43,6 +43,9 @@ const updateKonfigurasi = async (req, res) => {
 
     konfigurasi.idKepalaBalai = idKepalaBalai;
     konfigurasi.idKepalaBagianUmum = idKepalaBagianUmum;
+    konfigurasi.formatNomorSurat = formatNomorSurat;
+    konfigurasi.nomorTerakhir = nomorTerakhir;
+    konfigurasi.resetBulanan = resetBulanan;
     await konfigurasi.save();
 
     res.status(200).json({ msg: "Konfigurasi sistem berhasil diperbarui." });

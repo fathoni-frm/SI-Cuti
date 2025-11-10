@@ -3,8 +3,16 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class KonfigurasiSistem extends Model {
     static associate(models) {
-      KonfigurasiSistem.belongsTo(models.Pegawai, { foreignKey: 'idKepalaBalai', as: 'kepalaBalai', constraints: false });
-      KonfigurasiSistem.belongsTo(models.Pegawai, { foreignKey: 'idKepalaBagianUmum', as: 'kepalaBagianUmum', constraints: false });
+      KonfigurasiSistem.belongsTo(models.Pegawai, {
+        foreignKey: "idKepalaBalai",
+        as: "kepalaBalai",
+        constraints: false,
+      });
+      KonfigurasiSistem.belongsTo(models.Pegawai, {
+        foreignKey: "idKepalaBagianUmum",
+        as: "kepalaBagianUmum",
+        constraints: false,
+      });
     }
   }
   KonfigurasiSistem.init(
@@ -17,13 +25,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      formatNomorSurat: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      nomorTerakhir: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      resetBulanan: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
     },
     {
-    sequelize,
-    modelName: 'KonfigurasiSistem',
-    tableName: 'KonfigurasiSistems',
-    timestamps: true
-  }
+      sequelize,
+      modelName: "KonfigurasiSistem",
+      tableName: "KonfigurasiSistems",
+      timestamps: true,
+    }
   );
   return KonfigurasiSistem;
 };

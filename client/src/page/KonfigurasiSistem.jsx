@@ -16,6 +16,9 @@ const KonfigurasiSistem = () => {
     const [konfigurasi, setKonfigurasi] = useState({
         idKepalaBalai: null,
         idKepalaBagianUmum: null,
+        formatNomorSurat: "",
+        nomorTerakhir: 0,
+        resetBulanan: false,
     });
 
     useEffect(() => {
@@ -29,6 +32,9 @@ const KonfigurasiSistem = () => {
                 setKonfigurasi({
                     idKepalaBalai: resKonfig.data?.idKepalaBalai || null,
                     idKepalaBagianUmum: resKonfig.data?.idKepalaBagianUmum || null,
+                    formatNomorSurat: resKonfig.data?.formatNomorSurat || "",
+                    nomorTerakhir: resKonfig.data?.nomorTerakhir || 0,
+                    resetBulanan: resKonfig.data?.resetBulanan || false,
                 });
                 setKepalaBalaiList(resBalai.data);
                 setKepalaBagianList(resBagian.data);
@@ -73,6 +79,9 @@ const KonfigurasiSistem = () => {
                     await axios.put("/konfigurasi-sistem", {
                         idKepalaBalai: konfigurasi.idKepalaBalai,
                         idKepalaBagianUmum: konfigurasi.idKepalaBagianUmum,
+                        formatNomorSurat: konfigurasi.formatNomorSurat,
+                        nomorTerakhir: konfigurasi.nomorTerakhir,
+                        resetBulanan: konfigurasi.resetBulanan,
                     });
 
                     Swal.fire({
@@ -126,7 +135,6 @@ const KonfigurasiSistem = () => {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
-                    {/* Kepala Balai */}
                     <div>
                         <label className="block text-gray-700 font-semibold mb-2">
                             Kepala Balai
@@ -146,8 +154,6 @@ const KonfigurasiSistem = () => {
                             classNamePrefix="react-select"
                         />
                     </div>
-
-                    {/* Kepala Bagian Umum */}
                     <div>
                         <label className="block text-gray-700 font-semibold mb-2">
                             Kepala Bagian Umum
@@ -166,6 +172,39 @@ const KonfigurasiSistem = () => {
                             className="w-full"
                             classNamePrefix="react-select"
                         />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Format Nomor Surat</label>
+                        <input
+                            type="text"
+                            className="w-full border border-gray-300 rounded-md p-2"
+                            value={konfigurasi.formatNomorSurat || ""}
+                            onChange={(e) =>
+                                setKonfigurasi({ ...konfigurasi, formatNomorSurat: e.target.value })
+                            }
+                            placeholder="Contoh: BBKHIT/KP/{{bulan}}/{{tahun}}"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Nomor Terakhir</label>
+                        <input
+                            type="number"
+                            className="w-full border border-gray-300 rounded-md p-2"
+                            value={konfigurasi.nomorTerakhir || 0}
+                            onChange={(e) =>
+                                setKonfigurasi({ ...konfigurasi, nomorTerakhir: parseInt(e.target.value) })
+                            }
+                        />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                        <input
+                            type="checkbox"
+                            checked={konfigurasi.resetBulanan || false}
+                            onChange={(e) =>
+                                setKonfigurasi({ ...konfigurasi, resetBulanan: e.target.checked })
+                            }
+                        />
+                        <label className="text-gray-700">Reset nomor surat setiap bulan</label>
                     </div>
 
                     {/* Tombol Simpan */}
@@ -192,7 +231,7 @@ const KonfigurasiSistem = () => {
                     </div>
                 </div>
             </div>
-        </MainLayout>
+        </MainLayout >
     );
 };
 

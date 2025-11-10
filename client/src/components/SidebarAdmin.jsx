@@ -6,6 +6,7 @@ import {
 	FaUsersCog,
 	FaCalendarPlus,
 } from "react-icons/fa";
+import { TbWorldCog } from "react-icons/tb";
 
 const SidebarAdmin = ({ isSidebarOpen, toggleSidebar }) => {
 	const location = useLocation();
@@ -101,6 +102,15 @@ const SidebarAdmin = ({ isSidebarOpen, toggleSidebar }) => {
 					)}`}>
 					<FaUsersCog className="text-xl flex-shrink-0" />
 					<span className={linkTextClass}>Manajemen Pegawai</span>
+				</Link>
+				<Link
+					to="/konfigurasi-sistem"
+					onClick={handleMobileLinkClick}
+					className={`flex items-center space-x-3 p-2.5 rounded-md ${isActive(
+						"/konfigurasi-sistem"
+					)}`}>
+					<TbWorldCog className="text-xl flex-shrink-0" />
+					<span className={linkTextClass}>Konfigurasi Sistem</span>
 				</Link>
 			</div>
 		</aside>
