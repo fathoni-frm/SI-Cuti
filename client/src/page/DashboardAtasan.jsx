@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import useAuthStore from "../store/authStore";
 import axios from "../api/axios";
-import MainLayout from "../Layouts/MainLayout";
+import LayoutDashboard from "../Layouts/LayoutDashboard";
 import SummaryCards from "../components/SummaryCards";
 import BackgroundItem from "../components/BackgroundItem";
 import TabelKuotaCuti from "../components/TabelKuotaCuti";
 import TabelPermohonan from "../components/TabelPermohonan";
 import TabelRiwayat from "../components/TabelRiwayat";
-import NationalHolidays from "../components/NationalHolidays";
 import Spinner from "../components/Spinner";
 import {
 	FaCheckCircle,
@@ -143,62 +142,58 @@ const DashboardAtasan = () => {
 	if (isLoading) return <Spinner />;
 
 	return (
-		<MainLayout role="Atasan">
-			<div className="flex flex-col lg:flex-row flex-grow">
-				<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-					<h1 className="text-2xl font-bold">Dashboard</h1>
+		<LayoutDashboard role="Atasan">
+			<div className="lg:flex-grow bg-gray-100 p-4 sm:p-6 w-full lg:w-auto space-y-5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+				<h1 className="text-2xl font-bold">Dashboard</h1>
 
-					{/* Rekap Permohonan Cuti Pegawai */}
-					<SummaryCards
-						title="Rekap Permohonan Cuti Pegawai"
-						data={dataPermohonanPegawai}
+				{/* Rekap Permohonan Cuti Pegawai */}
+				<SummaryCards
+					title="Rekap Permohonan Cuti Pegawai"
+					data={dataPermohonanPegawai}
+				/>
+
+				{/* Permohonan Cuti Belum Diproses */}
+				<BackgroundItem title="Permohonan Cuti Yang Belum Anda Proses">
+					<TabelPermohonan
+						data={dataPermohonan}
+						isDashboard={true}
+						showQuota={false}
+						showPagination={false}
+						lihat={true}
 					/>
+				</BackgroundItem>
 
-					{/* Permohonan Cuti Belum Diproses */}
-					<BackgroundItem title="Permohonan Cuti Yang Belum Anda Proses">
-						<TabelPermohonan
-							data={dataPermohonan}
-							isDashboard={true}
-							showQuota={false}
-							showPagination={false}
-							lihat={true}
-						/>
-					</BackgroundItem>
 
-					<hr className="border-2 border-gray-900 w-full my-5" />
+				<hr className="border-2 border-gray-900 w-full my-5" />
 
-					{/* Rekap Pengajuan Cuti Anda */}
-					<SummaryCards
-						title="Rekap Pengajuan Cuti Anda"
-						data={dataPengajuanAnda}
-					/>
+				{/* Rekap Pengajuan Cuti Anda */}
+				<SummaryCards
+					title="Rekap Pengajuan Cuti Anda"
+					data={dataPengajuanAnda}
+				/>
 
-					{/* Kuota Cuti */}
-					<div id="kuota-cuti">
-						<BackgroundItem title="Sisa Kuota Cuti Anda">
-							<TabelKuotaCuti data={filteredDataKuotaCuti} />
-						</BackgroundItem>
-					</div>
-
-					{/* Riwayat Pengajuan Cuti Anda */}
-					<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
-						<TabelRiwayat
-							data={dataRiwayatCuti
-								.sort(
-									(a, b) =>
-										new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
-								)
-								.slice(0, 5)}
-							showPagination={false}
-							isDashboard={true}
-						/>
+				{/* Kuota Cuti */}
+				<div id="kuota-cuti">
+					<BackgroundItem title="Sisa Kuota Cuti Anda">
+						<TabelKuotaCuti data={filteredDataKuotaCuti} />
 					</BackgroundItem>
 				</div>
 
-				{/* Hari Libur */}
-				<NationalHolidays />
+				{/* Riwayat Pengajuan Cuti Anda */}
+				<BackgroundItem title="Riwayat Pengajuan Cuti Anda">
+					<TabelRiwayat
+						data={dataRiwayatCuti
+							.sort(
+								(a, b) =>
+									new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+							)
+							.slice(0, 5)}
+						showPagination={false}
+						isDashboard={true}
+					/>
+				</BackgroundItem>
 			</div>
-		</MainLayout>
+		</LayoutDashboard>
 	);
 };
 
