@@ -47,7 +47,7 @@ const getDataPermohonanCutiAtasan = async (req, res) => {
                 },
             ],
             attributes: ['id', 'idPengajuan', 'statusVerifikasi', 'urutanVerifikasi', 'updatedAt'],
-            order: [[{ model: PengajuanCuti }, 'tanggalPengajuan', 'DESC']],
+            order: [['updatedAt', 'DESC']],
         });
 
         const permohonanCuti = [];

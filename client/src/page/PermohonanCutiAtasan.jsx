@@ -56,6 +56,7 @@ const PermohonanCutiAtasan = () => {
 						statusVerifikasi: item.statusVerifikasi,
 						pegawai: { nama: item.PengajuanCuti.pegawai.nama },
 						suratCuti: item.PengajuanCuti.suratCuti,
+						updatedAt: item.updatedAt,
 					}));
 
 				const hasilPermohonanCuti = normalisasi(res.data.permohonanCuti);
@@ -65,19 +66,19 @@ const PermohonanCutiAtasan = () => {
 				setPermohonanCuti(
 					hasilPermohonanCuti.sort(
 						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+							new Date(b.updatedAt) - new Date(a.updatedAt)
 					)
 				);
 				setDisetujui(
 					hasilDisetujui.sort(
 						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+							new Date(b.updatedAt) - new Date(a.updatedAt)
 					)
 				);
 				setDitolak(
 					hasilditolak.sort(
 						(a, b) =>
-							new Date(b.tanggalPengajuan) - new Date(a.tanggalPengajuan)
+							new Date(b.updatedAt) - new Date(a.updatedAt)
 					)
 				);
 			} catch (err) {
@@ -89,7 +90,7 @@ const PermohonanCutiAtasan = () => {
 	}, []);
 
 	if (isLoading) return <Spinner />;
-
+	
 	return (
 		<MainLayout role={user.role}>
 			<div className="p-4 sm:p-6 w-full">

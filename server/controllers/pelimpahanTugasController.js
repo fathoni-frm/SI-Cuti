@@ -34,7 +34,7 @@ const getPermohonanPelimpahan = async (req, res) => {
                     include: [{ model: Pegawai, as: 'pegawai' }],
                 },
             ],
-            order: [['createdAt', 'DESC']],
+            order: [['updatedAt', 'DESC']],
         });
 
         const permohonan = [];
