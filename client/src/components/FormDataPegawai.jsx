@@ -34,7 +34,6 @@ const TextInput = ({
 	label,
 	type = "text",
 	isReadOnly,
-	password = false,
 	placeholder,
 }) => (
 	<div>
@@ -43,9 +42,7 @@ const TextInput = ({
 			<Field name={name}>
 				{({ field }) => (
 					<div
-						className={`w-full border border-gray-300 px-3 py-2 rounded-md ${
-							password ? "font-bold bg-gray-50" : "bg-gray-100"
-						}`}>
+						className="w-full border border-gray-300 px-3 py-2 rounded-md bg-gray-100">
 						{field.value || "-"}
 					</div>
 				)}
@@ -376,7 +373,6 @@ const FormDataPegawai = ({ isReadOnly = false, children }) => {
 					label="Password"
 					type={showPassword ? "text" : "password"}
 					isReadOnly={isReadOnly}
-					password={true}
 				/>
 				<button
 					type="button"
