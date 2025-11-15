@@ -177,8 +177,8 @@ const PermohonanCutiAdmin = () => {
 				"Status Cuti": item.status,
 				"Alamat Cuti": item.alamatCuti,
 				"Alasan Cuti": item.alasanCuti,
-				"Nama Penerima Tugas": item.PenerimaTugas?.nama || "-",
-				"NIP Penerima Tugas": item.PenerimaTugas?.nip || "-",
+				"Nama Penerima Tugas": item.PelimpahanTuga?.penerima.nama || "-",
+				"NIP Penerima Tugas": item.PelimpahanTuga?.penerima.nip || "-",
 			}));
 
 			const worksheet = XLSX.utils.json_to_sheet(dataCuti);
