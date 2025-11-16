@@ -85,8 +85,22 @@ const getTemplateImport = async (req, res) => {
   });
 };
 
+const cetakSuratCuti = (req, res) => {
+  const file = req.params.filename;
+
+  const filePath = path.join(__dirname, "..", "uploads", "surat-cuti", file);
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error("Gagal mengirim file surat cuti:", err);
+      res.status(404).json({ msg: "File surat cuti tidak ditemukan" });
+    }
+  });
+};
+
 module.exports = {
   getKonfigurasi,
   updateKonfigurasi,
   getTemplateImport,
+  cetakSuratCuti,
 };

@@ -181,6 +181,13 @@ const DetailCuti = () => {
 		const url = `${import.meta.env.VITE_PUBLIC_URL}/uploads/surat-cuti/${data.suratCuti}`;
 		window.open(url, "_blank");
 	};
+
+	// Untuk di production
+	// const handleCetakSurat = () => {
+	// 	if (!data.suratCuti || data.status !== "Disetujui") return;
+	// 	const url = `/api/konfigurasi-sistem/cetak-surat/${data.suratCuti}`;
+	// 	window.open(url, "_blank");
+	// };
 	
 	return (
 		<MainLayout role={user.role}>
