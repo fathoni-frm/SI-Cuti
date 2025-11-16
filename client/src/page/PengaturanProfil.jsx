@@ -50,18 +50,22 @@ const PengaturanProfil = () => {
 		fetchPegawai();
 	}, [user]);
 
-	const handleCetak = async (idPegawai) => {
+	const handleCetak = async (idPegawai, username) => {
 		try {
 			setIsDownloading(true);
 			const response = await axios.get(`/pegawai/cetak/${idPegawai}`, {
 				responseType: "blob",
+				withCredentials: true,
 			});
 			const blob = new Blob([response.data], { type: "application/pdf" });
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = `profil-${idPegawai}.pdf`;
+			a.download = `profil-${username}.pdf`;
+			document.body.appendChild(a);
 			a.click();
+			a.remove();
+			window.URL.revokeObjectURL(url);
 		} catch (error) {
 			console.error("Gagal mencetak PDF:", error);
 			toast.error("Gagal mencetak data diri");
@@ -80,12 +84,12 @@ const PengaturanProfil = () => {
 						Profil Saya
 					</h1>
 					<div className="flex justify-around gap-2">
-						<Link
-							onClick={() => handleCetak(user.idPegawai)}
+						<button
+							onClick={() => handleCetak(user.idPegawai	)}
 							className={`flex justify-center items-center w-full gap-2 px-3 py-2 rounded-md ${
 								isDownloading
 									? "bg-blue-600 cursor-not-allowed"
-									: "bg-blue-500 hover:bg-blue-600 text-white"
+									: "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
 							}`}
 							disabled={isDownloading}>
 							{isDownloading ? (
@@ -99,7 +103,7 @@ const PengaturanProfil = () => {
 									<p className="whitespace-nowrap">Cetak Data Diri</p>
 								</>
 							)}
-						</Link>
+						</button>
 						<Link
 							to={`/pengaturan-profil/edit`}
 							className="flex justify-center items-center w-full gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded-md">
