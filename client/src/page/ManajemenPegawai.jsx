@@ -22,7 +22,6 @@ const ManajemenPegawai = () => {
 	const navigate = useNavigate();
 	const [pegawaiList, setPegawaiList] = useState([]);
 	const MySwal = withReactContent(Swal);
-	const URLTemplateImport = `${import.meta.env.VITE_PUBLIC_URL}/uploads/template/template-import.xlsx`;
 
 	const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
 	const dropdownRef = useRef(null);
@@ -64,13 +63,12 @@ const ManajemenPegawai = () => {
 			const { value: file } = await MySwal.fire({
 				title: "Import Data Pegawai",
 				html: `
-				<div class="text-sm text-left space-y-3">
+				 <div class="text-sm text-left space-y-3">
 					<p class="inline leading-5">Silakan pilih file Excel yang berisi data pegawai. Sesuaikan format data pegawai dengan template berikut :</p>
-					<a href="${URLTemplateImport}"
-					   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-0.5 px-1 rounded text-xs transition"
-					   download>
-						📄 Template Import Pegawai
-					</a>
+					<button id="btn-download-template"
+						class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-0.5 px-1 rounded text-xs transition cursor-pointer">
+						📄 Download Template
+					</button>
 					<input type="file" id="file-input" accept=".xlsx" class="w-full px-2 py-1 border border-gray-300 rounded text-sm mt-2 cursor-pointer" />
 				</div>
 			`,
@@ -79,6 +77,30 @@ const ManajemenPegawai = () => {
 				confirmButtonColor: "#00c951",
 				cancelButtonText: "Batal",
 				focusConfirm: false,
+				didOpen: () => {
+					const btn = document.getElementById("btn-download-template");
+
+					btn.addEventListener("click", async () => {
+						try {
+							const response = await axios.get("/konfigurasi-sistem/template-import", {
+								responseType: "blob",
+							});
+
+							const blob = new Blob([response.data]);
+							const url = URL.createObjectURL(blob);
+
+							const a = document.createElement("a");
+							a.href = url;
+							a.download = "template-import.xlsx";
+							a.click();
+
+							URL.revokeObjectURL(url);
+						} catch (error) {
+							console.error(error);
+							Swal.fire("Gagal", "Tidak dapat mengunduh template", "error");
+						}
+					});
+				},
 				preConfirm: () => {
 					const input = Swal.getPopup().querySelector("#file-input");
 					const file = input.files[0];
@@ -130,12 +152,11 @@ const ManajemenPegawai = () => {
 				html: `
 					<p>Data berhasil diimpor: <strong>${data.berhasil}</strong></p>
 					<p>Data gagal diimpor: <strong>${data.gagal}</strong></p>
-					${
-						data.gagal > 0
-							? "<details><summary>Lihat Detail Gagal</summary><pre style='text-align:left;font-size:12px'>" +
-							data.detail.join("\n") +
-							"</pre></details>"
-							: ""
+					${data.gagal > 0
+						? "<details><summary>Lihat Detail Gagal</summary><pre style='text-align:left;font-size:12px'>" +
+						data.detail.join("\n") +
+						"</pre></details>"
+						: ""
 					}
 				`,
 			});
@@ -231,9 +252,8 @@ const ManajemenPegawai = () => {
 									{currentItems.map((pegawai, index) => (
 										<tr
 											key={pegawai.id}
-											className={`text-sm text-gray-700 text-center ${
-												index % 2 === 0 ? "bg-white" : "bg-gray-50"
-											} hover:bg-gray-100`}>
+											className={`text-sm text-gray-700 text-center ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+												} hover:bg-gray-100`}>
 											<td className="px-2 py-2 font-medium text-black break-words whitespace-normal">
 												{indexOfFirstItem + index + 1}
 											</td>
