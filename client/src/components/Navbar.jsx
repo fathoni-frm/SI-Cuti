@@ -182,7 +182,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 						)}
 					</button>
 					{notifOpen && (
-						<div className="absolute -right-15 mt-2 w-72 sm:right-0 sm:w-80 max-h-[44vh] overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 origin-top-right">
+						<div className="absolute -right-15 mt-2 w-72 sm:right-0 sm:w-86 max-h-[44vh] overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 origin-top-right">
 							<div className="flex p-2 border-b border-gray-200 justify-between items-center sticky top-0 bg-white">
 								<h3 className="text-sm font-semibold text-gray-700">
 									Notifikasi
