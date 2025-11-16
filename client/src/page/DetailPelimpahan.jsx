@@ -211,6 +211,13 @@ const DetailPelimapahan = () => {
 								tindak lanjut.
 							</p>
 						)}
+						{data.status === "Dibatalkan" && (
+							<p>
+								Anda telah <strong>mengabaikan</strong> pelimpahan tugas ini.
+								Pelimpahan tugas dari {data.PengajuanCuti.pegawai.nama} telah{" "}
+								<strong>dibatalkan</strong> secara otomatis
+							</p>
+						)}
 					</div>
 				</div>
 
