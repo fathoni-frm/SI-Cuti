@@ -438,7 +438,7 @@ const FormPengajuanCuti = ({
 										formik.setFieldValue("lampiran", null);
 										if (fileInputRef.current) fileInputRef.current.value = "";
 									}}
-									className="inline-flex items-center px-2 py-1.5 bg-red-600 text-white text-xs font-medium rounded-full hover:bg-red-700"
+									className="inline-flex items-center px-2 py-1.5 bg-red-600 text-white text-xs font-medium rounded-full hover:bg-red-700 cursor-pointer"
 								>
 									<FaTrashAlt className="mr-1" />
 									Hapus Lampiran
